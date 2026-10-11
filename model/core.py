@@ -39,6 +39,7 @@ import model.price_setting_tech as price_setting_tech
 
 import model.investment_summary as investment_summary
 from model.variable_presets import apply_variable_presets, read_variable_presets
+from model import components_historical
 
 # %% import packages ---------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
@@ -48,6 +49,27 @@ import pandas as pd
 from io import StringIO  # used to export model to txt file
 import time
 import os
+
+def dual_constraint_names(model, winter_limit_on, res_target_on):
+    """Constraints whose duals are exported by default; DUALS_EXPORT_ALL exports every active one instead."""
+    names = [
+        "energy_balance",
+        "storage_soc",
+        "energy_balancethermal",
+        # "storage_soc_limit",
+        # "lineATClimit",
+        # Thermal capacity duals (HP, PTES, RH):
+        "generationTh_limit",      # shadow price of thermal generation capacity (MW_th) — HP, PTES, RH
+        "storageTh_rate_limit",    # shadow price of charging/pumping rate (MW_th/el) — HP, PTES, RH
+        "storageTh_soc_limit",     # shadow price of thermal energy storage capacity (MWh_th) — PTES TTES
+        "storageTh_soc",           # shadow price of thermal energy storage level (MWh_th) - PTES TTES
+    ]
+    if winter_limit_on:
+        names.append("Constraint_winter_limit")
+    if res_target_on:
+        names.append("Constraint_investment_res_CH")
+    # constraints a back-cast adds through its hook (model/components_historical.py)
+    return names + components_historical.registered_constraints(model)
 
 # %% main function -----------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------
@@ -185,7 +207,11 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
         print("Preset details:")
         for preset, status, message in preset_summary['details']:
             print(f"  - {status}: {preset.get('variable_name')} | indices={preset.get('indices')} | scen={preset.get('scenario_name')} -> {message}")
-    
+
+    # a back-cast checks the built model and adds its constraints after the presets (docs/backcast.md)
+    if historical_import.is_backcast(settings_scen):
+        components_historical.apply_historical_constraints(model, scenario_name, "input/model_variable_presets.csv")
+
     # Set tiny lower bound for nuclear investment to prevent presolve from fixing it to 0
     # This ensures meaningful reduced costs are computed for break-even analysis
     # Using 1e-2 MW (10 kW) - negligible vs nuclear scale (1000+ MW) but numerically safe
@@ -329,25 +355,10 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     # Dual values ------------------------------------------------
     # exports all dual values of constraints automatically in seperate files named after variable's name
 
-    constraint_names_to_export = [
-        "energy_balance",
-        "storage_soc",
-        "energy_balancethermal",
-        # "storage_soc_limit",
-        # "lineATClimit",
-        # Thermal capacity duals (HP, PTES, RH):
-        "generationTh_limit",      # shadow price of thermal generation capacity (MW_th) — HP, PTES, RH
-        "storageTh_rate_limit",    # shadow price of charging/pumping rate (MW_th/el) — HP, PTES, RH
-        "storageTh_soc_limit",     # shadow price of thermal energy storage capacity (MWh_th) — PTES TTES
-        "storageTh_soc",           # shadow price of thermal energy storage level (MWh_th) - PTES TTES
-    ]
+    constraint_names_to_export = dual_constraint_names(
+        model, winter_limit[sub_scen]["mode"], minimum_RES_target_CH[sub_scen]
+    )
 
-    if winter_limit[sub_scen]["mode"]:
-        constraint_names_to_export.append("Constraint_winter_limit")
-
-    if minimum_RES_target_CH[sub_scen]:
-        constraint_names_to_export.append("Constraint_investment_res_CH")
-    
     if any(duals_export_all.values()): # If DUALS_EXPORT_ALL is True for any subscenario, export all duals
         constraint_list = [v for v in model.component_objects(ctype=Constraint, active=True, descend_into=True)]
     else:

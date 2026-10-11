@@ -27,6 +27,25 @@ A back-cast sub-scenario also needs these settings; the run stops and names ever
 
 `run_year` and `weather_year` play no role in a back-cast.
 
+## Model checks
+
+After capacity fixing and the variable presets, `core_main` calls `apply_historical_constraints`
+(`model/components_historical.py`). It runs after the presets, so no preset can undo a back-cast
+constraint; constraints a back-cast adds go through `add_backcast_constraint` and are exported as duals
+by default. It stops the run, naming every reason, unless:
+- every plant is a CH00 plant of the back-cast fleet, and no district-heating plant is built;
+- every investment variable is fixed;
+- no fuel or energy-budget constraint and no electrolyzer window is active;
+- no demand-side response plant is built, `slack_soc` is off, and neither the Swiss RES target nor the
+  winter import limit is active;
+- no part built on the static calendar is active (DSR days, EV weeks, the building heat state,
+  district-heating weeks);
+- no variable preset applies to the back-cast meta-scenario.
+
+It then audits the objective and prints each group of cost terms with its unit: hydro O&M, lost load and
+trade in EUR, investment in CHF. An investment term with a non-zero coefficient or constant stops the run;
+terms whose variables are all fixed, such as the costs of fixed plants, appear as a constant offset.
+
 ## Time steps
 
 The period becomes a UTC interval with an exclusive end: 1 Oct 2025 to 30 Aug 2026 is
