@@ -78,9 +78,26 @@ reads:
 - **No investment and no fuel model.** Every investment slope is 0, the operating-cost calibration is 1,
   and the set of limited fuels is empty.
 - **Lost load** as in the normal import.
+- **Border trade**: observed prices and transfer limits on the four border lines (next section).
 
 Nothing outside the back-cast fleet is built: EV, V2G, electrolyzer, building heat pumps, district
 heating, fuel limits, KVA infeed, energy limits and investment candidates stay empty.
+
+## Borders
+
+The back-cast trades with Austria, Germany, France and Italy at observed prices within observed limits,
+read from the processed folder for every hour of the period:
+- **Prices** from `prices_day_ahead_hourly.csv`: day-ahead, EUR/MWh, hourly mean of the quarter-hours,
+  each neighbour's price on its border line. Negative prices are kept.
+- **Transfer limits** from `ntc_dayahead_combined_hourly.csv`: day-ahead NTC, Swissgrid D-2 where
+  available and ENTSO-E otherwise, hourly minimum of the quarter-hours; intraday NTC is not used. On line
+  `HVAC_X00_CH00`, positive flow runs into CH00: the upper bound (`ATC_exportlimit`) is `X_to_CH` and the
+  lower bound is minus `CH_to_X` (`ATC_importlimit`). `NTC_CH_ratio` multiplies both directions once. A
+  zero limit is valid.
+- The manifest records both files and counts the direction-hours per NTC source.
+
+A missing file, column or hour, a duplicate column or hour, a missing or non-finite value, a negative
+limit, or an `NTC_CH_ratio` that is not a finite number of at least 0 stops the run.
 
 ## Run records
 
@@ -91,6 +108,6 @@ After the import, `core_main` writes two files into `output/<meta-scenario>/`:
 
 ## Status
 
-The import builds the structure, the hydro fleet and lost load. Until the following inputs are built, a
-back-cast stops with an error that names them: neighbour prices, transfer limits, Swiss demand,
-renewable infeed, fixed plants, reservoir inflow and reservoir stocks.
+The import builds the structure, the hydro fleet, lost load and border trade. Until the following inputs
+are built, a back-cast stops with an error that names them: Swiss demand, renewable infeed, fixed plants,
+reservoir inflow and reservoir stocks.

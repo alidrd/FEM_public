@@ -2,6 +2,7 @@
 data_prep/data_import_TYNDP.py). They read the repository's tracked input files; no model is solved.
 """
 import copy
+from pathlib import Path
 
 import pandas as pd
 import pyomo.environ as pyo
@@ -14,6 +15,7 @@ import model.read_settings as read_settings
 from data_prep import historical_import as hi
 from model.reset_items import get_lists_and_dicts
 from model.structural_parameters import Map_tech_startcondition, Map_plant_tech_cost_component, fuel_limited_CH_list
+from tests.backcast_data import write_processed
 
 FLEET = ["CH00_dam", "CH00_psp_close", "large_psp", "medium_reservior", "small_reservior"]
 NAME = "hist_test_obs"
@@ -43,10 +45,11 @@ def isolated_globals():
 
 
 @pytest.fixture
-def settings(monkeypatch):
+def settings(monkeypatch, tmp_path):
+    period = "2025-10-01/2025-10-02"
     monkeypatch.setitem(read_settings.scenarios_list, NAME, {
-        "CH_only": True, "allow_investment": False, "NodeDH_list": [], "historical_period": "2025-10-01/2025-10-02",
-        "historical_data_dir": "input/historical/processed/x"})
+        "CH_only": True, "allow_investment": False, "NodeDH_list": [], "historical_period": period,
+        "historical_data_dir": str(write_processed(tmp_path / "processed", period))})
     return read_settings.read_scenario_settings(NAME)
 
 
@@ -97,12 +100,15 @@ def test_complete_inputs_are_written_and_recorded(settings, isolated_globals, mo
     monkeypatch.setattr(hi, "NOT_YET_BUILT", [])
     run_import()
     assert common.Plant_list == FLEET and NAME in common.lost_load_cost
+    assert len(common.Line_trade_price) == len(common.ATC_exportlimit) == len(common.ATC_importlimit) == 4 * 48
     hi.write_run_records(tmp_path, [NAME])
     time_map = pd.read_csv(tmp_path / "historical_time_map.csv")
     assert time_map["t"].tolist() == settings["T_list"]
     manifest = pd.read_json(tmp_path / "historical_inputs_manifest.json", typ="series")
     assert len(manifest["code"]["git_commit"]) == 40 and manifest["model_steps"] == [6553, 6600]
     assert all(len(record["sha256"]) == 64 for record in manifest["files"])
+    assert {hi.PRICES_TABLE, hi.NTC_TABLE} <= {Path(record["path"]).name for record in manifest["files"]}
+    assert any(assumption.startswith("transfer limits") for assumption in manifest["assumptions"])
 
 
 def test_run_without_backcast_writes_no_run_records(tmp_path):

@@ -1,0 +1,33 @@
+"""Small processed folders for back-cast tests: the tables of data_prep/historical, for one short period plus one
+hour on each side, in the pipeline's format (index column time_utc, UTC interval start)."""
+import pandas as pd
+
+from data_prep.historical_import import BORDER_NEIGHBOURS, historical_time_map
+
+# Asymmetric transfer limits per neighbour (MW), so that a reversed direction shows
+INTO_CH = {"AT00": 1200.0, "DE00": 1150.0, "FR00": 2015.0, "IT00": 1910.0}
+OUT_OF_CH = {"AT00": 630.0, "DE00": 4000.0, "FR00": 900.0, "IT00": 3716.0}
+
+
+def period_hours(period):
+    hours = historical_time_map(period)["time_utc"]
+    return pd.DatetimeIndex([hours.iloc[0] - pd.Timedelta(hours=1), *hours, hours.iloc[-1] + pd.Timedelta(hours=1)])
+
+
+def write_processed(folder, period):
+    """Write the processed tables a back-cast reads; prices rise by 1 EUR/MWh per hour from 50 (DE00 from -5)."""
+    folder.mkdir(parents=True, exist_ok=True)
+    hours = period_hours(period)
+    steps = range(len(hours))
+    prices = {"time_utc": hours, "CH00": 80.0}
+    for n in BORDER_NEIGHBOURS:
+        prices[n] = [(-5.0 if n == "DE00" else 50.0) + k for k in steps]
+    pd.DataFrame(prices).to_csv(folder / "prices_day_ahead_hourly.csv", index=False, float_format="%.3f")
+    ntc = {"time_utc": hours}
+    for n in BORDER_NEIGHBOURS:
+        ntc[f"CH_to_{n[:2]}"] = OUT_OF_CH[n]
+        ntc[f"{n[:2]}_to_CH"] = INTO_CH[n]
+    for direction in [column for column in ntc if column != "time_utc"]:
+        ntc[f"source_{direction}"] = "swissgrid_d2"
+    pd.DataFrame(ntc).to_csv(folder / "ntc_dayahead_combined_hourly.csv", index=False, float_format="%.3f")
+    return folder

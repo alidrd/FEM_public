@@ -7,6 +7,7 @@ import pytest
 import model.read_settings as read_settings
 from data_prep import historical_import as hi
 from scenarios.settings_default import seetings_default_param
+from tests.backcast_data import write_processed
 
 FIRST_RUN = "2025-10-01/2026-08-30"
 
@@ -131,10 +132,10 @@ def test_settings_without_historical_period_are_unchanged(scenario):
     assert (settings["t_start"], settings["t_end"]) == (6553, 6552) and len(settings["T_list"]) == 8760
 
 
-def test_backcast_import_stops_until_it_is_built(scenario):
+def test_backcast_import_stops_until_it_is_built(scenario, tmp_path):
     from data_prep.data_import_TYNDP import data_import_TYNDP_fcn
 
     name = scenario("hist_s", CH_only=True, allow_investment=False, NodeDH_list=[], historical_period=FIRST_RUN,
-                    historical_data_dir="x")
+                    historical_data_dir=str(write_processed(tmp_path, FIRST_RUN)))
     with pytest.raises(NotImplementedError, match="back-cast inputs not built yet"):
         data_import_TYNDP_fcn(name)

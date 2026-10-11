@@ -4,8 +4,10 @@ period (glossary: CONTEXT.md; design: CH_ONLY_HISTORICAL_MODEL_PLAN.md; guide: d
 This module holds the back-cast's time base and setting checks, and the historical import that replaces the
 normal data import. It reads processed files only and never imports pipeline code (data_prep/historical).
 """
+import csv
 import hashlib
 import json
+import math
 import re
 import subprocess
 from pathlib import Path
@@ -40,8 +42,6 @@ COST_WORKBOOK = "input/cost_assumptions.xlsx"
 WORKBOOK_YEARS = (2035, 2050)
 # Inputs the historical import does not build yet; the step that builds one removes its entry
 NOT_YET_BUILT = [
-    "neighbour prices",
-    "transfer limits",
     "Swiss demand",
     "renewable infeed",
     "fixed plants",
@@ -49,6 +49,9 @@ NOT_YET_BUILT = [
     "reservoir stocks",
 ]
 RUN_RECORDS = {}  # sub-scenario -> time map and inputs manifest, written by core_main into the run folder
+# Tables of the processed folder of data_prep/historical (historical_data_dir)
+PRICES_TABLE = "prices_day_ahead_hourly.csv"
+NTC_TABLE = "ntc_dayahead_combined_hourly.csv"
 
 
 def is_backcast(settings):
@@ -161,14 +164,89 @@ def read_historical_inputs(scenario_name, settings):
     stage(staged, {"lost_load_cost": {scenario_name: read_lost_load_cost(settings["lost_load_cost_mode"])}})
     fleet, fleet_assumptions = read_hydro_fleet(scenario_name, settings)
     stage(staged, fleet)
+    market, market_files, market_assumptions = read_market(scenario_name, settings)
+    stage(staged, market)
     files = [*FLEET_TABLES, AVAILABILITY_TABLE, COST_WORKBOOK,
-             f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv"]
+             f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files]
     assumptions = [
         f"border lines HVAC_<neighbour>_{NODE} for {', '.join(BORDER_NEIGHBOURS)}, the neighbour as start node",
         *fleet_assumptions,
         "investment is off: every investment slope is 0; operating-cost calibration 1; no limited fuels",
+        *market_assumptions,
     ]
     return staged, files, assumptions
+
+
+def read_market(scenario_name, settings):
+    """Neighbour prices and day-ahead transfer limits on the four border lines, with the files read and the
+    assumptions. For line HVAC_X00_CH00 the upper flow bound (ATC_exportlimit) is X_to_CH and the lower bound
+    is minus CH_to_X (ATC_importlimit); NTC_CH_ratio multiplies both directions once."""
+    ratio = settings["NTC_CH_ratio"]
+    if isinstance(ratio, bool) or not isinstance(ratio, (int, float)) or not math.isfinite(ratio) or ratio < 0:
+        raise ValueError(f"NTC_CH_ratio must be a finite number of at least 0, got {ratio!r}")
+    prices = read_processed_hourly(settings, PRICES_TABLE, list(BORDER_NEIGHBOURS))
+    into_ch = {n: f"{n[:2]}_to_CH" for n in BORDER_NEIGHBOURS}
+    out_of_ch = {n: f"CH_to_{n[:2]}" for n in BORDER_NEIGHBOURS}
+    limits = read_processed_hourly(settings, NTC_TABLE, [*into_ch.values(), *out_of_ch.values()])
+    negative = [column for column in limits.columns if (limits[column] < 0).any()]
+    if negative:
+        raise ValueError(f"{NTC_TABLE}: negative transfer limits in {negative}")
+    s = scenario_name
+    lines = {n: f"HVAC_{n}_{NODE}" for n in BORDER_NEIGHBOURS}
+    staged = {
+        "Line_trade_price": {(lines[n], t, s): float(prices.at[t, n]) for n in BORDER_NEIGHBOURS for t in prices.index},
+        "ATC_exportlimit": {(lines[n], t, s): ratio * float(limits.at[t, into_ch[n]])
+                            for n in BORDER_NEIGHBOURS for t in limits.index},
+        "ATC_importlimit": {(lines[n], t, s): ratio * float(limits.at[t, out_of_ch[n]])
+                            for n in BORDER_NEIGHBOURS for t in limits.index},
+    }
+    ntc_path = Path(settings["historical_data_dir"]) / NTC_TABLE
+    source_columns = [f"source_{direction}" for direction in [*into_ch.values(), *out_of_ch.values()]]
+    sources = pd.read_csv(ntc_path, usecols=["time_utc", *source_columns])
+    sources.index = pd.to_datetime(sources["time_utc"], utc=True)
+    in_period = sources.loc[historical_time_map(settings["historical_period"])["time_utc"], source_columns]
+    counts = pd.Series(in_period.to_numpy().ravel()).value_counts().to_dict()
+    assumptions = [
+        "neighbour prices: day-ahead, EUR/MWh, hourly means of the quarter-hours; negative prices kept",
+        f"transfer limits: combined day-ahead NTC (Swissgrid D-2, else ENTSO-E), hourly minimum of the "
+        f"quarter-hours, times NTC_CH_ratio = {ratio}; direction-hours per source: {counts}",
+    ]
+    return staged, [str(Path(settings["historical_data_dir"]) / PRICES_TABLE), str(ntc_path)], assumptions
+
+
+def read_processed_hourly(settings, file_name, columns):
+    """The given columns of one processed hourly table at every model step of the period (index: model step).
+
+    Raises on a missing file or column, a duplicate column or hour, a missing hour or a missing or non-finite
+    value, naming the series and the hours.
+    """
+    path = Path(settings["historical_data_dir"]) / file_name
+    if not path.exists():
+        raise FileNotFoundError(f"{path} not found (historical_data_dir = {settings['historical_data_dir']!r})")
+    with open(path, newline="", encoding="utf-8") as handle:
+        header = next(csv.reader(handle))
+    duplicated = sorted({column for column in header if header.count(column) > 1})
+    if duplicated:
+        raise ValueError(f"{file_name}: duplicate columns {duplicated}")
+    missing = [column for column in ["time_utc", *columns] if column not in header]
+    if missing:
+        raise ValueError(f"{file_name}: no column {missing}")
+    table = pd.read_csv(path, usecols=["time_utc", *columns])
+    table.index = pd.to_datetime(table["time_utc"], utc=True)
+    if table.index.duplicated().any():
+        raise ValueError(f"{file_name}: duplicate hours, e.g. {table.index[table.index.duplicated()][0]}")
+    time_map = historical_time_map(settings["historical_period"])
+    absent = time_map.loc[~time_map["time_utc"].isin(table.index), "time_utc"]
+    if len(absent):
+        raise ValueError(f"{file_name}: {len(absent)} hours of the period are missing, e.g. {absent.iloc[0]}")
+    values = table.loc[time_map["time_utc"], list(columns)].apply(pd.to_numeric, errors="coerce")
+    for column in columns:
+        bad = values[column].isna() | values[column].isin([math.inf, -math.inf])
+        if bad.any():
+            raise ValueError(f"{file_name}: {int(bad.sum())} missing or non-finite values of {column}, "
+                             f"e.g. at {values.index[bad.to_numpy()][0]}")
+    values.index = time_map["t"].to_numpy()
+    return values
 
 
 def read_structure(scenario_name):
