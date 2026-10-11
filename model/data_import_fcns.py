@@ -1554,52 +1554,84 @@ def read_line_data(year, Node_list, T_list, NTC_CH_ratio, eu_policy, CH_only=Fal
                 ]
 
     # ----------------------------------- neighbor prices for CH_only mode -----------------------------------
-    # Load neighbor prices if CH_only mode is activated
     Line_trade_price = {}
-    if CH_only and scenario_name and neighbor_countries and neighbor_price_scenario:
-        
-        print(f"Loading neighbor prices for countries: {neighbor_countries}")
-        print(f"Using price scenario: {neighbor_price_scenario}")
-        
-        # Load neighbor prices CSV
-        neighbor_prices_file = f"input/neighbour_prices_for_CH_only_mode/neighbor_prices_{neighbor_price_scenario}.csv"
-        
-        try:
-            df_neighbor_prices = pd.read_csv(neighbor_prices_file)
-            print(f"Loaded neighbor prices from: {neighbor_prices_file}")
-            
-            # Set time_step as index for efficient lookup
-            df_neighbor_prices = df_neighbor_prices.set_index('time_step')
-            
-            # Create Line_trade_price dictionary: map each line and time step to corresponding neighbor price
-            for line_name in List_line:
-                # Find neighbor country connected to CH00 using Map_line_node
-                start_node = Map_line_node[line_name]["start_node"]
-                end_node = Map_line_node[line_name]["end_node"]
-                
-                if start_node == "CH00":
-                    neighbor_country = end_node
-                elif end_node == "CH00":
-                    neighbor_country = start_node
-                else:
-                    continue  # Skip lines not connected to CH00
-                
-                # Store price for each time step in T_list
-                for time_step in T_list:
-                    if neighbor_country in df_neighbor_prices.columns:
-                        price = df_neighbor_prices.loc[time_step, neighbor_country]
-                        Line_trade_price[(line_name, time_step)] = price
-            
-            print(f"Created Line_trade_price mapping for {len(Line_trade_price)} line-time combinations")
-            
-        except FileNotFoundError:
-            print(f"Warning: Neighbor prices file not found: {neighbor_prices_file}")
-            print("CH_only mode will fail without neighbor prices!")
-        except Exception as e:
-            print(f"Error loading neighbor prices: {e}")
-            print("CH_only mode will fail without neighbor prices!")
+    if CH_only:
+        Line_trade_price = read_neighbor_prices(
+            List_line, Map_line_node, T_list, scenario_name, neighbor_countries, neighbor_price_scenario
+        )
 
     return List_line, Map_line_node, ATC_exportlimit, ATC_importlimit, Line_trade_price
+
+
+def read_neighbor_prices(List_line, Map_line_node, T_list, scenario_name, neighbor_countries, neighbor_price_scenario):
+    """
+    Neighbor prices for CH_only mode: every border line of CH00 gets its neighbor's price at every time step,
+    keyed (line, time step). The objective prices all trade with them, so any gap raises; zero and negative
+    prices are valid.
+    """
+    empty_settings = [
+        name
+        for name, value in [
+            ("scenario_name", scenario_name),
+            ("neighbor_countries_for_CH_only_mode", neighbor_countries),
+            ("neighbor_price_scenario_for_CH_only_mode", neighbor_price_scenario),
+        ]
+        if not value
+    ]
+    if empty_settings:
+        raise ValueError(f"CH_only mode prices all trade at neighbor prices, but these settings are empty: {empty_settings}")
+
+    # neighbor of each border line of CH00
+    border_neighbor = {}
+    for line_name in List_line:
+        start_node = Map_line_node[line_name]["start_node"]
+        end_node = Map_line_node[line_name]["end_node"]
+        if start_node == "CH00":
+            border_neighbor[line_name] = end_node
+        elif end_node == "CH00":
+            border_neighbor[line_name] = start_node
+    neighbors = sorted(set(border_neighbor.values()))
+    unlisted = [n for n in neighbors if n not in neighbor_countries]
+    if unlisted:
+        raise ValueError(
+            f"Border neighbors {unlisted} of CH00 are missing from neighbor_countries_for_CH_only_mode {neighbor_countries}"
+        )
+
+    neighbor_prices_file = f"input/neighbour_prices_for_CH_only_mode/neighbor_prices_{neighbor_price_scenario}.csv"
+    if not os.path.exists(neighbor_prices_file):
+        raise FileNotFoundError(
+            f"Neighbor prices file not found: {neighbor_prices_file} "
+            f"(neighbor_price_scenario_for_CH_only_mode = {neighbor_price_scenario!r})"
+        )
+    df_neighbor_prices = pd.read_csv(neighbor_prices_file)
+    if "time_step" not in df_neighbor_prices.columns:
+        raise ValueError(f"{neighbor_prices_file} has no time_step column")
+    duplicates = df_neighbor_prices.loc[df_neighbor_prices["time_step"].duplicated(), "time_step"].unique().tolist()
+    if duplicates:
+        raise ValueError(f"{neighbor_prices_file} has duplicate time steps, e.g. {duplicates[:5]}")
+    df_neighbor_prices = df_neighbor_prices.set_index("time_step")
+    missing_columns = [n for n in neighbors if n not in df_neighbor_prices.columns]
+    if missing_columns:
+        raise ValueError(f"{neighbor_prices_file} has no price column for {missing_columns}")
+    missing_steps = [t for t in T_list if t not in df_neighbor_prices.index]
+    if missing_steps:
+        raise ValueError(f"{neighbor_prices_file} lacks {len(missing_steps)} time steps, e.g. {missing_steps[:5]}")
+
+    prices = df_neighbor_prices.loc[T_list, neighbors].apply(pd.to_numeric, errors="coerce")
+    not_finite = (prices.isna() | prices.isin([float("inf"), float("-inf")])).stack()
+    if not_finite.any():
+        examples = not_finite[not_finite].index.tolist()[:5]
+        raise ValueError(
+            f"{neighbor_prices_file} has {int(not_finite.sum())} missing or non-finite prices, e.g. (time step, neighbor) {examples}"
+        )
+
+    Line_trade_price = {
+        (line_name, time_step): float(prices.loc[time_step, neighbor])
+        for line_name, neighbor in border_neighbor.items()
+        for time_step in T_list
+    }
+    print(f"Loaded neighbor prices for {neighbors} from {neighbor_prices_file}")
+    return Line_trade_price
 
 
 def calculate_infeed_TYNDP(

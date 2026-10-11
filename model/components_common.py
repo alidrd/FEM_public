@@ -1199,7 +1199,20 @@ def define_params_op(model, resistive_heater_investment_cap_MW_total):
 def define_line_trade_price(model):
     """
     Line trade prices for CH_only mode (empty if not in CH_only mode). A negative day-ahead price is valid.
+    The objective prices trade on the border lines of CH00 only, so each of them needs a price at every time
+    step and sub-scenario; lines that the objective does not price carry 0.
     """
+    if Line_trade_price:
+        priced_lines = model.lineATC & set(Map_node_importinglineATC.get("CH00", []) + Map_node_exportinglineATC.get("CH00", []))
+        missing = [
+            (line, t, scen)
+            for line in priced_lines
+            for t in model.T
+            for scen in model.Scenarios
+            if (line, t, scen) not in Line_trade_price
+        ]
+        if missing:
+            raise ValueError(f"CH_only mode: no trade price for {len(missing)} (line, time step, sub-scenario) keys, e.g. {missing[:3]}")
     model.line_trade_price = Param(
         model.lineATC,
         model.T,
