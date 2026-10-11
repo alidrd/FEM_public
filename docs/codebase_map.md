@@ -41,6 +41,7 @@ contents, list the folder; this guide records what a listing does not tell you.
 | New setting | Default in `scenarios/settings_default.py`; read as `settings_scen["<name>"]` in `model/core.py` or the data import. A row in the scenario CSV overrides the default; values are parsed with `eval`, so `True`, `0.5` and lists work. |
 | Input data | Files in `input/`, read by `model/data_import_fcns.py` and `data_prep/`. District-heating plants: `input/plants_DH_CH_features.csv` (existing, incl. `efficiency` = COP for heat pumps) and `input/plants_DH_invest_candidates.csv`. Cost data: `input/cost_operation_invest_data.py`. |
 | Technology cost category | `Map_plant_tech_cost_component` in `model/structural_parameters.py` (`cap_op` or `cap_op_energy`). |
+| Back-cast (`CH_only` run of a past period) | `data_prep/historical_import.py`, switched on by the setting `historical_period`; `docs/backcast.md`. |
 | Fix or start values for one scenario | `input/model_variable_presets.csv` (format in its header). |
 | Solver options | `solver_parameters` in `model/core.py` (e.g. append `method=2` for barrier only on large runs). |
 

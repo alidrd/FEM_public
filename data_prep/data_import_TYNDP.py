@@ -96,6 +96,7 @@ from model.structural_parameters import (
 )
 from model.data_import_fcns import *
 from model.read_settings import read_scenario_settings
+from data_prep import historical_import
 import utils.data_import_costs as data_costs
 import input.cost_operation_invest_data as operation_data
 import pandas as pd
@@ -154,6 +155,11 @@ def data_import_TYNDP_fcn(scenario_name):
     neighbor_countries_for_CH_only_mode = settings_scen["neighbor_countries_for_CH_only_mode"]
     neighbor_price_scenario_for_CH_only_mode = settings_scen["neighbor_price_scenario_for_CH_only_mode"]
     high_resolution_PV = settings_scen["high_resolution_PV"]
+
+    # a back-cast reads processed historical files instead, so no future-year file is read
+    if historical_import.is_backcast(settings_scen):
+        historical_import.import_historical_inputs(scenario_name, settings_scen)
+        return
 
     # --- Read multi-step lost load cost data ---
     lost_load_cost_filename = f"lostLoadCost_{lost_load_cost_mode}.csv"

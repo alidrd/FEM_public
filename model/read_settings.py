@@ -1,5 +1,6 @@
 from scenarios.settings_default import seetings_default_param
 from scenarios.scenarios import scenarios_list
+from data_prep import historical_import
 
 
 def read_scenario_settings(scenario_name):
@@ -7,6 +8,16 @@ def read_scenario_settings(scenario_name):
 
     # Use default parameters if a parameters as stored in seetings_default_param, if it  is missing in the scenarios_list
     scenario_params = {**seetings_default_param, **parameters}
+
+    # a back-cast takes its time steps from historical_period; t_start or t_end set in the CSV must agree
+    if historical_import.is_backcast(scenario_params):
+        t_start, t_end = historical_import.model_steps(scenario_params["historical_period"])
+        for name, derived in (("t_start", t_start), ("t_end", t_end)):
+            if name in parameters and parameters[name] != derived:
+                raise ValueError(f"{scenario_name}: {name} = {parameters[name]} in the scenario CSV disagrees "
+                                 f"with historical_period, which gives {derived}")
+        scenario_params["t_start"], scenario_params["t_end"] = t_start, t_end
+        historical_import.check_backcast_settings(scenario_name, scenario_params)
 
     # add Consumer_list_netflex and T_list to scenario_pasrams
     t_start = scenario_params["t_start"]

@@ -10,6 +10,8 @@ seetings_default_param = {
     "CH_only": False,
     "neighbor_countries_for_CH_only_mode": ["DE00", "AT00", "FR00", "IT00"],
     "neighbor_price_scenario_for_CH_only_mode": "default",
+    "historical_period": False,  # back-cast: "YYYY-MM-DD/YYYY-MM-DD", local dates, both included (docs/backcast.md)
+    "historical_data_dir": False,  # back-cast: processed folder of data_prep/historical
     "t_start": 6553,
     "t_end": 6552,
     "consumer_start": 1,

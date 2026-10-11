@@ -14,6 +14,7 @@ from data_prep.definitions_common import *
 from data_prep.definitions_TYNDP import *
 from data_prep.definitions_TYNDP import Consumer_list_TYNDP
 from data_prep.data_import_TYNDP import data_import_TYNDP_fcn
+from data_prep import historical_import
 from model.components_common import *
 from model.components_central import *
 from model.read_settings import read_scenario_settings
@@ -63,6 +64,9 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     model = pyo.ConcreteModel(name="core_" + scenario_name + "_" + str(time.time()).split(".")[0])
 
     # read data for all sub_scenario ----------
+    historical_import.check_backcast_meta_scenario(
+        scenario_name, {sub_scen: read_scenario_settings(sub_scen) for sub_scen in sub_scenarios_list}
+    )
     for sub_scen in sub_scenarios_list:
         data_import_TYNDP_fcn(sub_scen)
 
