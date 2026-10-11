@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from data_prep.historical import bfe, checks, demand, energy_charts, entsoe_ntc, entsoe_web, provenance, swissgrid
+from data_prep.historical import bfe, checks, demand, energy_charts, entsoe_ntc, entsoe_web, pecd, provenance, swissgrid
 from data_prep.historical.config import (
     CAPACITY_HOURLY_RULE, ONSITE_SOLAR_SHARE, DIRECTIONS, LOCAL_TZ, NEIGHBOURS, NTC_ENTSOE_SOURCE_ORDER,
     NTC_ENTSOE_WEB_PREFERRED_DAYS, NUCLEAR_UNITS_NET_MW, INSTALLED_POWER_OTHERS, INSTALLED_POWER_NOT_OTHERS,
@@ -269,13 +269,27 @@ def coverage(tables: dict[str, pd.DataFrame], irregular: dict[str, pd.DatetimeIn
     return pd.DataFrame(rows)
 
 
+def write_pecd_inflow(out: Path, start_utc, end_utc) -> dict | None:
+    """Write the weekly PECD inflow of the registered archives and return its provenance record. Without a
+    registered archive, a table left by an earlier run is removed, so it is never labelled as fresh."""
+    archives = pecd.registered_archives()
+    target = out / pecd.TABLE
+    if not archives:
+        print("PECD: no archive registered in raw/pecd, table skipped")
+        target.unlink(missing_ok=True)
+        return None
+    table, record = pecd.build_weekly_inflow(archives, start_utc, end_utc)
+    table.to_csv(target, index=False, float_format="%.3f")
+    return record
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--start", required=True, help="first local day, YYYY-MM-DD")
     parser.add_argument("--end", required=True, help="last local day (inclusive), YYYY-MM-DD")
     args = parser.parse_args(argv)
     start_day, end_day = args.start, args.end
-    period_bounds_utc(start_day, end_day)
+    start_utc, end_utc = period_bounds_utc(start_day, end_day)
     index = hourly_index(start_day, end_day)
     out = output_dir(start_day, end_day)
     out.mkdir(parents=True, exist_ok=True)
@@ -323,6 +337,7 @@ def main(argv: list[str] | None = None) -> None:
 
     for name, frame in tables.items():
         frame.to_csv(out / f"{name}_hourly.csv", float_format="%.3f")
+    print("PECD weekly inflow"); pecd_record = write_pecd_inflow(out, start_utc, end_utc)
     build_reservoir(start_day, end_day).to_csv(out / "reservoir_weekly_bfe.csv")
     build_installed_power(start_day, end_day).to_csv(out / "ch_installed_power_yearly.csv", float_format="%.3f")
     validation = checks.run_all(tables)
@@ -331,10 +346,9 @@ def main(argv: list[str] | None = None) -> None:
     report = coverage(tables, irregular)
     report.to_csv(out / "coverage_report.csv", index=False)
     print(report.groupby("table")[["hours", "missing_hours", "irregular_hours_in_table"]].max().to_string())
-    start_utc, end_utc = period_bounds_utc(start_day, end_day)
     provenance.write(out, {"start_local_day": start_day, "end_local_day_inclusive": end_day, "timezone": LOCAL_TZ,
                            "start_utc": start_utc.isoformat(), "end_utc_exclusive": end_utc.isoformat(),
-                           "hours": len(index)})
+                           "hours": len(index)}, extra={"pecd": pecd_record})
     print(f"written to {out} (with provenance.json)")
 
 

@@ -37,7 +37,8 @@ def raw_files(manifest: dict) -> dict:
     return out
 
 
-def write(out_dir: Path, period: dict) -> Path:
+def write(out_dir: Path, period: dict, extra: dict | None = None) -> Path:
+    """Write provenance.json; `extra` adds records of inputs outside the raw manifest (e.g. "pecd")."""
     code_dir = Path(__file__).resolve().parent
     record = {
         "created_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
@@ -48,6 +49,7 @@ def write(out_dir: Path, period: dict) -> Path:
         "settings": settings(),
         "raw_files": raw_files(http_get.load_manifest()),
         "outputs_sha256": {p.name: http_get.sha256(p) for p in sorted(out_dir.glob("*.csv"))},
+        **(extra or {}),
     }
     target = out_dir / "provenance.json"
     target.write_text(json.dumps(record, indent=1, ensure_ascii=False), encoding="utf-8")

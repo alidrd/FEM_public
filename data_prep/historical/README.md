@@ -35,7 +35,8 @@ python -m data_prep.historical.plot_trade_ntc --start 2025-10-01 --end 2026-09-3
   - every setting in `config.py` (e.g. `CAPACITY_HOURLY_RULE`, `ONSITE_SOLAR_SHARE`);
   - each raw file with its checksum and manifest source; hand-copied files are marked as not in the
     manifest;
-  - the checksum of every output table.
+  - the checksum of every output table;
+  - under `pecd`, each registered PECD archive and every file inside it (see below).
 
   Processing stops if a raw file no longer matches its manifest checksum.
 - **plot_overview** writes `plots/historical_overview_<start>_<end>.html`.
@@ -57,6 +58,20 @@ python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30 --so
 
 Then rerun `process`. Without the token, that step stops with an error.
 
+Reservoir inflow comes from Copernicus PECD 4.2, requested by hand on the Copernicus Climate Data Store
+(free account; dataset `sis-energy-pecd`): PECD version 4.2, the ERA5 reanalysis stream, the hydro inflow
+variables HRI and HOL at bidding-zone level, for the years of the period. Completed years come as annual
+(`COM`) files and the running year as interim monthly (`ITE`) files, so request them separately. Register
+each downloaded archive once, then rerun `process`:
+
+```bash
+python -m data_prep.historical.pecd register <archive.zip>
+```
+
+`register` checks the archive, copies it to `raw/pecd/` and records it in `raw_manifest.json`; commit that
+file. Processing stops on an unregistered, missing or changed archive. To replace an archive, delete the old
+one from `raw/pecd/` and its manifest entry, then register the new one. The request is not automated yet.
+
 ## Sources
 
 | Data | Source | Coverage |
@@ -73,6 +88,7 @@ Then rerun `process`. Without the token, that step stops with an error.
 | Day-ahead NTC, 8 directions, Oct-Dec 2025 | ENTSO-E Transparency Platform web table (TR 11.1), copied by hand into `raw/entsoe_web/` | 92 days; stopgap until the token arrives |
 | Storage-lake content, weekly | BFE open data ogd17, from `bfe-ogd.ch`. Until 2026-10-09 the `uvek-gis.admin.ch` mirror was used; it lagged by one weekly reading. | full period, including the first reading after the period end |
 | National electricity balance, monthly (end use, losses, pumping, production by type) | BFE open data ogd35 | to the latest published month; the running year is provisional |
+| CH00 hydro inflow, weekly: reservoir (HRI) and open-loop pumped storage (HOL) | Copernicus PECD 4.2 (`sis-energy-pecd`, ERA5 reanalysis), archive requested by hand and registered | annual files for completed years, interim monthly files for the running year |
 
 ## Processed tables
 
@@ -94,6 +110,7 @@ positive for imports into CH. Columns are named after the FEM nodes (`CH00`, `DE
 | `ntc_entsoe_web_hourly.csv` | same, from the hand copy of the ENTSO-E web table (Oct-Dec 2025) |
 | `ntc_dayahead_combined_hourly.csv` | Swissgrid D-2 where available, else ENTSO-E in the order `NTC_ENTSOE_SOURCE_ORDER` (API download, then web copy); `source_<direction>` names the source of each value |
 | `nuclear_availability_hourly.csv` | generation, net capacity, outage = capacity - generation, availability |
+| `pecd_inflow_weekly_ch00.csv` | Only with a registered PECD archive. One row per series (HRI, HOL) and week overlapping the period: `week_start_utc` and `week_end_utc` (Monday 00:00 to the next Monday), `energy_MWh`, `release` (`COM` annual, `ITE` interim), `file_version`, `published`, `source_file`, `archive`.<br>- Values are electrical energy at grid level (C3S user guide). PECD already applies its CH00 correction factors (HOL ×0.825, run of river ×1.39, HRI none); never apply them again.<br>- Weeks start on Monday; 00:00 UTC is inferred from the files, since the documentation does not state a time zone.<br>- Interim values are model estimates, revised into the annual files after year end. A week no archive contains has no value; identical values from two files are merged, conflicting ones stop processing. |
 | `reservoir_weekly_bfe.csv` | GWh per region and maximum content; starts with the last reading before the period |
 | `ch_installed_power_yearly.csv` | Index `year`: installed power in MW per Energy-Charts category at the end of each year, from the period's first year to the latest published one. `others` is the sum of `INSTALLED_POWER_OTHERS` (`config.py`), the capacity behind the generation series `others`. |
 | `ch_demand_option_a_hourly.csv` | Swiss demand without storage pumping, MW (`demand.py`). **Use `demand_MW`**, built as follows:<br>- Swissgrid end-user consumption;<br>- plus grid losses: BFE monthly, in proportion to end-user consumption;<br>- plus on-site consumption: BFE end use minus Swissgrid end-user, a monthly total.<br>**Assumption:** half of the on-site consumption is placed like PV output and half flat (`ONSITE_SOLAR_SHARE = 0.5` in `config.py`). The real split is not published. The extremes stay as columns: `demand_solar_shaped_MW` (all like PV) and `demand_flat_MW` (all flat).<br>Monthly demand equals BFE Landesverbrauch. Months without every hour of the local calendar month (743 or 745 in DST months), or without BFE publication, stay NaN; a month cut by the start or end of the period is therefore NaN, not given the whole month's BFE energy. |

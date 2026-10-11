@@ -108,3 +108,9 @@ INSTALLED_POWER_NOT_OTHERS = (
 )
 
 USER_AGENT = "FEM-historical-data/1.0 (research use; Future Markets model)"
+
+# Copernicus PECD 4.2 hydro inflow (CDS dataset sis-energy-pecd, ERA5 reanalysis, zone level), from archives
+# downloaded by hand and registered with `python -m data_prep.historical.pecd register <archive.zip>`.
+# HRI = reservoir inflow, HOL = open-loop pumped-storage inflow; run of river (HRO) comes from Energy-Charts.
+PECD_ZONE = "CH00"
+PECD_SERIES = ("HRI", "HOL")
