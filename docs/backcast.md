@@ -81,6 +81,7 @@ reads:
 - **Lost load** as in the normal import.
 - **Border trade**: observed prices and transfer limits on the four border lines (next section).
 - **Swiss demand**: option A as the demand of `CH00_fixedconsumer` (section Demand).
+- **Renewable infeed**: observed solar, wind and run-of-river generation (section Renewable infeed).
 
 Nothing outside the back-cast fleet is built: EV, V2G, electrolyzer, building heat pumps, district
 heating, fuel limits, KVA infeed, energy limits and investment candidates stay empty.
@@ -119,6 +120,23 @@ heat-pump inflexible demand stay empty, since observed demand already contains t
 missing or non-finite value in the chosen column, a negative value, or an `onsite_solar_share_assumed` that
 varies within the period stops the run.
 
+## Renewable infeed
+
+Observed Swiss generation from `ch_public_power_hourly.csv` (Energy-Charts public power) is the
+infeed of `CH00_fixedconsumer` at every hour of the period:
+
+| Model technology | Column |
+|---|---|
+| `pvrf` | `solar` |
+| `windon` | `wind_onshore` |
+| `ror` | `hydro_run_of_river` |
+
+Every other infeed technology (`windof`, `pv`) is 0 at every hour, so no future infeed remains.
+`infeed.csv` reports the infeed by technology, and curtailment stays possible. There are no infeed
+plants, so solar, wind and run-of-river capacities are not modelled. The manifest records the energy of
+each technology over the period. A missing column, a missing or non-finite value, or negative generation
+stops the run.
+
 ## Run records
 
 After the import, `core_main` writes two files into `output/<meta-scenario>/`:
@@ -128,6 +146,6 @@ After the import, `core_main` writes two files into `output/<meta-scenario>/`:
 
 ## Status
 
-The import builds the structure, the hydro fleet, lost load, border trade and Swiss demand. Until the
-following inputs are built, a back-cast stops with an error that names them: renewable infeed, fixed
+The import builds the structure, the hydro fleet, lost load, border trade, Swiss demand and renewable
+infeed. Until the following inputs are built, a back-cast stops with an error that names them: fixed
 plants, reservoir inflow and reservoir stocks.

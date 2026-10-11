@@ -17,7 +17,8 @@ def period_hours(period):
 def write_processed(folder, period):
     """Write the processed tables a back-cast reads. Prices rise by 1 EUR/MWh per hour from 50 (DE00 from -5);
     demand_MW rises by 1 MW per hour from 6000, with the solar-shaped column 100 MW below and the flat one 100 MW
-    above; every month is published definitively."""
+    above; every month is published definitively. Solar, wind and run-of-river rise by 1 MW per hour from 100, 10
+    and 1000."""
     folder.mkdir(parents=True, exist_ok=True)
     hours = period_hours(period)
     steps = range(len(hours))
@@ -37,4 +38,7 @@ def write_processed(folder, period):
                   "demand_flat_MW": [d + 100 for d in demand], "onsite_solar_share_assumed": 0.5,
                   "bfe_month_definitive": 1.0}).to_csv(folder / "ch_demand_option_a_hourly.csv", index=False,
                                                        float_format="%.3f")
+    pd.DataFrame({"time_utc": hours, "solar": [100.0 + k for k in steps], "wind_onshore": [10.0 + k for k in steps],
+                  "hydro_run_of_river": [1000.0 + k for k in steps], "load": 7000.0}).to_csv(
+        folder / "ch_public_power_hourly.csv", index=False, float_format="%.3f")
     return folder

@@ -42,7 +42,6 @@ COST_WORKBOOK = "input/cost_assumptions.xlsx"
 WORKBOOK_YEARS = (2035, 2050)
 # Inputs the historical import does not build yet; the step that builds one removes its entry
 NOT_YET_BUILT = [
-    "renewable infeed",
     "fixed plants",
     "reservoir inflow",
     "reservoir stocks",
@@ -59,6 +58,9 @@ DEMAND_PLACEMENT = {
     "demand_flat_MW": "all flat",
 }
 DEMAND_TYPE = "fixed"  # the only inflexible consumption type of the model (core_main)
+POWER_TABLE = "ch_public_power_hourly.csv"
+# Infeed technology of the model -> observed column of POWER_TABLE; every other infeed technology is 0
+INFEED_COLUMNS = {"pvrf": "solar", "windon": "wind_onshore", "ror": "hydro_run_of_river"}
 
 
 def is_backcast(settings):
@@ -175,14 +177,18 @@ def read_historical_inputs(scenario_name, settings):
     stage(staged, market)
     demand, demand_files, demand_assumptions = read_demand(scenario_name, settings)
     stage(staged, demand)
+    infeed, infeed_files, infeed_assumptions = read_infeed(scenario_name, settings)
+    stage(staged, infeed)
     files = [*FLEET_TABLES, AVAILABILITY_TABLE, COST_WORKBOOK,
-             f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files, *demand_files]
+             f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files, *demand_files,
+             *infeed_files]
     assumptions = [
         f"border lines HVAC_<neighbour>_{NODE} for {', '.join(BORDER_NEIGHBOURS)}, the neighbour as start node",
         *fleet_assumptions,
         "investment is off: every investment slope is 0; operating-cost calibration 1; no limited fuels",
         *market_assumptions,
         *demand_assumptions,
+        *infeed_assumptions,
     ]
     return staged, files, assumptions
 
@@ -250,6 +256,30 @@ def read_demand(scenario_name, settings):
         "EV and heat-pump inflexible demand: none, as observed demand already holds them",
     ]
     return staged, [str(Path(settings["historical_data_dir"]) / DEMAND_TABLE)], assumptions
+
+
+def read_infeed(scenario_name, settings):
+    """Observed solar, wind and run-of-river generation as the fixed consumer's infeed at every model step, and 0
+    for every other infeed technology, with the file read and the assumptions. Curtailment stays possible."""
+    from model.structural_parameters import tech_infeed_all_list
+
+    table = read_processed_hourly(settings, POWER_TABLE, list(INFEED_COLUMNS.values()))
+    negative = [column for column in table.columns if (table[column] < 0).any()]
+    if negative:
+        raise ValueError(f"{POWER_TABLE}: negative generation in {negative}")
+    s = scenario_name
+    infeed = {(CONSUMER, tech, t, s): float(table.at[t, column]) for tech, column in INFEED_COLUMNS.items()
+              for t in table.index}
+    others = [tech for tech in tech_infeed_all_list if tech not in INFEED_COLUMNS]
+    infeed.update({(CONSUMER, tech, t, s): 0.0 for tech in others for t in table.index})
+    energy = ", ".join(f"{tech} {table[column].sum() / 1e6:.3f} TWh" for tech, column in INFEED_COLUMNS.items())
+    assumptions = [
+        f"renewable infeed: observed Energy-Charts public power, "
+        f"{', '.join(f'{column} as {tech}' for tech, column in INFEED_COLUMNS.items())}; {energy} over the period",
+        f"infeed of {', '.join(others)}: 0; no infeed plants, so solar, wind and run-of-river capacities are not "
+        f"modelled",
+    ]
+    return {"Infeed_consumers": infeed}, [str(Path(settings["historical_data_dir"]) / POWER_TABLE)], assumptions
 
 
 def read_processed_hourly(settings, file_name, columns):

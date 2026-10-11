@@ -101,7 +101,7 @@ def test_complete_inputs_are_written_and_recorded(settings, isolated_globals, mo
     run_import()
     assert common.Plant_list == FLEET and NAME in common.lost_load_cost
     assert len(common.Line_trade_price) == len(common.ATC_exportlimit) == len(common.ATC_importlimit) == 4 * 48
-    assert len(common.Demand_data) == 48
+    assert len(common.Demand_data) == 48 and len(common.Infeed_consumers) == 5 * 48
     assert common.EV_inflexible_demand_data == {} and common.HP_inflexible_demand_data == {}
     hi.write_run_records(tmp_path, [NAME])
     time_map = pd.read_csv(tmp_path / "historical_time_map.csv")
@@ -109,7 +109,8 @@ def test_complete_inputs_are_written_and_recorded(settings, isolated_globals, mo
     manifest = pd.read_json(tmp_path / "historical_inputs_manifest.json", typ="series")
     assert len(manifest["code"]["git_commit"]) == 40 and manifest["model_steps"] == [6553, 6600]
     assert all(len(record["sha256"]) == 64 for record in manifest["files"])
-    assert {hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE} <= {Path(record["path"]).name for record in manifest["files"]}
+    read = {Path(record["path"]).name for record in manifest["files"]}
+    assert {hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE, hi.POWER_TABLE} <= read
     assert any(assumption.startswith("transfer limits") for assumption in manifest["assumptions"])
 
 
