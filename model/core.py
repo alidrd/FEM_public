@@ -50,27 +50,6 @@ from io import StringIO  # used to export model to txt file
 import time
 import os
 
-def dual_constraint_names(model, winter_limit_on, res_target_on):
-    """Constraints whose duals are exported by default; DUALS_EXPORT_ALL exports every active one instead."""
-    names = [
-        "energy_balance",
-        "storage_soc",
-        "energy_balancethermal",
-        # "storage_soc_limit",
-        # "lineATClimit",
-        # Thermal capacity duals (HP, PTES, RH):
-        "generationTh_limit",      # shadow price of thermal generation capacity (MW_th) — HP, PTES, RH
-        "storageTh_rate_limit",    # shadow price of charging/pumping rate (MW_th/el) — HP, PTES, RH
-        "storageTh_soc_limit",     # shadow price of thermal energy storage capacity (MWh_th) — PTES TTES
-        "storageTh_soc",           # shadow price of thermal energy storage level (MWh_th) - PTES TTES
-    ]
-    if winter_limit_on:
-        names.append("Constraint_winter_limit")
-    if res_target_on:
-        names.append("Constraint_investment_res_CH")
-    # constraints a back-cast adds through its hook (model/components_historical.py)
-    return names + components_historical.registered_constraints(model)
-
 # %% main function -----------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------
 
@@ -408,3 +387,25 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     #     generate_detailed_reports(model, scenario_name, total_time_seconds=total_time_seconds)
     # else:
     #     print(f"Skipping detailed reporting: only supported for single subscenario runs (found {len(sub_scenarios_list)} subscenarios)")
+
+
+def dual_constraint_names(model, winter_limit_on, res_target_on):
+    """Constraints whose duals are exported by default; DUALS_EXPORT_ALL exports every active one instead."""
+    names = [
+        "energy_balance",
+        "storage_soc",
+        "energy_balancethermal",
+        # "storage_soc_limit",
+        # "lineATClimit",
+        # Thermal capacity duals (HP, PTES, RH):
+        "generationTh_limit",      # shadow price of thermal generation capacity (MW_th) — HP, PTES, RH
+        "storageTh_rate_limit",    # shadow price of charging/pumping rate (MW_th/el) — HP, PTES, RH
+        "storageTh_soc_limit",     # shadow price of thermal energy storage capacity (MWh_th) — PTES TTES
+        "storageTh_soc",           # shadow price of thermal energy storage level (MWh_th) - PTES TTES
+    ]
+    if winter_limit_on:
+        names.append("Constraint_winter_limit")
+    if res_target_on:
+        names.append("Constraint_investment_res_CH")
+    # constraints a back-cast adds through its hook (model/components_historical.py)
+    return names + components_historical.registered_constraints(model)

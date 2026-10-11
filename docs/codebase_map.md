@@ -35,7 +35,7 @@ contents, list the folder; this guide records what a listing does not tell you.
 |---|---|
 | New or changed constraint | A rule function plus `model.<name> = Constraint(...)` inside `define_constraints` in `model/components_common.py`. The electrolyzer energy limits, the winter import limit and the Swiss RES target are in `model/components_central.py`. |
 | Scale a constraint for numerics | Multiply both sides by `model.constraint_scaling['<name>']` in the rule and add `'<name>': <factor>` to `model/constraint_scaling.py`. The dual export converts the dual back to unscaled units (`docs/duals.md`). |
-| Export a constraint's dual by default | Add its name to `constraint_names_to_export` in `model/core.py`. With the setting `DUALS_EXPORT_ALL` set to `True`, the duals of all active constraints are exported. |
+| Export a constraint's dual by default | Add its name to the list in `dual_constraint_names` in `model/core.py`; a back-cast constraint added through `add_backcast_constraint` is registered there automatically. With the setting `DUALS_EXPORT_ALL` set to `True`, the duals of all active constraints are exported. |
 | New variable | `define_vars_op` (dispatch) or `define_vars_inv` (capacities) in `model/components_common.py`. All variables are exported automatically. |
 | Cost term | `obj_expression` in `model/components_common.py`. Multiply every term by `model.weight_in_objective_fcn[scen]` inside the loop over `model.Scenarios` (`docs/multi_weather_year.md`). |
 | New setting | Default in `scenarios/settings_default.py`; read as `settings_scen["<name>"]` in `model/core.py` or the data import. A row in the scenario CSV overrides the default; values are parsed with `eval`, so `True`, `0.5` and lists work. |

@@ -32,7 +32,7 @@ Read them from the run's `constraint_scaling.csv` rather than from this list.
 Written during the run by `constraints` in `aggregation/results_export.py`, called from
 `model/core.py`.
 
-**By default**, from the list `constraint_names_to_export` in `model/core.py`:
+**By default**, from the list in `dual_constraint_names` in `model/core.py`:
 
 | File | Meaning | Index |
 |---|---|---|
