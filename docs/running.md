@@ -16,7 +16,8 @@ installation on `PATH` and a licence are required; the Python package `gurobipy`
 ## Scenario CSVs
 
 The CSV named on the `target_csv =` line of `scenarios/scenarios.py` defines what
-`run_scenarios.py` runs. Rows are settings, columns are sub-scenarios.
+`run_scenarios.py` runs. Rows are settings, columns are sub-scenarios. `run_scenarios.py` runs each
+meta-scenario in its own Python process and stops at the first one that fails.
 
 - **`sub_secn` row (required).** Without it, no scenario is created and `run_scenarios.py`
   finishes without running anything. Each sub-scenario is named `<column name>_<sub_secn>`, and

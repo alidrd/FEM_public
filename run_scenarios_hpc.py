@@ -1,3 +1,4 @@
+# import model.monkey_patch # Activate this to have all imported files printed in the end
 import argparse
 from scenarios.scenarios import meta_scenarios_list
 import model.core as core

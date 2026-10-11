@@ -7,8 +7,11 @@ contents, list the folder; this guide records what a listing does not tell you.
 
 ## How a run flows
 
-1. **`run_scenarios.py`** loops over `meta_scenarios_list` and calls `model.core.core_main` once
-   per meta-scenario. `run_scenarios_hpc.py --scenario <name>` runs a single one (SLURM).
+1. **`run_scenarios.py`** runs each meta-scenario of `meta_scenarios_list` in its own Python process,
+   in CSV order, through `run_scenarios_hpc.py --scenario <name>`, which calls `model.core.core_main`.
+   The data import fills module-level lists and dicts that nothing clears, so a fresh process keeps one
+   meta-scenario's data out of the next. A failing meta-scenario stops the batch.
+   `run_scenarios_hpc.py --scenario <name>` alone runs a single one (SLURM).
 2. **`scenarios/scenarios.py`** reads the CSV named on its `target_csv =` line and groups its
    columns into meta-scenarios and sub-scenarios (rules in `docs/running.md`).
 3. **`model/core.py`, `core_main`** (about 390 lines, orchestration only):
