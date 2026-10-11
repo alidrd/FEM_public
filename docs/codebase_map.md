@@ -59,6 +59,7 @@ the duals, `reduced_costs` the reduced costs. `model/investment_summary.py` writ
 | Combine several runs | `aggregate_results.py`, which calls `aggregation/aggregate_new.py` |
 | Plots of one or several runs | `visualization_class.py` (writes to `plots/`); standalone scripts in `plot_creators/` |
 | Browser dashboard of one run | `tools/prepare_viewer.py` and `viewer.html` (main README) |
+| Check that a change leaves results unchanged | `tools/compare_runs.py <run_a> <run_b>` (declared tolerances; `docs/running.md`, Test run) |
 | Detailed reports from saved CSVs | `python -m detailed_reporting.run_detailed_reporting_posthoc`; the in-run call in `core.py` is commented out |
 
 `aggregate_results.py`, `visualization_class.py` and the post-hoc runner each start with a

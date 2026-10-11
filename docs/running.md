@@ -58,6 +58,12 @@ a few minutes, mostly data import; the solve itself takes seconds. Results go to
 `output/2050_st/` and overwrite the previous test run. `output/2050_st/statistics.csv` should
 report `Termination_Condition` `optimal`.
 
+To check that a change leaves results unchanged, copy `output/2050_st/` to its own folder before the
+change, repeat the test run after it, and compare the two:
+`poetry run python tools/compare_runs.py output/<saved copy> output/2050_st`. The tool compares
+capacities, dispatch, prices and the objective within the tolerances declared at its top, matching
+rows by their keys, and exits non-zero if any difference remains.
+
 The test scenario has a single sub-scenario and does not use the DH demand overlay, so it does
 not exercise multi-weather-year logic. To check such a change, put a temporary copy of the test
 column, repeated with different `sub_secn` values and weights summing to 1, in a CSV outside
