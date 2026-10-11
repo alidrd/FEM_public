@@ -553,13 +553,16 @@ acceptance criteria and its blockers (native GitHub dependencies).
 - The message references the issue and ends with `Requires:` and the subjects of all commits it needs, in
   order. A feature moves to another branch by cherry-picking those commits, then the feature.
 - Plan, glossary and ADR edits go into docs-only commits, which no cherry-pick needs.
-- #1-#7, #10 and #26-#28 apply to `main` on their own. #8 and #9 need this branch's two pipeline commits.
+- #1, #3-#7, #10 and #26-#28 apply to `main` on their own; #2 changes #1's helper and needs #1. #8 and #9 need
+  this branch's two pipeline commits.
+- The commit "Remove the unused gurobipy import" has no ticket: it does the import part of #28 and applies to
+  `main` on its own.
 - #21 is a workflow gate, not a commit: later tickets list it as a blocker but never in `Requires:`.
 
 | Issue | Topic | Ticket | Blocked by |
 |---|---|---|---|
 | #1 | Generic | Allow negative trade prices | - |
-| #2 | Generic | Raise on missing CH_only trade prices | - |
+| #2 | Generic | Raise on missing CH_only trade prices | #1 |
 | #3 | Generic | Build EV constraints only when the EV plant exists | - |
 | #4 | Generic | Run each meta-scenario in its own process | - |
 | #5 | Generic | Compare two runs within declared tolerances | - |
