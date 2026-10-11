@@ -13,6 +13,7 @@ from the processed folder of `data_prep/historical` (see its README).
 |---|---|---|
 | `historical_period` | `False` | Turns a sub-scenario into a back-cast: a quoted `"YYYY-MM-DD/YYYY-MM-DD"` of local (Europe/Zurich) dates, both included |
 | `historical_data_dir` | `False` | The processed folder of `data_prep/historical`, e.g. `"input/historical/processed/2023-10-01_2026-09-30"` |
+| `historical_demand` | `"demand_MW"` | Demand column of `ch_demand_option_a_hourly.csv` (section Demand) |
 
 Quote the period in the scenario CSV. The reader evaluates cells with `eval`, so an unquoted
 `2025-11-15/2026-12-20` becomes a number and an empty cell becomes `"nan"`; both stop the run.
@@ -79,6 +80,7 @@ reads:
   and the set of limited fuels is empty.
 - **Lost load** as in the normal import.
 - **Border trade**: observed prices and transfer limits on the four border lines (next section).
+- **Swiss demand**: option A as the demand of `CH00_fixedconsumer` (section Demand).
 
 Nothing outside the back-cast fleet is built: EV, V2G, electrolyzer, building heat pumps, district
 heating, fuel limits, KVA infeed, energy limits and investment candidates stay empty.
@@ -99,6 +101,24 @@ read from the processed folder for every hour of the period:
 A missing file, column or hour, a duplicate column or hour, a missing or non-finite value, a negative
 limit, or an `NTC_CH_ratio` that is not a finite number of at least 0 stops the run.
 
+## Demand
+
+The fixed consumer's demand at every hour of the period is Swiss demand option A from
+`ch_demand_option_a_hourly.csv`: Swissgrid end-user consumption plus grid losses plus on-site
+consumption, without storage pumping. Its monthly totals equal the BFE national consumption
+(Landesverbrauch); the manifest counts the hours in months BFE has published only provisionally.
+
+The hourly placement of on-site consumption is an assumption, so state the column with every result.
+`historical_demand` chooses it:
+- `demand_MW` (default): half like PV output, half flat (`onsite_solar_share_assumed`);
+- `demand_solar_shaped_MW`: all like PV output;
+- `demand_flat_MW`: all flat.
+
+The two extremes are for sensitivity runs; at noon in July 2026 they are about 1.6 GW apart. EV and
+heat-pump inflexible demand stay empty, since observed demand already contains them. Another column, a
+missing or non-finite value in the chosen column, a negative value, or an `onsite_solar_share_assumed` that
+varies within the period stops the run.
+
 ## Run records
 
 After the import, `core_main` writes two files into `output/<meta-scenario>/`:
@@ -108,6 +128,6 @@ After the import, `core_main` writes two files into `output/<meta-scenario>/`:
 
 ## Status
 
-The import builds the structure, the hydro fleet, lost load and border trade. Until the following inputs
-are built, a back-cast stops with an error that names them: Swiss demand, renewable infeed, fixed plants,
-reservoir inflow and reservoir stocks.
+The import builds the structure, the hydro fleet, lost load, border trade and Swiss demand. Until the
+following inputs are built, a back-cast stops with an error that names them: renewable infeed, fixed
+plants, reservoir inflow and reservoir stocks.

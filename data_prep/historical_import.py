@@ -42,7 +42,6 @@ COST_WORKBOOK = "input/cost_assumptions.xlsx"
 WORKBOOK_YEARS = (2035, 2050)
 # Inputs the historical import does not build yet; the step that builds one removes its entry
 NOT_YET_BUILT = [
-    "Swiss demand",
     "renewable infeed",
     "fixed plants",
     "reservoir inflow",
@@ -52,6 +51,14 @@ RUN_RECORDS = {}  # sub-scenario -> time map and inputs manifest, written by cor
 # Tables of the processed folder of data_prep/historical (historical_data_dir)
 PRICES_TABLE = "prices_day_ahead_hourly.csv"
 NTC_TABLE = "ntc_dayahead_combined_hourly.csv"
+DEMAND_TABLE = "ch_demand_option_a_hourly.csv"
+# Demand columns of DEMAND_TABLE (setting historical_demand) and where each places on-site consumption
+DEMAND_PLACEMENT = {
+    "demand_MW": "a share {share} (onsite_solar_share_assumed) like PV output, the rest flat",
+    "demand_solar_shaped_MW": "all like PV output",
+    "demand_flat_MW": "all flat",
+}
+DEMAND_TYPE = "fixed"  # the only inflexible consumption type of the model (core_main)
 
 
 def is_backcast(settings):
@@ -166,13 +173,16 @@ def read_historical_inputs(scenario_name, settings):
     stage(staged, fleet)
     market, market_files, market_assumptions = read_market(scenario_name, settings)
     stage(staged, market)
+    demand, demand_files, demand_assumptions = read_demand(scenario_name, settings)
+    stage(staged, demand)
     files = [*FLEET_TABLES, AVAILABILITY_TABLE, COST_WORKBOOK,
-             f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files]
+             f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files, *demand_files]
     assumptions = [
         f"border lines HVAC_<neighbour>_{NODE} for {', '.join(BORDER_NEIGHBOURS)}, the neighbour as start node",
         *fleet_assumptions,
         "investment is off: every investment slope is 0; operating-cost calibration 1; no limited fuels",
         *market_assumptions,
+        *demand_assumptions,
     ]
     return staged, files, assumptions
 
@@ -212,6 +222,34 @@ def read_market(scenario_name, settings):
         f"quarter-hours, times NTC_CH_ratio = {ratio}; direction-hours per source: {counts}",
     ]
     return staged, [str(Path(settings["historical_data_dir"]) / PRICES_TABLE), str(ntc_path)], assumptions
+
+
+def read_demand(scenario_name, settings):
+    """Swiss demand option A, column historical_demand, as the fixed consumer's demand at every model step, with
+    the file read and the assumptions. EV and heat-pump inflexible demand stay empty: observed demand holds them."""
+    column = settings["historical_demand"]
+    if column not in DEMAND_PLACEMENT:
+        raise ValueError(f"historical_demand must be one of {list(DEMAND_PLACEMENT)}, got {column!r}")
+    table = read_processed_hourly(settings, DEMAND_TABLE,
+                                  [column, "onsite_solar_share_assumed", "bfe_month_definitive"])
+    negative = table.index[table[column] < 0]
+    if len(negative):
+        raise ValueError(f"{DEMAND_TABLE}: {len(negative)} negative values of {column}, e.g. at {negative[0]}")
+    shares = sorted(set(table["onsite_solar_share_assumed"]))
+    if len(shares) != 1:
+        raise ValueError(f"{DEMAND_TABLE}: onsite_solar_share_assumed varies within the period ({shares})")
+    provisional = int((table["bfe_month_definitive"] == 0).sum())
+    s = scenario_name
+    staged = {"Demand_data": {(CONSUMER, DEMAND_TYPE, t, s): float(table.at[t, column]) for t in table.index}}
+    assumptions = [
+        f"Swiss demand: option A, column {column}: Swissgrid end-user consumption + grid losses + on-site "
+        f"consumption, without storage pumping; on-site consumption placed "
+        f"{DEMAND_PLACEMENT[column].format(share=shares[0])}",
+        f"monthly demand equals BFE Landesverbrauch; {provisional} of {len(table)} hours lie in months BFE has "
+        f"published only provisionally",
+        "EV and heat-pump inflexible demand: none, as observed demand already holds them",
+    ]
+    return staged, [str(Path(settings["historical_data_dir"]) / DEMAND_TABLE)], assumptions
 
 
 def read_processed_hourly(settings, file_name, columns):

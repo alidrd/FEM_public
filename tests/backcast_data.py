@@ -15,7 +15,9 @@ def period_hours(period):
 
 
 def write_processed(folder, period):
-    """Write the processed tables a back-cast reads; prices rise by 1 EUR/MWh per hour from 50 (DE00 from -5)."""
+    """Write the processed tables a back-cast reads. Prices rise by 1 EUR/MWh per hour from 50 (DE00 from -5);
+    demand_MW rises by 1 MW per hour from 6000, with the solar-shaped column 100 MW below and the flat one 100 MW
+    above; every month is published definitively."""
     folder.mkdir(parents=True, exist_ok=True)
     hours = period_hours(period)
     steps = range(len(hours))
@@ -30,4 +32,9 @@ def write_processed(folder, period):
     for direction in [column for column in ntc if column != "time_utc"]:
         ntc[f"source_{direction}"] = "swissgrid_d2"
     pd.DataFrame(ntc).to_csv(folder / "ntc_dayahead_combined_hourly.csv", index=False, float_format="%.3f")
+    demand = [6000.0 + k for k in steps]
+    pd.DataFrame({"time_utc": hours, "demand_MW": demand, "demand_solar_shaped_MW": [d - 100 for d in demand],
+                  "demand_flat_MW": [d + 100 for d in demand], "onsite_solar_share_assumed": 0.5,
+                  "bfe_month_definitive": 1.0}).to_csv(folder / "ch_demand_option_a_hourly.csv", index=False,
+                                                       float_format="%.3f")
     return folder
