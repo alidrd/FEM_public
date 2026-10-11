@@ -35,6 +35,7 @@ from model.structural_parameters import (
     tariff_import_definitions,
 )
 import utils.export_solve_statistics as export_model_stats
+from model.solver_status import require_optimal_solve
 import model.price_setting_tech as price_setting_tech
 
 import model.investment_summary as investment_summary
@@ -236,6 +237,8 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None, solve=True)
     )
     solve_time = time.time() - solve_timer_start
     print("time to solve the model: ", solve_time)    
+    # stop unless the solve ended optimal (otherwise there is no optimal solution to export)
+    require_optimal_solve(result, log_path)
     # %% export result ----------------------------------------------------------------------------------
     print("Exporting the results ...")
     # export statistics and settings ---------------------------------
