@@ -311,6 +311,78 @@ def test_nuclear_capacity_mismatch_with_energy_charts_raises(tmp_path, monkeypat
         process.build_nuclear(power, "2025-06-01", "2025-06-01")
 
 
+# --- installed power by category and year --------------------------------------------------------
+
+OTHERS_GW = {"conventional_thermal": 0.318, "landfill_gas": 0.0, "waste_incinerators_without_heat_extraction": 0.257,
+             "waste_incinerators_with_heat_extraction": 0.138, "industry": 0.133, "district_heating_plants": 0.212,
+             "small_chp": 0.142}
+NOT_OTHERS_GW = {"hydro_run_of_river": 4.319, "hydro_water_reservoir": 8.124, "hydro_pumped_storage": 3.503,
+                 "hydro_pumped_storage_w_o_natural_inflow": 0.529, "nuclear": 2.973, "wind_onshore": 0.109,
+                 "solar_dc": 9.499}
+
+
+def _installed_power(tmp_path, monkeypatch, years, values=None, units=None):
+    """Write an installed_power download: every year gets `values` (GW per category; default: all categories)."""
+    values = {**OTHERS_GW, **NOT_OTHERS_GW} if values is None else values
+    series = [{"id": sid, "unit": (units or {}).get(sid, "GW")} for sid in values]
+    data = [{"timestamp": f"{year}-01-01T00:00:00+01:00", "values": values} for year in years]
+    target = tmp_path / "energy_charts" / "installed_power" / "installed_power_ch_yearly.json"
+    target.parent.mkdir(parents=True)
+    target.write_text(json.dumps({"series": series, "data": data}))
+    monkeypatch.setattr(process, "RAW_DIR", tmp_path)
+
+
+def test_installed_power_sums_the_others_categories(tmp_path, monkeypatch):
+    _installed_power(tmp_path, monkeypatch, [2024, 2025])
+    table = process.build_installed_power("2025-10-01", "2026-09-30")
+    assert list(table.index) == [2025]
+    assert table.loc[2025, "others"] == pytest.approx(1200.0)
+    assert table.loc[2025, "nuclear"] == pytest.approx(2973.0)
+
+
+def test_installed_power_runs_from_the_period_start_to_the_latest_published_year(tmp_path, monkeypatch):
+    _installed_power(tmp_path, monkeypatch, [2022, 2023, 2024, 2025])
+    assert list(process.build_installed_power("2023-10-01", "2026-09-30").index) == [2023, 2024, 2025]
+
+
+def test_installed_power_missing_others_category_raises(tmp_path, monkeypatch):
+    values = {**OTHERS_GW, **NOT_OTHERS_GW}
+    del values["small_chp"]
+    _installed_power(tmp_path, monkeypatch, [2025], values)
+    with pytest.raises(ValueError, match="small_chp"):
+        process.build_installed_power("2025-10-01", "2025-12-31")
+
+
+def test_installed_power_unknown_category_raises(tmp_path, monkeypatch):
+    _installed_power(tmp_path, monkeypatch, [2025], {**OTHERS_GW, **NOT_OTHERS_GW, "battery_storage": 0.3})
+    with pytest.raises(ValueError, match="battery_storage"):
+        process.build_installed_power("2025-10-01", "2025-12-31")
+
+
+def test_installed_power_missing_year_raises(tmp_path, monkeypatch):
+    _installed_power(tmp_path, monkeypatch, [2023, 2025])
+    with pytest.raises(ValueError, match="2024"):
+        process.build_installed_power("2023-10-01", "2025-12-31")
+
+
+def test_installed_power_missing_value_raises(tmp_path, monkeypatch):
+    _installed_power(tmp_path, monkeypatch, [2025], {**OTHERS_GW, **NOT_OTHERS_GW, "small_chp": None})
+    with pytest.raises(ValueError, match="small_chp"):
+        process.build_installed_power("2025-10-01", "2025-12-31")
+
+
+def test_installed_power_ending_before_the_period_raises(tmp_path, monkeypatch):
+    _installed_power(tmp_path, monkeypatch, [2021, 2022])
+    with pytest.raises(ValueError, match="2022"):
+        process.build_installed_power("2023-10-01", "2024-09-30")
+
+
+def test_installed_power_unit_other_than_gw_raises(tmp_path, monkeypatch):
+    _installed_power(tmp_path, monkeypatch, [2025], units={"industry": "MW"})
+    with pytest.raises(ValueError, match="industry"):
+        process.build_installed_power("2025-10-01", "2025-12-31")
+
+
 # --- ENTSO-E web copy and combined day-ahead NTC --------------------------------------------
 
 from data_prep.historical import entsoe_web  # noqa: E402

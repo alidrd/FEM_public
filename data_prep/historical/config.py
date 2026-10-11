@@ -84,4 +84,27 @@ NUCLEAR_UNITS_NET_MW = {
     "Leibstadt": 1233.0,
 }
 
+# Energy-Charts installed_power categories. The generation series "others" of public_power covers every
+# category except hydro, nuclear, wind and solar; ch_installed_power_yearly.csv carries their sum as "others".
+# process.py raises on a category in neither list, so a new category is classified before it is used.
+INSTALLED_POWER_OTHERS = (
+    "conventional_thermal",
+    "landfill_gas",
+    "waste_incinerators_without_heat_extraction",
+    "waste_incinerators_with_heat_extraction",
+    "industry",
+    "district_heating_plants",
+    "small_chp",
+)
+INSTALLED_POWER_NOT_OTHERS = (
+    "hydro_run_of_river",
+    "hydro_water_reservoir",
+    "hydro_pumped_storage",
+    "hydro_pumped_storage_w_o_natural_inflow",
+    "nuclear",
+    "wind_onshore",
+    "wind_offshore",
+    "solar_dc",
+)
+
 USER_AGENT = "FEM-historical-data/1.0 (research use; Future Markets model)"

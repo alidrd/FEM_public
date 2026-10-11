@@ -16,7 +16,7 @@ import pandas as pd
 from data_prep.historical import bfe, checks, demand, energy_charts, entsoe_ntc, entsoe_web, provenance, swissgrid
 from data_prep.historical.config import (
     CAPACITY_HOURLY_RULE, ONSITE_SOLAR_SHARE, DIRECTIONS, LOCAL_TZ, NEIGHBOURS, NTC_ENTSOE_SOURCE_ORDER,
-    NTC_ENTSOE_WEB_PREFERRED_DAYS, NUCLEAR_UNITS_NET_MW,
+    NTC_ENTSOE_WEB_PREFERRED_DAYS, NUCLEAR_UNITS_NET_MW, INSTALLED_POWER_OTHERS, INSTALLED_POWER_NOT_OTHERS,
     PROCESSED_DIR, RAW_DIR, ZONES, COUNTRY_OF_NODE,
 )
 from data_prep.historical.timeutils import hourly_index, period_bounds_utc, to_hourly, year_chunks
@@ -206,6 +206,42 @@ def build_nuclear(public_power: pd.DataFrame, start_day, end_day) -> pd.DataFram
     return out
 
 
+def build_installed_power(start_day, end_day) -> pd.DataFrame:
+    """Installed power per Energy-Charts category, MW at the end of each year, from the period's first year
+    to the latest published year, plus "others": the sum of INSTALLED_POWER_OTHERS, the capacity behind the
+    generation series "others". Raises on an unclassified or missing category, a missing year or value."""
+    raw = RAW_DIR / "energy_charts" / "installed_power" / "installed_power_ch_yearly.json"
+    payload = json.loads(raw.read_text(encoding="utf-8"))
+    units = {s["id"]: s["unit"] for s in payload["series"]}
+    unclassified = sorted(set(units) - set(INSTALLED_POWER_OTHERS) - set(INSTALLED_POWER_NOT_OTHERS))
+    if unclassified:
+        raise ValueError(f"{raw.name}: categories {unclassified} are in neither INSTALLED_POWER_OTHERS nor "
+                         f"INSTALLED_POWER_NOT_OTHERS (config.py); classify them")
+    required = [*INSTALLED_POWER_OTHERS, "nuclear"]
+    missing = [category for category in required if category not in units]
+    if missing:
+        raise ValueError(f"{raw.name}: no series for {missing}")
+    not_gw = sorted(category for category, unit in units.items() if unit != "GW")
+    if not_gw:
+        raise ValueError(f"{raw.name}: unit other than GW for {not_gw}")
+
+    table = energy_charts.parse_installed_power(payload)
+    first_year, last_year, latest = pd.Timestamp(start_day).year, pd.Timestamp(end_day).year, int(table.index.max())
+    if latest < first_year:
+        raise ValueError(f"{raw.name}: installed power ends in {latest}, before the period starts in {first_year}")
+    years = list(range(first_year, min(last_year, latest) + 1))
+    missing_years = [year for year in years if year not in table.index]
+    if missing_years:
+        raise ValueError(f"{raw.name}: no installed power for the years {missing_years}")
+    table = table.loc[years]
+    gaps = [(year, category) for category in required for year in years if pd.isna(table.loc[year, category])]
+    if gaps:
+        raise ValueError(f"{raw.name}: missing values (year, category) {gaps}")
+    table["others"] = table[list(INSTALLED_POWER_OTHERS)].sum(axis=1)
+    table.index.name = "year"
+    return table
+
+
 def build_reservoir(start_day, end_day) -> pd.DataFrame:
     weekly = bfe.read(bfe.RAW_FILE)
     first, last = pd.Timestamp(start_day), pd.Timestamp(end_day)
@@ -288,6 +324,7 @@ def main(argv: list[str] | None = None) -> None:
     for name, frame in tables.items():
         frame.to_csv(out / f"{name}_hourly.csv", float_format="%.3f")
     build_reservoir(start_day, end_day).to_csv(out / "reservoir_weekly_bfe.csv")
+    build_installed_power(start_day, end_day).to_csv(out / "ch_installed_power_yearly.csv", float_format="%.3f")
     validation = checks.run_all(tables)
     validation.to_csv(out / "validation_report.csv", index=False, float_format="%.3f")
     print(validation.to_string(max_colwidth=40))
