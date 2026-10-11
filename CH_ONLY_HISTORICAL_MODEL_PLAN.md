@@ -5,6 +5,8 @@ Prepared 2026-10-09 for `feature/historical-backcast-data`.
 - Revised 2026-10-11 with corrections from a review by Codex (kept outside this repository), each checked
   against the code.
 - Revised 2026-10-11 with the user's decisions 10-15, including a **separate historical import** (section 1).
+- Revised 2026-10-11 with decisions 16-24 and the ticket index (section 12): GitHub issues #1-#25 on
+  `alidrd/FEM_public`. Terms follow `CONTEXT.md`.
 
 **Plan only; nothing below is implemented in FEM.**
 
@@ -13,10 +15,9 @@ Prepared 2026-10-09 for `feature/historical-backcast-data`.
   (`input/historical/processed/<period>/`, `time_utc` index, UTC interval start). These include
   `ntc_dayahead_combined_hourly.csv` (5.2) and Swiss demand option A, `ch_demand_option_a_hourly.csv` (5.3).
 - Reservoir inflow needs Copernicus PECD v4.2 weekly CH00 inflow (HRI, HOL in MWh).
-  - **This repository does not import PECD yet.** A PECD import into `data_prep/historical` (from the CDS
-    archive, which needs a CDS account) is a prerequisite for the first run.
-  - Until then, the table must come from a separate local data set. Its path is the setting
-    `historical_inflow_file` (section 3).
+  - **This repository does not import PECD yet.** A PECD import into `data_prep/historical` is a
+    prerequisite for the first run (decision 17, #9). It reads the CDS archive downloaded by hand and writes
+    the weekly table to the processed folder, which stays the only interface (decision 16).
 - A portable bundle with checksums, needed for HPC runs, comes later.
 
 **Pipeline status (2026-10-11).** The two preprocessing bugs Codex found are fixed and tested:
@@ -38,7 +39,8 @@ bundle.
     (`[2025-09-30 22:00, 2026-08-30 22:00)` UTC).
   - With `False`, nothing runs differently. A regression test checks existing scenarios (section 10).
 - **Data side: a separate historical import (decision 14).**
-  - **The switch:** one `if` at the top of `data_import_TYNDP_fcn`, right after the settings are read:
+  - **The switch:** one `if` in `data_import_TYNDP_fcn`, after the lost-load block, so lost load is read as
+    today:
 
         if settings_scen["historical_period"]:
             import_historical_inputs(scenario_name, settings_scen)
@@ -109,7 +111,6 @@ values (6.4).
 |---|---|---|
 | `historical_period` | `False` | Master switch and target period, `"YYYY-MM-DD/YYYY-MM-DD"` (local, inclusive). Sets the time window (section 4). Requires `CH_only=True` and `allow_investment=False`. |
 | `historical_data_dir` | `False` | Processed folder of `data_prep/historical`, e.g. `"input/historical/processed/2023-10-01_2026-09-30"`. May span several years; only `historical_period` is used. |
-| `historical_inflow_file` | `False` | Weekly PECD v4.2 table (HRI, HOL in MWh); an explicit absolute path for now (see Input) |
 | `historical_demand` | `"demand_MW"` | Column of `ch_demand_option_a_hourly.csv`; the extremes `demand_solar_shaped_MW` and `demand_flat_MW` are for sensitivity runs |
 | `historical_hydro_end` | `"equal"` | National reservoir level at the period end: `"equal"` (decided), `"at_least"` or `"free"` |
 
@@ -410,7 +411,7 @@ All logic stays in the two new files. Existing code gets only switches:
 5. **Model code that assumes a future module exists** gets an `if` guard. Known case: the two EV constraints
    are built unconditionally and name `"CH00_EV_flex"` (`components_common.py:1832-1838`, `:2478`, `:2489`).
    They are built only if that plant exists. Other cases found during implementation are listed here. The
-   nuclear lower bound in `core.py:187` is already guarded.
+   nuclear lower bound in `core.py:188` is already guarded.
 6. **New defaults** in `settings_default.py` (section 3).
 
 **Separate fix, recommended:** the existing CSV price loader in `read_line_data` swallows every error and runs
@@ -435,7 +436,7 @@ with zero trade cost, and `.get(...,0)` adds the same risk. A raise there protec
 The first column is `hist_2526_octaug`. Its rows:
 - `CH_only=True`, `allow_investment=False`, `NodeDH_list=[]`, `slack_soc=False`;
 - `historical_period="2025-10-01/2026-08-30"`;
-- `historical_data_dir`, `historical_inflow_file`, `historical_demand="demand_MW"`,
+- `historical_data_dir`, `historical_demand="demand_MW"`,
   `historical_hydro_end="equal"`;
 - one sub-scenario with weight 1.
 
@@ -517,3 +518,55 @@ August is partial (to 30 Aug), so August model totals are not compared with BFE 
 | 13 | Time labels | Decided: rotated labels with calendar-dependence assertions for the first run; calendar time steps before any leap period (section 4) |
 | 14 | Import | Decided: separate historical import in its own file, switched by one `if`; no hybrid runs in the first version (sections 1, 3, 5.0) |
 | 15 | "Others" capacity year | Decided: latest published Energy-Charts year (2025, about 1,200 MW, also for 2026 hours), declared (5.5) |
+| 16 | Pipeline-model interface | Decided: the back-cast import reads only processed files, never pipeline code or constants (#8, #9) |
+| 17 | PECD source | Decided: in-repo importer of the hand-downloaded CDS archive; the setting `historical_inflow_file` is dropped (#9) |
+| 18 | EV guard | Decided: the two EV constraints are built only when `CH00_EV_flex` is a plant of the model (#3) |
+| 19 | Meta-scenario isolation | Decided: each meta-scenario runs in its own process; the back-cast import also raises on global data left by another meta-scenario (#4, #11) |
+| 20 | Sub-scenarios | Decided: exactly one sub-scenario, weight 1, per back-cast meta-scenario (#10) |
+| 21 | Variable presets | Decided: a preset that applies to a back-cast meta-scenario raises (#12) |
+| 22 | Tests needing local data | Decided: pytest marker `needs_data`, deselected by default; a selected test with missing data fails (#6) |
+| 23 | Guides on feature branches | Decided: feature commits change guide bodies only; "Checked against" lines are refreshed after the merge into `main` (#7) |
+| 24 | Commits | Decided: one commit per ticket, packaged for cherry-picking (section 12) |
+
+## 12. Tickets and commits
+
+The work is split into the GitHub issues #1-#25 on `alidrd/FEM_public`. Each issue holds the scope, the
+acceptance criteria and its blockers (native GitHub dependencies).
+
+**Packaging: one ticket, one commit.**
+- The commit subject is the issue title. The commit holds the code, unit tests that fail on the old code, and
+  the guide text it changes (guide body only, decision 23).
+- The message references the issue and ends with `Requires:` and the subjects of all commits it needs, in
+  order. A feature moves to another branch by cherry-picking those commits, then the feature.
+- Plan, glossary and ADR edits go into docs-only commits, which no cherry-pick needs.
+- #1-#7 and #10 apply to `main` on their own. #8 and #9 need this branch's two pipeline commits.
+
+| Issue | Topic | Ticket | Blocked by |
+|---|---|---|---|
+| #1 | Generic | Allow negative trade prices | - |
+| #2 | Generic | Raise on missing CH_only trade prices | - |
+| #3 | Generic | Build EV constraints only when the EV plant exists | - |
+| #4 | Generic | Run each meta-scenario in its own process | - |
+| #5 | Generic | Compare two runs within declared tolerances | - |
+| #6 | Generic | Opt-in tests that need local data | - |
+| #7 | Docs | Refresh "Checked against" after the merge | - |
+| #8 | Pipeline | Installed power by category and year | - |
+| #9 | Pipeline | Weekly PECD inflow for CH00 | - |
+| #10 | Back-cast | Settings and time map | - |
+| #11 | Back-cast | Historical import skeleton | #10 |
+| #12 | Back-cast | Model hook and shape checks | #10 |
+| #13 | Back-cast | Neighbour prices and transfer limits | #1, #11 |
+| #14 | Back-cast | Swiss demand | #11 |
+| #15 | Back-cast | Renewable infeed | #11 |
+| #16 | Back-cast | Fixed plants | #8, #11, #12 |
+| #17 | Back-cast | Reservoir inflow on an electrical basis | #9, #11 |
+| #18 | Back-cast | Start stock and end target | #12, #17 |
+| #19 | Back-cast | Scenario file and data tests | #3, #6, #13-#16, #18 |
+| #20 | Back-cast | Price comparison tool | #10 |
+| #21 | Back-cast | First run and validation (run steps, no commit) | #5, #19, #20 |
+| #22 | Later | Chronological model steps | #21 |
+| #23 | Later | Hourly operating cost | - |
+| #24 | Later | Automated PECD download | #9 |
+| #25 | Later | Portable input bundle for HPC | #19 |
+
+#1-#20 are labelled `ready-for-agent`, #21 `ready-for-human`, and #22-#25 `needs-triage`.
