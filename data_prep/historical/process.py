@@ -15,7 +15,8 @@ import pandas as pd
 
 from data_prep.historical import bfe, checks, demand, energy_charts, entsoe_ntc, entsoe_web, provenance, swissgrid
 from data_prep.historical.config import (
-    CAPACITY_HOURLY_RULE, ONSITE_SOLAR_SHARE, DIRECTIONS, LOCAL_TZ, NEIGHBOURS, NTC_ENTSOE_WEB_PREFERRED_DAYS, NUCLEAR_UNITS_NET_MW,
+    CAPACITY_HOURLY_RULE, ONSITE_SOLAR_SHARE, DIRECTIONS, LOCAL_TZ, NEIGHBOURS, NTC_ENTSOE_SOURCE_ORDER,
+    NTC_ENTSOE_WEB_PREFERRED_DAYS, NUCLEAR_UNITS_NET_MW,
     PROCESSED_DIR, RAW_DIR, ZONES, COUNTRY_OF_NODE,
 )
 from data_prep.historical.timeutils import hourly_index, period_bounds_utc, to_hourly, year_chunks
@@ -135,27 +136,35 @@ def build_ntc_entsoe_web(index) -> pd.DataFrame | None:
     return frame.reindex(index)[DIRECTIONS]
 
 
-def combine_dayahead_ntc(d2: pd.DataFrame, web: pd.DataFrame | None, preferred_days: tuple[str, ...]) -> pd.DataFrame:
-    """One day-ahead NTC table: Swissgrid D-2 where it has a value, else the ENTSO-E web copy; on
-    preferred_days (local dates) the ENTSO-E web copy is used in every direction.
+def combine_dayahead_ntc(d2: pd.DataFrame, web: pd.DataFrame | None, preferred_days: tuple[str, ...],
+                         api: pd.DataFrame | None = None) -> pd.DataFrame:
+    """One day-ahead NTC table: Swissgrid D-2 where it has a value; hours without one are filled from the
+    ENTSO-E sources in NTC_ENTSOE_SOURCE_ORDER (API download, then web copy). On preferred_days (local
+    dates) D-2 is not used: every direction takes the first ENTSO-E source complete for that day.
 
-    The two are the same product (identical on every compared 2026 day, see
+    All three are the same product (D-2 and the web copy identical on every compared 2026 day, see
     validation_report.csv). The column source_<direction> names the source of each value.
     """
+    entsoe = {name: frame for name, frame in (("entsoe_api", api), ("entsoe_web", web)) if frame is not None}
+    order = [name for name in NTC_ENTSOE_SOURCE_ORDER if name in entsoe]
     local_day = pd.Index(d2.index.tz_convert(LOCAL_TZ).strftime("%Y-%m-%d"))
-    preferred = local_day.isin(preferred_days)
-    for day in set(preferred_days) & set(local_day):
+    out = d2[DIRECTIONS].copy()
+    source = pd.DataFrame({d: pd.Series("swissgrid_d2", index=d2.index).where(d2[d].notna(), "") for d in DIRECTIONS})
+    for day in sorted(set(preferred_days) & set(local_day)):
         rows = local_day == day
-        if web is None or web.loc[rows, DIRECTIONS].isna().any().any():
-            raise ValueError(f"preferred day {day} needs a complete ENTSO-E web copy in raw/entsoe_web/")
-    out = d2.copy()
+        complete = [n for n in order if entsoe[n].loc[rows, DIRECTIONS].notna().all().all()]
+        if not complete:
+            raise ValueError(f"preferred day {day} needs a complete ENTSO-E day-ahead NTC "
+                             f"(API download or web copy in raw/entsoe_web/)")
+        out.loc[rows, DIRECTIONS] = entsoe[complete[0]].loc[rows, DIRECTIONS]
+        source.loc[rows, DIRECTIONS] = complete[0]
+    for name in order:
+        for d in DIRECTIONS:
+            fill = out[d].isna() & entsoe[name][d].notna()
+            out.loc[fill, d] = entsoe[name].loc[fill, d]
+            source.loc[fill, d] = name
     for d in DIRECTIONS:
-        source = pd.Series("swissgrid_d2", index=d2.index).where(d2[d].notna(), "")
-        if web is not None:
-            use_web = (d2[d].isna() | preferred) & web[d].notna()
-            out[d] = d2[d].where(~use_web, web[d])
-            source = source.where(~use_web, "entsoe_web")
-        out[f"source_{d}"] = source
+        out[f"source_{d}"] = source[d]
     return out
 
 
@@ -260,13 +269,14 @@ def main(argv: list[str] | None = None) -> None:
         print("ENTSO-E web copy: none in raw/entsoe_web, table skipped")
     else:
         print("ENTSO-E web copy of day-ahead NTC"); tables["ntc_entsoe_web"] = web
-    tables["ntc_dayahead_combined"] = combine_dayahead_ntc(tables["ntc_swissgrid_d2"], web,
-                                                           NTC_ENTSOE_WEB_PREFERRED_DAYS)
     entsoe = build_ntc_entsoe(start_day, end_day, index)
     if entsoe is None:
-        print("ENTSO-E NTC: not downloaded yet (needs ENTSOE_API_KEY), table skipped")
+        print("ENTSO-E NTC API: not downloaded yet (needs ENTSOE_API_KEY), table skipped")
     else:
         tables["ntc_entsoe_a61"], irregular["ntc_entsoe_a61"] = entsoe
+    tables["ntc_dayahead_combined"] = combine_dayahead_ntc(
+        tables["ntc_swissgrid_d2"], web, NTC_ENTSOE_WEB_PREFERRED_DAYS,
+        api=tables["ntc_entsoe_a61"] if "ntc_entsoe_a61" in tables else None)
     print("nuclear"); tables["nuclear_availability"] = build_nuclear(tables["ch_public_power"], start_day, end_day)
     print("demand, option A")
     if not bfe.BALANCE_FILE.exists():

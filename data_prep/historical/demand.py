@@ -32,12 +32,20 @@ def local_month(index: pd.DatetimeIndex) -> pd.DatetimeIndex:
     return pd.DatetimeIndex(index.tz_convert(LOCAL_TZ).tz_localize(None).to_period("M").to_timestamp())
 
 
+def calendar_month_hours(months: pd.DatetimeIndex) -> pd.Series:
+    """Hours in each local calendar month (743 in March and 745 in October because of DST)."""
+    start = months.tz_localize(LOCAL_TZ).tz_convert("UTC")
+    end = (months + pd.offsets.MonthBegin(1)).tz_localize(LOCAL_TZ).tz_convert("UTC")
+    return pd.Series(((end - start) / pd.Timedelta(hours=1)).astype(int), index=months)
+
+
 def build_demand_option_a(end_user_mw: pd.Series, solar_mw: pd.Series, balance: pd.DataFrame,
                           onsite_solar_share: float) -> pd.DataFrame:
     """Hourly demand components in MW on the UTC index of end_user_mw.
 
-    A month gets values only if every hour has end-user and solar data and BFE has published it;
-    otherwise the whole month stays NaN. Raises if Swissgrid end-user energy exceeds BFE end use in a
+    A month gets values only if the input holds every hour of the local calendar month with end-user and
+    solar data, and BFE has published it; otherwise the whole month stays NaN. A month cut by the start or
+    end of the input therefore stays NaN instead of receiving the whole month's BFE energy. Raises if Swissgrid end-user energy exceeds BFE end use in a
     month (the definitions would contradict each other) or if a month has no PV output to shape by.
     """
     if not 0.0 <= onsite_solar_share <= 1.0:
@@ -45,7 +53,7 @@ def build_demand_option_a(end_user_mw: pd.Series, solar_mw: pd.Series, balance: 
     if not end_user_mw.index.equals(solar_mw.index):
         raise ValueError("end-user and solar series must share one hourly index")
     month = local_month(end_user_mw.index)
-    hours = end_user_mw.groupby(month).size()
+    hours = calendar_month_hours(pd.DatetimeIndex(month.unique()))
     complete = (end_user_mw.notna() & solar_mw.notna()).groupby(month).sum().eq(hours)
     bfe = balance.reindex(hours.index)
     usable = complete & bfe.Endverbrauch_GWh.notna() & bfe.Verluste_GWh.notna()

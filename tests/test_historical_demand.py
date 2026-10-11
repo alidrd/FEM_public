@@ -69,6 +69,27 @@ def test_month_with_a_missing_hour_stays_nan():
     assert out.drop(columns=["bfe_month_definitive", "onsite_solar_share_assumed"]).isna().all().all()
 
 
+def test_partial_month_at_the_edge_of_the_input_stays_nan():
+    # One complete day of February must not receive February's whole BFE energy (860 GWh).
+    load, solar, balance = _inputs()
+    out = build_demand_option_a(load.iloc[:24], solar.iloc[:24], balance, 0.5)
+    assert out.drop(columns=["bfe_month_definitive", "onsite_solar_share_assumed"]).isna().all().all()
+
+
+def test_dst_month_with_745_hours_counts_as_complete():
+    idx = hourly_index("2025-10-01", "2025-10-31")
+    assert len(idx) == 745
+    local_hour = idx.tz_convert("Europe/Zurich").hour
+    solar = pd.Series(np.where((local_hour >= 10) & (local_hour < 16), 500.0, 0.0), index=idx)
+    load = pd.Series(1000.0, index=idx)
+    balance = pd.DataFrame({"Endverbrauch_GWh": [800.0], "Verluste_GWh": [60.0], "Definitiv": [1]},
+                           index=pd.DatetimeIndex(["2025-10-01"]))
+    out = build_demand_option_a(load, solar, balance, 0.5)
+    assert out.demand_MW.notna().all()
+    assert out.demand_MW.sum() / 1000 == pytest.approx(860.0)
+    assert out.onsite_flat_MW.sum() / 1000 == pytest.approx(800.0 - 745.0)
+
+
 def test_month_not_yet_published_by_bfe_stays_nan():
     load, solar, balance = _inputs()
     out = build_demand_option_a(load, solar, balance.iloc[0:0], 0.5)

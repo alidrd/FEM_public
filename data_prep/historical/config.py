@@ -38,10 +38,14 @@ DIRECTIONS = [
 # Prices and power are always averaged. With hourly source limits both rules give the same value.
 CAPACITY_HOURLY_RULE = "min"
 
-# Local days on which the ENTSO-E web copy replaces Swissgrid D-2 NTC in all eight directions, because
-# Swissgrid's public file for the day is an early revision (2026-09-24: version 1 with "n.y.d."). Chosen by
-# the user on 2026-10-09; the data is in raw/entsoe_web/part_2026-09-24.txt.
+# Local days on which ENTSO-E replaces Swissgrid D-2 NTC in all eight directions, because Swissgrid's public
+# file for the day is an early revision (2026-09-24: version 1 with "n.y.d."). Chosen by the user on
+# 2026-10-09; the web copy for it is in raw/entsoe_web/part_2026-09-24.txt.
 NTC_ENTSOE_WEB_PREFERRED_DAYS = ("2026-09-24",)
+# ENTSO-E day-ahead NTC sources in order of use, both the same product (A61): the API download
+# (entsoe_ntc.py, needs a token) before the manual web copy (entsoe_web.py). They fill hours without a
+# Swissgrid D-2 value; on NTC_ENTSOE_WEB_PREFERRED_DAYS the first one complete for the day is used.
+NTC_ENTSOE_SOURCE_ORDER = ("entsoe_api", "entsoe_web")
 
 ENERGY_CHARTS_API ="https://api.energy-charts.info/v2"
 # Energy-Charts allows 2 requests per minute (HTTP 429 above that).

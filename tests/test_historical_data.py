@@ -363,6 +363,39 @@ def test_preferred_day_uses_web_copy_in_every_direction_even_where_d2_has_values
     assert set(out.loc[day, "source_CH_to_DE"]) == {"entsoe_web"}
 
 
+def test_combined_ntc_fills_gaps_from_api_before_web_copy():
+    from data_prep.historical.config import DIRECTIONS
+    idx = hourly_index("2025-12-31", "2026-01-01")[22:26]
+    d2 = pd.DataFrame({d: [np.nan, np.nan, 1000.0, np.nan] for d in DIRECTIONS}, index=idx)
+    web = pd.DataFrame({d: [500.0, 600.0, 700.0, 900.0] for d in DIRECTIONS}, index=idx)
+    api = pd.DataFrame({d: [510.0, np.nan, 710.0, np.nan] for d in DIRECTIONS}, index=idx)
+    out = process.combine_dayahead_ntc(d2, web, (), api=api)
+    assert out["CH_to_IT"].tolist() == [510.0, 600.0, 1000.0, 900.0]
+    assert out["source_CH_to_IT"].tolist() == ["entsoe_api", "entsoe_web", "swissgrid_d2", "entsoe_web"]
+
+
+def test_preferred_day_uses_complete_api_before_web_copy():
+    from data_prep.historical.config import DIRECTIONS
+    idx = hourly_index("2026-09-24", "2026-09-24")
+    d2 = pd.DataFrame({d: 1000.0 for d in DIRECTIONS}, index=idx)
+    web = pd.DataFrame({d: 400.0 for d in DIRECTIONS}, index=idx)
+    api = pd.DataFrame({d: 450.0 for d in DIRECTIONS}, index=idx)
+    out = process.combine_dayahead_ntc(d2, web, ("2026-09-24",), api=api)
+    assert (out["AT_to_CH"] == 450.0).all() and set(out["source_AT_to_CH"]) == {"entsoe_api"}
+    api.iloc[3, 2] = np.nan  # API incomplete for the day -> the complete web copy is used instead
+    out = process.combine_dayahead_ntc(d2, web, ("2026-09-24",), api=api)
+    assert (out["AT_to_CH"] == 400.0).all() and set(out["source_AT_to_CH"]) == {"entsoe_web"}
+
+
+def test_preferred_day_with_api_only_and_no_web_copy():
+    from data_prep.historical.config import DIRECTIONS
+    idx = hourly_index("2026-09-24", "2026-09-24")
+    d2 = pd.DataFrame({d: 1000.0 for d in DIRECTIONS}, index=idx)
+    api = pd.DataFrame({d: 450.0 for d in DIRECTIONS}, index=idx)
+    out = process.combine_dayahead_ntc(d2, None, ("2026-09-24",), api=api)
+    assert (out["DE_to_CH"] == 450.0).all()
+
+
 def test_preferred_day_without_complete_web_copy_raises():
     from data_prep.historical.config import DIRECTIONS
     idx = hourly_index("2026-09-24", "2026-09-24")

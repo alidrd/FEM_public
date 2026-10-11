@@ -92,10 +92,10 @@ positive for imports into CH. Columns are named after the FEM nodes (`CH00`, `DE
 | `ntc_swissgrid_d2_hourly.csv` | day-ahead NTC per direction, MW |
 | `ntc_entsoe_a61_hourly.csv` | same, from ENTSO-E (only after the token step) |
 | `ntc_entsoe_web_hourly.csv` | same, from the hand copy of the ENTSO-E web table (Oct-Dec 2025) |
-| `ntc_dayahead_combined_hourly.csv` | Swissgrid D-2 where available, else the ENTSO-E web copy; `source_<direction>` names the source of each value |
+| `ntc_dayahead_combined_hourly.csv` | Swissgrid D-2 where available, else ENTSO-E in the order `NTC_ENTSOE_SOURCE_ORDER` (API download, then web copy); `source_<direction>` names the source of each value |
 | `nuclear_availability_hourly.csv` | generation, net capacity, outage = capacity - generation, availability |
 | `reservoir_weekly_bfe.csv` | GWh per region and maximum content; starts with the last reading before the period |
-| `ch_demand_option_a_hourly.csv` | Swiss demand without storage pumping, MW (`demand.py`). **Use `demand_MW`**, built as follows:<br>- Swissgrid end-user consumption;<br>- plus grid losses: BFE monthly, in proportion to end-user consumption;<br>- plus on-site consumption: BFE end use minus Swissgrid end-user, a monthly total.<br>**Assumption:** half of the on-site consumption is placed like PV output and half flat (`ONSITE_SOLAR_SHARE = 0.5` in `config.py`). The real split is not published. The extremes stay as columns: `demand_solar_shaped_MW` (all like PV) and `demand_flat_MW` (all flat).<br>Monthly demand equals BFE Landesverbrauch. Months without complete data or without BFE publication stay NaN. |
+| `ch_demand_option_a_hourly.csv` | Swiss demand without storage pumping, MW (`demand.py`). **Use `demand_MW`**, built as follows:<br>- Swissgrid end-user consumption;<br>- plus grid losses: BFE monthly, in proportion to end-user consumption;<br>- plus on-site consumption: BFE end use minus Swissgrid end-user, a monthly total.<br>**Assumption:** half of the on-site consumption is placed like PV output and half flat (`ONSITE_SOLAR_SHARE = 0.5` in `config.py`). The real split is not published. The extremes stay as columns: `demand_solar_shaped_MW` (all like PV) and `demand_flat_MW` (all flat).<br>Monthly demand equals BFE Landesverbrauch. Months without every hour of the local calendar month (743 or 745 in DST months), or without BFE publication, stay NaN; a month cut by the start or end of the period is therefore NaN, not given the whole month's BFE energy. |
 | `coverage_report.csv` | missing hours and the longest gap for each column |
 | `validation_report.csv` | cross-checks between sources (see `checks.py`) |
 
@@ -114,13 +114,15 @@ Swissgrid D-2 files in every value (192/192 on 15 Jan, 184/184 on the 23-hour 29
 
 **24 Sep 2026.** Swissgrid's public file for that day is the early version 1 with "n.y.d.", while ENTSO-E
 holds a later revision.
-- The user chose ENTSO-E for that day: `NTC_ENTSOE_WEB_PREFERRED_DAYS` in `config.py` makes the combined
-  table use `raw/entsoe_web/part_2026-09-24.txt` in all eight directions.
+- The user chose ENTSO-E for that day. `NTC_ENTSOE_WEB_PREFERRED_DAYS` in `config.py` makes the combined
+  table use ENTSO-E in all eight directions: the API download if it is complete for the day, else
+  `raw/entsoe_web/part_2026-09-24.txt`.
 - `validation_report.csv` keeps the difference on record: Italy values differ by up to 1,395 MW.
 - The combined day-ahead NTC is complete for Oct 2025 - Sep 2026.
 
-**Replacement.** Once the API token arrives, `entsoe_ntc.py` replaces this hand copy, which should then be
-compared with the API values.
+**Replacement.** Once the API token arrives, `entsoe_ntc.py` downloads A61, and rerunning `process` uses it
+ahead of this hand copy (`NTC_ENTSOE_SOURCE_ORDER`). The hand copy should then be compared with the API
+values.
 
 ## Analyses
 
