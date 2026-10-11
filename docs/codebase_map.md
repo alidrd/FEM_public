@@ -67,6 +67,6 @@ hard-coded list of run folders; edit it to your runs first (`docs/running.md`).
 
 ## Tests
 
-`tests/` holds unit tests for helpers with no solver: the DH demand overlay
-(`model/dh_demand_adjustment.py`), its generator (`utils/make_dh_adjustment.py`) and the dual
-export. How to run them and what new code needs: `docs/running.md`.
+`tests/` holds unit tests that need no solver; tests that also need local data carry the marker
+`needs_data` and run only with `-m needs_data`. How to run them and what new code needs:
+`docs/running.md`.

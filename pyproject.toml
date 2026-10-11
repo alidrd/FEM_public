@@ -23,6 +23,11 @@ pytest = ">=7.0"
 # Put the repo root on sys.path so tests can import the `model` / `utils`
 # namespace packages (e.g. `from model.dh_demand_adjustment import ...`).
 pythonpath = ["."]
+# Collect tests/ only, as on CI; test folders elsewhere in the tree are not collected.
+testpaths = ["tests"]
+# Tests that need local data CI does not have are deselected unless selected with `-m needs_data`.
+markers = ["needs_data: needs local input data that CI does not have; run with -m needs_data"]
+addopts = "-m 'not needs_data'"
 
 [build-system]
 requires = ["poetry-core"]

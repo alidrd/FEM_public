@@ -75,9 +75,15 @@ the repo and point `target_csv` at it.
 poetry run pytest
 ```
 
-`pyproject.toml` puts the repo root on the import path. The tests cover helpers that need no
-solver: the DH demand overlay, its generator, and the dual export. Nothing tests building or
-solving the model, which is what the test run is for.
+`pyproject.toml` puts the repo root on the import path and collects tests from `tests/` only, as
+on CI. The tests need no solver; nothing tests solving the model, which is what the test run is for.
+
+Tests that need local data that CI does not have (the full `input/` folder or the gitignored
+processed historical data) carry the marker `needs_data`. Plain `poetry run pytest` deselects them
+and reports how many; run them with `poetry run pytest -m needs_data`. Such a test checks its files
+with `require_local_data` from `tests/local_data.py`, which fails, naming the missing paths,
+instead of skipping. It imports model and data code inside the test, never at module level:
+pytest imports every test module before it deselects any.
 
 Every new or changed function gets unit tests in `tests/` that fail on the old code. Prefer
 small inputs built in the test over files from `input/` or `output/`. A model change also needs
