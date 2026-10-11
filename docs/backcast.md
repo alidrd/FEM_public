@@ -40,7 +40,38 @@ local days. Every date comes from the time map (`historical_time_map`: model ste
 hour), never from a label. A period that contains 29 February or has more than 8,760 hours stops the
 run.
 
+## Historical import
+
+In a back-cast, `data_import_TYNDP_fcn` hands over to `import_historical_inputs` before any normal
+reader runs, so no future-year file is read. The import fills the same global lists and dicts the model
+reads:
+- **Validate first, then write.** Every input of the sub-scenario is read and checked before any global
+  changes, so a failing input changes nothing.
+- **Clean state.** The globals must be empty when it starts; data left by another meta-scenario in the
+  same process stops the run. `run_scenarios.py` runs each meta-scenario in its own process.
+- **Structure.** Node CH00 with its fixed consumer `CH00_fixedconsumer`, and the border lines
+  `HVAC_{AT,DE,FR,IT}00_CH00` with the neighbour as start node.
+- **Representative hydro fleet** (`input/hydro_PECD`): `large_psp`, `medium_reservior` and
+  `small_reservior`, the closed loop `CH00_psp_close`, and `CH00_dam` with zero capacity. Storage
+  efficiencies, O&M and emission factors come from the cost workbook, used only where its 2035 and 2050
+  values agree; availability comes from `input/availability_factor_conventional.csv` and must not vary
+  by month (0.966).
+- **No investment and no fuel model.** Every investment slope is 0, the operating-cost calibration is 1,
+  and the set of limited fuels is empty.
+- **Lost load** as in the normal import.
+
+Nothing outside the back-cast fleet is built: EV, V2G, electrolyzer, building heat pumps, district
+heating, fuel limits, KVA infeed, energy limits and investment candidates stay empty.
+
+## Run records
+
+After the import, `core_main` writes two files into `output/<meta-scenario>/`:
+- `historical_time_map.csv`: model step, UTC hour and local hour of every hour of the period;
+- `historical_inputs_manifest.json`: the period and model steps, every file read with its checksum and
+  columns, the assumptions, and the git commit with a flag for uncommitted changes.
+
 ## Status
 
-The settings and the time steps are checked. The historical import is not built yet, so a back-cast
-stops with "back-cast import not built yet" right after these checks.
+The import builds the structure, the hydro fleet and lost load. Until the following inputs are built, a
+back-cast stops with an error that names them: neighbour prices, transfer limits, Swiss demand,
+renewable infeed, fixed plants, reservoir inflow and reservoir stocks.

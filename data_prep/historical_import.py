@@ -4,7 +4,11 @@ period (glossary: CONTEXT.md; design: CH_ONLY_HISTORICAL_MODEL_PLAN.md; guide: d
 This module holds the back-cast's time base and setting checks, and the historical import that replaces the
 normal data import. It reads processed files only and never imports pipeline code (data_prep/historical).
 """
+import hashlib
+import json
 import re
+import subprocess
+from pathlib import Path
 
 import pandas as pd
 
@@ -22,6 +26,29 @@ SETTINGS_OFF = (
     "slack_soc",
     "minimum_RES_target_CH",
 )
+
+NODE = "CH00"
+CONSUMER = "CH00_fixedconsumer"
+# Border lines HVAC_<neighbour>_CH00 with the neighbour as start node, as in the normal CH_only import
+BORDER_NEIGHBOURS = ("AT00", "DE00", "FR00", "IT00")
+FLEET_TABLES = (
+    "input/hydro_PECD/PECD_EERA2021_reservoir_pumping_2030_table.csv",
+    "input/hydro_PECD/PECD_EERA2021_reservoir_pumping_2030_table_representative_plants.csv",
+)
+AVAILABILITY_TABLE = "input/availability_factor_conventional.csv"
+COST_WORKBOOK = "input/cost_assumptions.xlsx"
+WORKBOOK_YEARS = (2035, 2050)
+# Inputs the historical import does not build yet; the step that builds one removes its entry
+NOT_YET_BUILT = [
+    "neighbour prices",
+    "transfer limits",
+    "Swiss demand",
+    "renewable infeed",
+    "fixed plants",
+    "reservoir inflow",
+    "reservoir stocks",
+]
+RUN_RECORDS = {}  # sub-scenario -> time map and inputs manifest, written by core_main into the run folder
 
 
 def is_backcast(settings):
@@ -80,6 +107,9 @@ def check_backcast_settings(scenario_name, settings):
         problems.append(f"CH_only must be True, got {settings['CH_only']!r}")
     if settings["allow_investment"] is not False:
         problems.append(f"allow_investment must be False, got {settings['allow_investment']!r}")
+    if settings["rep_hydro_plants"] is not True:
+        problems.append(f"rep_hydro_plants must be True (the representative hydro fleet), "
+                        f"got {settings['rep_hydro_plants']!r}")
     swiss_nodes = [node for node in settings["Node_list_setting"] if node.startswith("CH")]
     if swiss_nodes != ["CH00"]:
         problems.append(f"the Swiss nodes of Node_list_setting must be exactly ['CH00'], got {swiss_nodes}")
@@ -105,6 +135,215 @@ def check_backcast_meta_scenario(scenario_name, settings_by_sub_scenario):
 
 
 def import_historical_inputs(scenario_name, settings):
-    """Fill the model's global lists and dicts from processed historical files instead of the normal import."""
-    raise NotImplementedError(f"{scenario_name}: back-cast import not built yet; the settings and the time base "
-                              f"are checked, the historical inputs follow")
+    """Fill the model's global lists and dicts for a back-cast instead of the normal import.
+
+    Every input is read and checked first; only then are the globals written, so a failing input changes
+    nothing. The globals must be empty when it starts (check_no_foreign_state).
+    """
+    check_no_foreign_state(scenario_name)
+    staged, files, assumptions = read_historical_inputs(scenario_name, settings)
+    if NOT_YET_BUILT:
+        raise NotImplementedError(f"{scenario_name}: back-cast inputs not built yet: {', '.join(NOT_YET_BUILT)}")
+    write_staged(staged)
+    RUN_RECORDS[scenario_name] = {
+        "time_map": historical_time_map(settings["historical_period"]),
+        "manifest": inputs_manifest(scenario_name, settings, files, assumptions),
+    }
+
+
+def read_historical_inputs(scenario_name, settings):
+    """All inputs of one back-cast sub-scenario, checked but not written: (global name -> entries, files read,
+    assumptions)."""
+    from model.data_import_fcns import read_lost_load_cost
+
+    staged = {}
+    stage(staged, read_structure(scenario_name))
+    stage(staged, {"lost_load_cost": {scenario_name: read_lost_load_cost(settings["lost_load_cost_mode"])}})
+    fleet, fleet_assumptions = read_hydro_fleet(scenario_name, settings)
+    stage(staged, fleet)
+    files = [*FLEET_TABLES, AVAILABILITY_TABLE, COST_WORKBOOK,
+             f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv"]
+    assumptions = [
+        f"border lines HVAC_<neighbour>_{NODE} for {', '.join(BORDER_NEIGHBOURS)}, the neighbour as start node",
+        *fleet_assumptions,
+        "investment is off: every investment slope is 0; operating-cost calibration 1; no limited fuels",
+    ]
+    return staged, files, assumptions
+
+
+def read_structure(scenario_name):
+    """CH00, its fixed consumer and the four border lines (limits and prices come from the market inputs)."""
+    lines = [f"HVAC_{neighbour}_{NODE}" for neighbour in BORDER_NEIGHBOURS]
+    return {
+        "Consumer_list": [CONSUMER],
+        "Map_consumer_node": {CONSUMER: NODE},
+        "Map_node_consumer": {NODE: [CONSUMER]},
+        "LineATC_list": lines,
+        "Map_line_node": {line: {"start_node": n, "end_node": NODE} for line, n in zip(lines, BORDER_NEIGHBOURS)},
+        "Map_node_importinglineATC": {NODE: list(lines)},
+        "Map_node_exportinglineATC": {NODE: []},
+    }
+
+
+def read_hydro_fleet(scenario_name, settings):
+    """The representative hydro fleet with its capacities, efficiencies, start conditions, availability and costs,
+    all independent of run year and weather year; and the assumptions behind them."""
+    from model.data_import_fcns import read_hydro_capacities
+    from model.structural_parameters import Map_tech_startcondition
+
+    plants, plant_tech, plant_node, gen_max, storage, pumping, consumer_plants = read_hydro_capacities(
+        [NODE], True, settings["merge_some_countries"], settings["target_merge_countries"], False, False
+    )
+    techs = sorted(set(plant_tech.values()))
+    eff_in = year_independent("efficiency_into_storage", techs)
+    eff_out = year_independent("efficiency", techs)
+    om_cost = year_independent("om_cost_eurMWH", techs)
+    emission = year_independent("emission_factor", techs)
+    availability = hydro_availability(techs)
+    s = scenario_name
+    fleet = {
+        "Plant_list": list(plants),
+        "Map_plant_tech": dict(plant_tech),
+        "Map_plant_node": dict(plant_node),
+        "Map_consumer_plant": {consumer: list(p) for consumer, p in consumer_plants.items()},
+        "Map_node_plant": {NODE: list(plants)},
+        "Plant_capacity_gen": {(p, s): value for p, value in gen_max.items()},
+        "Plant_capacity_pmp": {(p, s): value for p, value in pumping.items()},
+        "Plant_capacity_strg": {(p, s): value for p, value in storage.items()},
+        "Map_eff_in_plant": {p: eff_in[plant_tech[p]] for p in plants},
+        "Map_eff_out_plant": {p: eff_out[plant_tech[p]] for p in plants},
+        "Map_plant_startcondition": {p: Map_tech_startcondition[plant_tech[p]] for p in plants},
+        "Avail_plant": {(p, t, s): availability[plant_tech[p]] for p in plants for t in settings["T_list"]},
+        "cost_data_opr_slp": {(tech, s): om_cost[tech] for tech in techs},
+        "cost_data_opr_int": {(tech, s): 0.0 for tech in techs},
+        "op_cost_n_tech_calibration": {(NODE, tech, s): 1.0 for tech in techs},
+        "emission_factor_per_MWh": {(tech, s): emission[tech] / eff_out[tech] for tech in techs},
+        # investment is off, so every slope is exactly zero
+        "cost_data_inv_gen_slp": {(tech, s): 0.0 for tech in techs},
+        "cost_data_inv_e_slp": {(tech, s): 0.0 for tech in techs},
+        "cost_data_inv_discharge_slp": {(tech, s): 0.0 for tech in techs},
+    }
+    assumptions = [
+        "hydro fleet: the repository's representative 2030 fleet, not observed 2025/26 capacities",
+        f"hydro availability {availability} (availability table, constant over the months)",
+        f"storage efficiencies in {eff_in}, out {eff_out} and O&M {om_cost} EUR/MWh: cost-workbook values, "
+        f"identical for {WORKBOOK_YEARS}",
+    ]
+    return fleet, assumptions
+
+
+def year_independent(component, techs):
+    """Cost-workbook value of each technology, which must be the same in every workbook year."""
+    import input.cost_operation_invest_data as operation_data
+
+    values = {}
+    for tech in techs:
+        by_year = operation_data.cost_component[component].get(tech)
+        if not isinstance(by_year, dict) or any(year not in by_year for year in WORKBOOK_YEARS):
+            raise ValueError(f"{COST_WORKBOOK}: no {component} of {tech} for {WORKBOOK_YEARS}")
+        distinct = {by_year[year] for year in WORKBOOK_YEARS}
+        if len(distinct) != 1:
+            raise ValueError(f"{COST_WORKBOOK}: {component} of {tech} differs between {WORKBOOK_YEARS} ({by_year}); "
+                             f"a back-cast uses only workbook values that do not depend on the year")
+        values[tech] = distinct.pop()
+    return values
+
+
+def hydro_availability(techs):
+    """Availability of each technology as the normal import gives it: the Swiss row of the availability table,
+    else its Default row. It must be the same in every month, since back-cast model steps are no calendar months."""
+    table = pd.read_csv(AVAILABILITY_TABLE)
+    months = [column for column in table.columns if column not in ("country", "technology")]
+    values = {}
+    for tech in techs:
+        rows = table[(table["technology"] == tech) & (table["country"] == "CH")]
+        if rows.empty:
+            rows = table[(table["technology"] == tech) & (table["country"] == "Default")]
+        if len(rows) != 1:
+            raise ValueError(f"{AVAILABILITY_TABLE}: expected one CH or Default row for {tech}, found {len(rows)}")
+        monthly = set(rows[months].iloc[0])
+        if len(monthly) != 1:
+            raise ValueError(f"{AVAILABILITY_TABLE}: the availability of {tech} varies by month ({sorted(monthly)}); "
+                             f"back-cast model steps are no calendar months")
+        values[tech] = monthly.pop()
+    return values
+
+
+def stage(staged, entries):
+    """Add one input's entries (global name -> entries) to the staged inputs; two inputs never share a key."""
+    for name, payload in entries.items():
+        if name not in staged:
+            staged[name] = payload
+        elif isinstance(payload, dict):
+            shared = set(staged[name]) & set(payload)
+            if shared:
+                raise ValueError(f"two back-cast inputs write the same keys of {name}: {sorted(shared)[:3]}")
+            staged[name] = {**staged[name], **payload}
+        else:
+            staged[name] = [*staged[name], *payload]
+
+
+def write_staged(staged):
+    """Write the staged inputs into the global lists and dicts the model reads."""
+    import data_prep.definitions_common as common
+
+    for name, payload in staged.items():
+        container = getattr(common, name)
+        if isinstance(container, dict):
+            container.update(payload)
+        else:
+            container.extend(payload)
+
+
+def check_no_foreign_state(scenario_name):
+    """The data lists and dicts must be empty when a back-cast's import starts. In the back-cast's own process
+    nothing writes them before, so any entry comes from another meta-scenario run in the same process."""
+    import data_prep.definitions_common as common
+    import data_prep.definitions_TYNDP as tyndp
+    from model.reset_items import get_lists_and_dicts
+
+    filled = []
+    for module in (common, tyndp):
+        lists, dicts = get_lists_and_dicts(module, [])
+        filled += [f"{module.__name__}.{name}" for name in lists + dicts if len(getattr(module, name))]
+    if filled:
+        raise RuntimeError(f"{scenario_name}: data of another meta-scenario is already loaded in this process "
+                           f"({filled[:5]}); run each back-cast in its own process, as run_scenarios.py does")
+
+
+def inputs_manifest(scenario_name, settings, files, assumptions):
+    """What a back-cast used: its period and time steps, every file read with its checksum and columns, the
+    assumptions, and the code version."""
+    start, end = period_bounds_utc(settings["historical_period"])
+
+    def git(*args):
+        return subprocess.run(["git", *args], capture_output=True, text=True, check=True).stdout.strip()
+
+    return {
+        "scenario": scenario_name,
+        "historical_period": settings["historical_period"],
+        "period_utc": [start.isoformat(), end.isoformat()],
+        "model_steps": [settings["t_start"], settings["t_end"]],
+        "historical_data_dir": settings["historical_data_dir"],
+        "files": [file_record(path) for path in files],
+        "assumptions": assumptions,
+        "code": {"git_commit": git("rev-parse", "HEAD"), "uncommitted_changes": bool(git("status", "--porcelain"))},
+    }
+
+
+def file_record(path):
+    record = {"path": str(path), "sha256": hashlib.sha256(Path(path).read_bytes()).hexdigest()}
+    if str(path).endswith(".csv"):
+        record["columns"] = list(pd.read_csv(path, nrows=0, comment="#").columns)
+    return record
+
+
+def write_run_records(output_dir, sub_scenarios_list):
+    """Write the time map and the inputs manifest of a back-cast into its run folder; other runs have none."""
+    for sub_scenario in sub_scenarios_list:
+        records = RUN_RECORDS.get(sub_scenario)
+        if records is None:
+            continue
+        records["time_map"].to_csv(Path(output_dir) / "historical_time_map.csv", index=False)
+        manifest = json.dumps(records["manifest"], indent=1, ensure_ascii=False)
+        (Path(output_dir) / "historical_inputs_manifest.json").write_text(manifest, encoding="utf-8")

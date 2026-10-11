@@ -162,10 +162,7 @@ def data_import_TYNDP_fcn(scenario_name):
         return
 
     # --- Read multi-step lost load cost data ---
-    lost_load_cost_filename = f"lostLoadCost_{lost_load_cost_mode}.csv"
-    lost_load_cost_filepath = os.path.join("input", "LostLoadCost", lost_load_cost_filename) # NOTE: sub-optimal, that input is hard coded
-    df_lost_load_cost = pd.read_csv(lost_load_cost_filepath, comment='#')
-    lost_load_cost[scenario_name] = df_lost_load_cost.to_dict('index')
+    lost_load_cost[scenario_name] = read_lost_load_cost(lost_load_cost_mode)
 
 
     dle.extend_list_with_new_elements([node + "_fixedconsumer" for node in Node_list], Consumer_list_TYNDP)

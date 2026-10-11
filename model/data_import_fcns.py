@@ -2336,3 +2336,11 @@ def read_KVA_infeed_data():
             KVA_infeed[region] = float(value)
 
     return KVA_infeed
+
+def read_lost_load_cost(lost_load_cost_mode):
+    """
+    Lost-load cost steps from input/LostLoadCost/lostLoadCost_<mode>.csv, keyed by step: capacity and cost.
+    Used by the normal import and by the historical import of a back-cast.
+    """
+    lost_load_cost_filepath = os.path.join("input", "LostLoadCost", f"lostLoadCost_{lost_load_cost_mode}.csv") # NOTE: sub-optimal, that input is hard coded
+    return pd.read_csv(lost_load_cost_filepath, comment='#').to_dict('index')

@@ -74,6 +74,7 @@ def test_consistent_backcast_settings_pass():
 @pytest.mark.parametrize("setting, value", [
     ("CH_only", False),
     ("allow_investment", True),
+    ("rep_hydro_plants", False),
     ("Node_list_setting", ["CH00", "CH01", "DE00"]),
     ("hydro_inflow_TWh", 20.06),
     ("ror_annual_TWh", 18.55),
@@ -135,5 +136,5 @@ def test_backcast_import_stops_until_it_is_built(scenario):
 
     name = scenario("hist_s", CH_only=True, allow_investment=False, NodeDH_list=[], historical_period=FIRST_RUN,
                     historical_data_dir="x")
-    with pytest.raises(NotImplementedError, match="back-cast import not built yet"):
+    with pytest.raises(NotImplementedError, match="back-cast inputs not built yet"):
         data_import_TYNDP_fcn(name)

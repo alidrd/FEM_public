@@ -309,6 +309,13 @@ def obj_expression(model):
 # -----------------------------------------------------------------------------------------------------------
 
 
+def fuels_limited(backcast):
+    """
+    Fuels with a limited supply in CH. A back-cast builds no fuel model (its plants are hydro or have a fixed
+    output), so the set is empty there; the shared list fuel_limited_CH_list stays unchanged.
+    """
+    return [] if backcast else [f for f in fuel_limited_CH_list]
+
 def define_sets(
     model,
     Plant_list_included,
@@ -323,6 +330,7 @@ def define_sets(
     sub_scenarios_list,
     NodeDH_list,
     PlantDH_list,
+    backcast=False,
 ):
     """
     Define sets for the model (used in both for consumer runs and central runs).
@@ -594,7 +602,7 @@ def define_sets(
     )
 
     model.Fuels_limited = Set(
-        initialize=[f for f in fuel_limited_CH_list],
+        initialize=fuels_limited(backcast),
         doc="set of fuels",
     )
     # multi scenario constraints

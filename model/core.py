@@ -69,6 +69,7 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     )
     for sub_scen in sub_scenarios_list:
         data_import_TYNDP_fcn(sub_scen)
+    historical_import.write_run_records(output_dir, sub_scenarios_list)
 
     tech_infeed_core_run_list = tech_infeed_all_list.copy()
 
@@ -151,6 +152,7 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
         sub_scenarios_list,
         NodeDH_list, # district heating nodes
         PlantDH_list, # district heating plants
+        backcast=historical_import.is_backcast(settings_scen),
     )
     # %% Parameters ------------------------------------------------------------------------------------
     model = define_params_inv(model, weight_in_objective_fcn, resistive_heater_cap)
