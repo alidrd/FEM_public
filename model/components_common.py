@@ -1848,13 +1848,7 @@ def define_constraints(model):
     )
     # -------------------------------------------- EV modelling -------------------------------------------
     # Model the charging of flexible EVs (CH00_EV_flex)
-    model.ev_consumption_weekly_sum = Constraint(
-        model.Week, model.Scenarios, rule=ev_consumption_weekly_sum_Constraint 
-    ) 
-
-    model.ev_consumption_hourly_rate = Constraint(
-        model.T, model.Scenarios, rule=ev_consumption_hourly_rate_Constraint
-    )
+    define_ev_constraints(model)
 
     # --------------------------------------------  V2G modeling -------------------------------------------
     model.v2g_consumption_hourly_rate = Constraint(
@@ -2456,6 +2450,21 @@ def genTh_max_limit_Constraint(model, p, scen):
     else:
         return Constraint.Skip       
 # -------------------------------------------- EV modelling -------------------------------------------
+def define_ev_constraints(model):
+    """
+    Weekly energy and hourly charging rate of the flexible EVs (representative plant CH00_EV_flex), built only
+    when that plant belongs to the model. The normal import adds it whenever CH00 is modelled; a back-cast does not.
+    """
+    if "CH00_EV_flex" not in model.P:
+        return model
+    model.ev_consumption_weekly_sum = Constraint(
+        model.Week, model.Scenarios, rule=ev_consumption_weekly_sum_Constraint
+    )
+    model.ev_consumption_hourly_rate = Constraint(
+        model.T, model.Scenarios, rule=ev_consumption_hourly_rate_Constraint
+    )
+    return model
+
 def ev_consumption_weekly_sum_Constraint(model, w, s):
     """
     Modelling the flexible EV consumption with the representative plant CH00_EV_flex.
