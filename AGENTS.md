@@ -24,7 +24,8 @@ Setup, Euler and SciCORE: `README.md`. All guides: `docs/README.md`.
 - **Commit source only.** `output/` and `plots/` are gitignored. `paper_*/` folders left over from
   another branch are not, so leave them unstaged.
 - **Keep the guides true.** When you change behaviour a guide in `docs/` describes, update that
-  guide and its "Checked against" line in the same commit.
+  guide's text in the same commit. Its "Checked against" line names a commit of `main`, so the docs
+  commit that follows a merge into `main` sets it.
 
 ## Where to read
 
