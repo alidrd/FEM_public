@@ -194,6 +194,13 @@
   "sha256": "426c729a2e58875ce5d2be9856f415a740df21a3357797c8bfff090f2a2a497c",
   "note": "downloaded before the manifest existed; retrieval time unknown, file modified 2026-10-09T11:47:12+00:00"
  },
+ "pecd/pecd_36e21bb9a83c21c5.zip": {
+  "url": "manual request on the Copernicus CDS, dataset sis-energy-pecd",
+  "retrieved_at_utc": null,
+  "registered_at_utc": "2026-10-11T19:04:48+00:00",
+  "bytes": 222413,
+  "sha256": "36e21bb9a83c21c5ff321eff3eb3b9b44ceff694ad34b81c36d04fe39abb0c3f"
+ },
  "swissgrid/cross_border_flows/Grenzfluesse-2026.csv": {
   "url": "https://www.swissgrid.ch/dam/jcr:8f24b41a-6174-4116-b589-cad1e51c7248/Grenzfluesse-2026.csv",
   "retrieved_at_utc": null,
