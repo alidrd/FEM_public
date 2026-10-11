@@ -7,6 +7,8 @@ Prepared 2026-10-09 for `feature/historical-backcast-data`.
 - Revised 2026-10-11 with the user's decisions 10-15, including a **separate historical import** (section 1).
 - Revised 2026-10-11 with decisions 16-24 and the ticket index (section 12): GitHub issues #1-#25 on
   `alidrd/FEM_public`. Terms follow `CONTEXT.md`.
+- Revised 2026-10-11 after a review of the tickets by Codex: tickets amended and issues #26-#29 added
+  (sections 5.0, 5.5, 5.6, 6.1, 7, 10 and 12).
 
 **Plan only; nothing below is implemented in FEM.**
 
@@ -39,8 +41,8 @@ bundle.
     (`[2025-09-30 22:00, 2026-08-30 22:00)` UTC).
   - With `False`, nothing runs differently. A regression test checks existing scenarios (section 10).
 - **Data side: a separate historical import (decision 14).**
-  - **The switch:** one `if` in `data_import_TYNDP_fcn`, after the lost-load block, so lost load is read as
-    today:
+  - **The switch:** one `if` in `data_import_TYNDP_fcn`. Lost load is read by one helper on both routes; the
+    back-cast route writes it together with its other inputs, so a failed import changes nothing (#11):
 
         if settings_scen["historical_period"]:
             import_historical_inputs(scenario_name, settings_scen)
@@ -194,9 +196,9 @@ reads.
 | Inflow, outflow | `Inflow_data`, `Plant_inflow_list`, `Outflow_data`, `Plant_outflow_list` | 5.6; no outflow |
 | Lines, prices | `LineATC_list`, `Map_line_node`, `ATC_exportlimit`, `ATC_importlimit`, `Line_trade_price`, `Map_node_exportinglineATC`, `Map_node_importinglineATC` | 5.1, 5.2; four lines `HVAC_{AT,DE,FR,IT}00_CH00`, the existing names and direction |
 | Demand | `Demand_data`, `EV_inflexible_demand_data`, `HP_inflexible_demand_data` | 5.3; EV and HP parts empty |
-| Costs | `cost_data_opr_slp`, `cost_data_opr_int`, `op_cost_n_tech_calibration`, `emission_factor_per_MWh`, investment-cost dicts | Year-independent workbook values for the remaining technologies (section 2); investment dicts empty, since investment is off |
+| Costs | `cost_data_opr_slp`, `cost_data_opr_int`, `op_cost_n_tech_calibration`, `emission_factor_per_MWh`, investment-cost dicts | Year-independent workbook values for the remaining technologies (section 2); explicit zero investment slopes for the back-cast fleet, since investment is off and the model looks the slopes up for every plant (#11) |
 | Lost load | `lost_load_cost` | As today (`input/LostLoadCost`, not year-dependent) |
-| Future-only modules | EV, V2G, electrolyzer, building heat pumps (`BA_*`), district heating (`PlantDH_*`, `DemandDH_data`), `Fuel_limits_data`, `KVAinfeed`, `Data_plant_energy_limited`, investment candidate lists | **Not built: empty.** Model code that assumes them must be guarded (section 7). |
+| Outside the back-cast fleet | EV, V2G, electrolyzer, building heat pumps (`BA_*`), district heating (`PlantDH_*`, `DemandDH_data`), `Fuel_limits_data`, `KVAinfeed`, `Data_plant_energy_limited`, investment candidate lists | **Not built: empty.** Model code that assumes them must be guarded (section 7). The set of limited fuels comes from a fixed list, so the back-cast switch empties it (#11). |
 
 The exact list is checked against `data_import_TYNDP_fcn` during implementation. A missing name shows up as a
 `KeyError` when the model is built and is fixed in the import, not by a default.
@@ -261,8 +263,10 @@ The exact list is checked against `data_import_TYNDP_fcn` during implementation.
 - **Capacity year:** the latest published year not after each hour. Energy-Charts publishes up to 2025, so
   2026 hours use the 2025 value. This is declared in the manifest.
 - **Why the capacity choice is harmless:** output is fixed, so capacity only normalizes `Avail_plant`. The
-  function raises if an observed value exceeds it.
-- `Avail_plant[(p,t,s)]` = observed / capacity.
+  function raises if an observed value exceeds the capacity C(t) of its hour.
+- **Normalisation capacity:** the model holds one `gen_max` per plant for the whole period, so `gen_max` is
+  P_base, the maximum of C(t) over the period, and `Avail_plant[(p,t,s)]` = observed / P_base. C(t) only
+  validates and is recorded (#16).
 - `gen.csv` shows both sources by name.
 - **Caveat on "others":** Energy-Charts gives one constant per month (13 distinct values in Oct 2025 -
   Sep 2026), i.e. the BFE monthly thermal total spread flat. It is not an hourly measurement, and plots must
@@ -272,7 +276,9 @@ The exact list is checked against `data_import_TYNDP_fcn` during implementation.
 **5.6 `hydro_inflow`** → `Inflow_data[(p,t,s)]`, assigned automatically to the current fleet.
 - **Source:** PECD HRI and HOL weekly MWh, kept as separately labelled series in logs and the manifest.
   - Their sum is the natural inflow of the three open plants.
-  - It is spread flat over each week's hours, keeping weekly MWh, then mapped to `t`.
+  - Each week is a 168-hour UTC interval: its MWh are spread flat over those hours, clipped to the
+    historical period, then mapped to `t`. A partial first or last week contributes only its overlap
+    (122/168 and 166/168 in the first run); nothing is renormalised (#17).
   - Closed loop (`CH00_psp_close`) gets 0.
 - **Split:** the `inflow_share` column of
   `input/hydro_PECD/PECD_EERA2021_reservoir_pumping_2030_table_representative_plants.csv`, the column the
@@ -300,7 +306,7 @@ The exact list is checked against `data_import_TYNDP_fcn` during implementation.
 - **Start split to plants:** equal fill fraction, i.e. pro rata to storage capacity. This is an explicit
   assumption, since BFE observes only the national stock.
 
-**5.8 Future-only modules.** They are not built (table 5.0), so they cannot double count observed load. This
+**5.8 Outside the back-cast fleet.** These modules are not built (table 5.0), so they cannot double count observed load. This
 covers:
 - EV and V2G;
 - the CH electrolyzer;
@@ -325,7 +331,8 @@ covers:
 **Boundaries.** The constraint component is `model.storage_soc[p, t, s]`; its rule is
 `storeBalance_Constraint`.
 - **Deactivate** `storage_soc[p, T.first(), s]` (the cyclic link via `T.prevw`) and
-  `storage_start_condition[p, s]` (the 0.95 start).
+  `storage_start_condition[p, s]` (the 0.95 start). The dual export then skips the deactivated rows (#26), and
+  the new rows get their own scaling entries (#18).
 - **Add a first-hour balance:** the same terms as the existing rule (charging, discharging, inflow, outflow,
   spill), with the observed start stock of each plant (5.7) in place of `soc[prevw]`.
 - **Add the national end target:** `Σ_p soc[p, T.last(), s] == S_end` for `"equal"`, or `>=` for
@@ -413,9 +420,15 @@ All logic stays in the two new files. Existing code gets only switches:
    They are built only if that plant exists. Other cases found during implementation are listed here. The
    nuclear lower bound in `core.py:188` is already guarded.
 6. **New defaults** in `settings_default.py` (section 3).
+7. **Limited fuels:** the back-cast switch empties the set of limited fuels before the model is built (#11).
+8. **Lost load:** one helper reads it for both import routes (#11).
 
 **Separate fix, recommended:** the existing CSV price loader in `read_line_data` swallows every error and runs
 with zero trade cost, and `.get(...,0)` adds the same risk. A raise there protects all CH_only runs.
+
+**Generic changes from the ticket review** (standalone tickets): the dual export skips deactivated rows and
+fails on a missing dual of an active row (#26); a solve that is not optimal stops before the export (#27); the
+model build becomes a function that returns the model, so tests use the production path (#28).
 
 ## 8. Currency and active costs
 
@@ -473,7 +486,8 @@ line and consumer sets equal table 5.0.
 
 **Invariance test** (section 2): canonical model data identical across `run_year` and `weather_year`.
 
-**Regression:** `scen_to_run_test.csv` with `historical_period=False`, before and after the change.
+**Regression:** `scen_to_run_test.csv` with `historical_period=False`, before and after the change. The
+before-change output is saved in its own baseline folder, since the test run overwrites `output/2050_st/` (#21).
 - Capacities, relevant dispatch, objective and prices must agree within declared numerical tolerances.
 - Any degenerate LP alternative is explained.
 - Solver timing or statistics files are not compared byte for byte.
@@ -539,7 +553,8 @@ acceptance criteria and its blockers (native GitHub dependencies).
 - The message references the issue and ends with `Requires:` and the subjects of all commits it needs, in
   order. A feature moves to another branch by cherry-picking those commits, then the feature.
 - Plan, glossary and ADR edits go into docs-only commits, which no cherry-pick needs.
-- #1-#7 and #10 apply to `main` on their own. #8 and #9 need this branch's two pipeline commits.
+- #1-#7, #10 and #26-#28 apply to `main` on their own. #8 and #9 need this branch's two pipeline commits.
+- #21 is a workflow gate, not a commit: later tickets list it as a blocker but never in `Requires:`.
 
 | Issue | Topic | Ticket | Blocked by |
 |---|---|---|---|
@@ -560,13 +575,17 @@ acceptance criteria and its blockers (native GitHub dependencies).
 | #15 | Back-cast | Renewable infeed | #11 |
 | #16 | Back-cast | Fixed plants | #8, #11, #12 |
 | #17 | Back-cast | Reservoir inflow on an electrical basis | #9, #11 |
-| #18 | Back-cast | Start stock and end target | #12, #17 |
-| #19 | Back-cast | Scenario file and data tests | #3, #6, #13-#16, #18 |
+| #18 | Back-cast | Start stock and end target | #12, #17, #26 |
+| #19 | Back-cast | Scenario file and data tests | #3, #6, #13-#16, #18, #28 |
 | #20 | Back-cast | Price comparison tool | #10 |
-| #21 | Back-cast | First run and validation (run steps, no commit) | #5, #19, #20 |
+| #21 | Back-cast | First run and validation (run steps, no commit) | #4, #5, #19, #20, #27 |
 | #22 | Later | Chronological model steps | #21 |
-| #23 | Later | Hourly operating cost | - |
+| #23 | Later | Hourly operating cost parameter and accessor | - |
 | #24 | Later | Automated PECD download | #9 |
 | #25 | Later | Portable input bundle for HPC | #19 |
+| #26 | Generic | Export duals of active constraint rows only | - |
+| #27 | Generic | Stop when the solve is not optimal | - |
+| #28 | Generic | Build the model without solving | - |
+| #29 | Later | Fuel and CO2 price inputs for hourly operating cost | #23 |
 
-#1-#20 are labelled `ready-for-agent`, #21 `ready-for-human`, and #22-#25 `needs-triage`.
+#1-#20 and #26-#28 are labelled `ready-for-agent`, #21 `ready-for-human`, and #22-#25 and #29 `needs-triage`.
