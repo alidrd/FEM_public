@@ -1192,16 +1192,22 @@ def define_params_op(model, resistive_heater_investment_cap_MW_total):
         doc="battery capacity of V2G EVs (MWh)",
     )
 
-    # Line trade prices for CH_only mode (empty if not in CH_only mode)
+    define_line_trade_price(model)
+
+    return model
+
+def define_line_trade_price(model):
+    """
+    Line trade prices for CH_only mode (empty if not in CH_only mode). A negative day-ahead price is valid.
+    """
     model.line_trade_price = Param(
         model.lineATC,
         model.T,
         model.Scenarios,
         initialize={(line, t, scen): Line_trade_price.get((line, t, scen), 0) for line in model.lineATC for t in model.T for scen in model.Scenarios},
-        within=pyo.NonNegativeReals,
+        within=pyo.Reals,
         doc="neighbor electricity prices for trade lines in CH_only mode (EUR/MWh)",
     )
-
     return model
 
 def define_params_inv(model, weight_in_objective_fcn, resistive_heater_investment_cap_MW_total):
