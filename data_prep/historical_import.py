@@ -42,7 +42,6 @@ COST_WORKBOOK = "input/cost_assumptions.xlsx"
 WORKBOOK_YEARS = (2035, 2050)
 # Inputs the historical import does not build yet; the step that builds one removes its entry
 NOT_YET_BUILT = [
-    "fixed plants",
     "reservoir inflow",
     "reservoir stocks",
 ]
@@ -61,6 +60,11 @@ DEMAND_TYPE = "fixed"  # the only inflexible consumption type of the model (core
 POWER_TABLE = "ch_public_power_hourly.csv"
 # Infeed technology of the model -> observed column of POWER_TABLE; every other infeed technology is 0
 INFEED_COLUMNS = {"pvrf": "solar", "windon": "wind_onshore", "ror": "hydro_run_of_river"}
+NUCLEAR_TABLE = "nuclear_availability_hourly.csv"
+INSTALLED_TABLE = "ch_installed_power_yearly.csv"
+# Fixed plants, whose output equals an observed column of POWER_TABLE: plant -> technology and observed column
+FIXED_PLANT_TECH = {"CH03_nuclear": "nuclear", "CH01_other": "other"}
+FIXED_PLANT_SERIES = {"CH03_nuclear": "nuclear", "CH01_other": "others"}
 
 
 def is_backcast(settings):
@@ -179,9 +183,13 @@ def read_historical_inputs(scenario_name, settings):
     stage(staged, demand)
     infeed, infeed_files, infeed_assumptions = read_infeed(scenario_name, settings)
     stage(staged, infeed)
+    fixed, fixed_files, fixed_assumptions = read_fixed_plants(scenario_name, settings)
+    stage(staged, fixed)
+    stage(staged, {"Map_node_plant": {NODE: list(staged["Plant_list"])}})
     files = [*FLEET_TABLES, AVAILABILITY_TABLE, COST_WORKBOOK,
              f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files, *demand_files,
-             *infeed_files]
+             *infeed_files, *fixed_files]
+    files = list(dict.fromkeys(files))  # a table two inputs read is recorded once
     assumptions = [
         f"border lines HVAC_<neighbour>_{NODE} for {', '.join(BORDER_NEIGHBOURS)}, the neighbour as start node",
         *fleet_assumptions,
@@ -189,6 +197,7 @@ def read_historical_inputs(scenario_name, settings):
         *market_assumptions,
         *demand_assumptions,
         *infeed_assumptions,
+        *fixed_assumptions,
     ]
     return staged, files, assumptions
 
@@ -282,23 +291,99 @@ def read_infeed(scenario_name, settings):
     return {"Infeed_consumers": infeed}, [str(Path(settings["historical_data_dir"]) / POWER_TABLE)], assumptions
 
 
+def read_fixed_plants(scenario_name, settings):
+    """Nuclear and "others" as fixed plants, whose output equals the observed series, with the files read and the
+    assumptions. The model holds one capacity per plant, so gen_max is P_base, the maximum over the period of the
+    capacity C(t) of each hour, and availability is observed / P_base; C(t) only validates."""
+    observed = read_processed_hourly(settings, POWER_TABLE, list(FIXED_PLANT_SERIES.values()))
+    observed = observed.rename(columns={column: p for p, column in FIXED_PLANT_SERIES.items()})
+    others, years = installed_capacity(settings, "others")
+    capacity = pd.DataFrame({
+        "CH03_nuclear": read_processed_hourly(settings, NUCLEAR_TABLE, ["net_capacity_MW"])["net_capacity_MW"],
+        "CH01_other": others,
+    })
+    problems = []
+    for p in FIXED_PLANT_TECH:
+        negative = observed.index[observed[p] < 0]
+        above = observed.index[observed[p] > capacity[p]]
+        if len(negative):
+            problems.append(f"{p}: {len(negative)} negative observed values, e.g. at {negative[0]}")
+        if len(above):
+            problems.append(f"{p}: {len(above)} observed values above the capacity C(t), e.g. at {above[0]} "
+                            f"({observed.at[above[0], p]} > {capacity.at[above[0], p]} MW)")
+        if not capacity[p].max() > 0:
+            problems.append(f"{p}: the normalisation capacity P_base is {capacity[p].max()}, not positive")
+    if problems:
+        raise ValueError("fixed plants: " + "; ".join(problems))
+    p_base = capacity.max()
+    techs = sorted(set(FIXED_PLANT_TECH.values()))
+    eff_out = year_independent("efficiency", techs)
+    emission = year_independent("emission_factor", techs)
+    s = scenario_name
+    plants = list(FIXED_PLANT_TECH)
+    staged = {
+        "Plant_list": plants,
+        "Map_plant_tech": dict(FIXED_PLANT_TECH),
+        "Map_plant_node": {p: NODE for p in plants},
+        "Plant_capacity_gen": {(p, s): float(p_base[p]) for p in plants},
+        "Avail_plant": {(p, t, s): float(observed.at[t, p] / p_base[p]) for p in plants for t in observed.index},
+        # output is fixed, so an operating cost would only add a constant to the objective
+        "cost_data_opr_slp": {(tech, s): 0.0 for tech in techs},
+        "cost_data_opr_int": {(tech, s): 0.0 for tech in techs},
+        "op_cost_n_tech_calibration": {(NODE, tech, s): 1.0 for tech in techs},
+        "emission_factor_per_MWh": {(tech, s): emission[tech] / eff_out[tech] for tech in techs},
+        "cost_data_inv_gen_slp": {(tech, s): 0.0 for tech in techs},
+        "cost_data_inv_e_slp": {(tech, s): 0.0 for tech in techs},
+        "cost_data_inv_discharge_slp": {(tech, s): 0.0 for tech in techs},
+    }
+    assumptions = [
+        f"fixed plants: output equals the observed Energy-Charts series, "
+        f"{', '.join(f'{p} = {column}' for p, column in FIXED_PLANT_SERIES.items())}; gen_max is P_base, the "
+        f"maximum of the capacity C(t) over the period, and availability is observed / P_base",
+        f"C(t) of CH03_nuclear: net_capacity_MW of {NUCLEAR_TABLE}; P_base {p_base['CH03_nuclear']} MW",
+        f"C(t) of CH01_other: 'others' of {INSTALLED_TABLE} for the latest published year not after the local year "
+        f"of each hour (local year -> published year {years}); P_base {p_base['CH01_other']} MW",
+        "'others' is the BFE monthly thermal total spread flat over each month, not an hourly measurement",
+        f"operating cost of {', '.join(techs)}: 0, as their output is fixed; emission factors {emission} tCO2/MWh "
+        f"of input from the cost workbook",
+    ]
+    folder = Path(settings["historical_data_dir"])
+    files = [str(folder / name) for name in (POWER_TABLE, NUCLEAR_TABLE, INSTALLED_TABLE)]
+    return staged, files, assumptions
+
+
+def installed_capacity(settings, column):
+    """Installed power of one category at every model step (index: model step), and the published year used for
+    each local year of the period: for each hour, the value of the latest published year not after the hour's local
+    year. The table gives the installed power at the end of each year."""
+    path = processed_table(settings, INSTALLED_TABLE, ["year", column])
+    table = pd.read_csv(path, usecols=["year", column])
+    if table["year"].duplicated().any():
+        raise ValueError(f"{INSTALLED_TABLE}: duplicate years {sorted(table.loc[table['year'].duplicated(), 'year'])}")
+    values = table.set_index("year")[column]
+    bad = values.isna() | values.isin([math.inf, -math.inf])
+    if bad.any():
+        raise ValueError(f"{INSTALLED_TABLE}: missing or non-finite values of {column} in {sorted(values.index[bad])}")
+    time_map = historical_time_map(settings["historical_period"])
+    local_years = time_map["time_local"].dt.year
+    years = {}
+    for year in sorted(set(local_years)):
+        published = [y for y in values.index if y <= year]
+        if not published:
+            raise ValueError(f"{INSTALLED_TABLE}: no published year up to {year} for {column} "
+                             f"(published: {sorted(values.index)})")
+        years[int(year)] = int(max(published))
+    capacity = pd.Series([float(values[years[y]]) for y in local_years], index=time_map["t"].to_numpy())
+    return capacity, years
+
+
 def read_processed_hourly(settings, file_name, columns):
     """The given columns of one processed hourly table at every model step of the period (index: model step).
 
     Raises on a missing file or column, a duplicate column or hour, a missing hour or a missing or non-finite
     value, naming the series and the hours.
     """
-    path = Path(settings["historical_data_dir"]) / file_name
-    if not path.exists():
-        raise FileNotFoundError(f"{path} not found (historical_data_dir = {settings['historical_data_dir']!r})")
-    with open(path, newline="", encoding="utf-8") as handle:
-        header = next(csv.reader(handle))
-    duplicated = sorted({column for column in header if header.count(column) > 1})
-    if duplicated:
-        raise ValueError(f"{file_name}: duplicate columns {duplicated}")
-    missing = [column for column in ["time_utc", *columns] if column not in header]
-    if missing:
-        raise ValueError(f"{file_name}: no column {missing}")
+    path = processed_table(settings, file_name, ["time_utc", *columns])
     table = pd.read_csv(path, usecols=["time_utc", *columns])
     table.index = pd.to_datetime(table["time_utc"], utc=True)
     if table.index.duplicated().any():
@@ -315,6 +400,23 @@ def read_processed_hourly(settings, file_name, columns):
                              f"e.g. at {values.index[bad.to_numpy()][0]}")
     values.index = time_map["t"].to_numpy()
     return values
+
+
+def processed_table(settings, file_name, columns):
+    """Path of one table of the processed folder; raises unless it exists and its header holds each of the given
+    columns exactly once."""
+    path = Path(settings["historical_data_dir"]) / file_name
+    if not path.exists():
+        raise FileNotFoundError(f"{path} not found (historical_data_dir = {settings['historical_data_dir']!r})")
+    with open(path, newline="", encoding="utf-8") as handle:
+        header = next(csv.reader(handle))
+    duplicated = sorted({column for column in header if header.count(column) > 1})
+    if duplicated:
+        raise ValueError(f"{file_name}: duplicate columns {duplicated}")
+    missing = [column for column in columns if column not in header]
+    if missing:
+        raise ValueError(f"{file_name}: no column {missing}")
+    return path
 
 
 def read_structure(scenario_name):
@@ -352,7 +454,6 @@ def read_hydro_fleet(scenario_name, settings):
         "Map_plant_tech": dict(plant_tech),
         "Map_plant_node": dict(plant_node),
         "Map_consumer_plant": {consumer: list(p) for consumer, p in consumer_plants.items()},
-        "Map_node_plant": {NODE: list(plants)},
         "Plant_capacity_gen": {(p, s): value for p, value in gen_max.items()},
         "Plant_capacity_pmp": {(p, s): value for p, value in pumping.items()},
         "Plant_capacity_strg": {(p, s): value for p, value in storage.items()},

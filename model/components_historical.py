@@ -4,15 +4,16 @@ the checks that reject a model which is not a back-cast model, and the audit of 
 The hook runs after the presets so that no preset can undo a back-cast constraint. Constraints a back-cast
 adds go through add_backcast_constraint, which registers them for the default dual export.
 """
-from pyomo.environ import Constraint
+from pyomo.environ import Constraint, Set
 from pyomo.repn import generate_standard_repn
 
 from data_prep.definitions_common import Map_plant_node, Map_plant_tech
+from data_prep.historical_import import FIXED_PLANT_TECH
 from model.variable_presets import read_variable_presets
 
 NODE = "CH00"
-# Technologies of the back-cast fleet: the representative hydro fleet; the fixed plants add theirs
-BACKCAST_TECHS = ["psp_open", "psp_close", "dam"]
+# Technologies of the back-cast fleet: the representative hydro fleet and the fixed plants
+BACKCAST_TECHS = ["psp_open", "psp_close", "dam", *FIXED_PLANT_TECH.values()]
 INVESTMENT_VARIABLES = ("gen_max", "pmp_max", "gen_energy_max", "genTh_max", "pumpTh_max", "gen_energyTh_max",
                         "fuel_storage_capacity_annual")
 # Fuel and energy budgets, and the electrolyzer windows (one constraint per plant: consume_tot_limit_<plant>_...)
@@ -41,10 +42,29 @@ INVESTMENT_TERMS = ("cost_inv_dict", "cost_inv_thermal_dict", "cost_inv_fuel_sto
 
 
 def apply_historical_constraints(model, scenario_name, preset_file):
-    """The back-cast hook: check the built model and audit its objective; later steps add constraints here."""
+    """The back-cast hook: check the built model, add the back-cast constraints and audit the objective."""
     check_historical_model(model, scenario_name, preset_file)
+    add_fixed_generation(model)
     for line in audit_objective(model):
         print("objective audit:", line)
+
+
+def add_fixed_generation(model):
+    """Output of each fixed plant equals its observed series: gen == gen_max * avail_plant, which the import sets to
+    P_base and observed / P_base. Raises if a fixed plant is no generating plant or has an energy or fuel limit."""
+    plants = list(FIXED_PLANT_TECH)
+    problems = [f"{p} is no generating plant of the model" for p in plants if p not in model.P_gen]
+    problems += [f"{p} has an energy limit" for p in plants if p in model.P_energylim]
+    problems += [f"{p} has a fuel limit" for p in plants if p in model.P_fuellimCH]
+    if problems:
+        raise ValueError("fixed plants: " + "; ".join(problems))
+    model.P_fixed = Set(initialize=plants, within=model.P_gen, doc="fixed plants of a back-cast")
+    add_backcast_constraint(model, "fixed_generation",
+                            Constraint(model.P_fixed, model.T, model.Scenarios, rule=fixed_generation_rule))
+
+
+def fixed_generation_rule(model, p, t, s):
+    return model.gen[p, t, s] == model.gen_max[p, s] * model.avail_plant[p, t, s]
 
 
 def add_backcast_constraint(model, name, constraint):

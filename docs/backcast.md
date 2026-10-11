@@ -34,7 +34,8 @@ After capacity fixing and the variable presets, `core_main` calls `apply_histori
 (`model/components_historical.py`). It runs after the presets, so no preset can undo a back-cast
 constraint; constraints a back-cast adds go through `add_backcast_constraint` and are exported as duals
 by default. It stops the run, naming every reason, unless:
-- every plant is a CH00 plant of the back-cast fleet, and no district-heating plant is built;
+- every plant is a CH00 plant of the back-cast fleet (the hydro fleet and the fixed plants), and no
+  district-heating plant is built;
 - every investment variable is fixed;
 - no fuel or energy-budget constraint and no electrolyzer window is active;
 - no demand-side response plant is built, `slack_soc` is off, and neither the Swiss RES target nor the
@@ -43,9 +44,10 @@ by default. It stops the run, naming every reason, unless:
   district-heating weeks);
 - no variable preset applies to the back-cast meta-scenario.
 
-It then audits the objective and prints each group of cost terms with its unit: hydro O&M, lost load and
-trade in EUR, investment in CHF. An investment term with a non-zero coefficient or constant stops the run;
-terms whose variables are all fixed, such as the costs of fixed plants, appear as a constant offset.
+It then adds the back-cast constraints: `fixed_generation` (section Fixed plants). Last, it audits the
+objective and prints each group of cost terms with its unit: hydro O&M, lost load and trade in EUR,
+investment in CHF. An investment term with a non-zero coefficient or constant stops the run; terms whose
+variables are all fixed appear as a constant offset.
 
 ## Time steps
 
@@ -82,6 +84,7 @@ reads:
 - **Border trade**: observed prices and transfer limits on the four border lines (next section).
 - **Swiss demand**: option A as the demand of `CH00_fixedconsumer` (section Demand).
 - **Renewable infeed**: observed solar, wind and run-of-river generation (section Renewable infeed).
+- **Fixed plants**: nuclear and "others", whose output equals the observed series (section Fixed plants).
 
 Nothing outside the back-cast fleet is built: EV, V2G, electrolyzer, building heat pumps, district
 heating, fuel limits, KVA infeed, energy limits and investment candidates stay empty.
@@ -137,6 +140,32 @@ plants, so solar, wind and run-of-river capacities are not modelled. The manifes
 each technology over the period. A missing column, a missing or non-finite value, or negative generation
 stops the run.
 
+## Fixed plants
+
+A **fixed plant** produces exactly its observed output in every hour:
+
+| Plant | Technology | Observed output (`ch_public_power_hourly.csv`) | Capacity C(t) |
+|---|---|---|---|
+| `CH03_nuclear` | `nuclear` | `nuclear` | `net_capacity_MW` of `nuclear_availability_hourly.csv` (2,973 MW) |
+| `CH01_other` | `other` | `others` | `others` of `ch_installed_power_yearly.csv`, the sum of the Energy-Charts "others" categories (`INSTALLED_POWER_OTHERS` in `data_prep/historical/config.py`) |
+
+- **Capacity year of "others":** each hour takes the latest published year not after its local
+  year. Energy-Charts publishes up to 2025, so 2026 hours use the 2025 value (1,200 MW). The
+  manifest records the year used for each local year.
+- **One capacity per plant:** the model holds one `gen_max` per plant for the whole period, so it
+  is P_base, the maximum of C(t) over the period, and the availability is observed / P_base. C(t)
+  only validates: an observed value above the C(t) of its hour, a negative observed value, or a
+  P_base that is not positive stops the run.
+- **Model side:** the hook adds `fixed_generation`, `gen = gen_max × avail_plant` for both plants,
+  so their output equals the observed series; its dual is exported by default. No energy or fuel
+  limit is built for them, so the annual cap on `other` of normal runs does not apply; the hook
+  stops the run if one is.
+- **Operating cost 0:** their output is fixed, so a cost would only add a constant to the objective.
+- **"Others" is not an hourly measurement:** Energy-Charts gives the BFE monthly thermal total spread flat
+  over each month. Plots must not suggest an hourly profile.
+
+`gen.csv` shows both plants by name.
+
 ## Run records
 
 After the import, `core_main` writes two files into `output/<meta-scenario>/`:
@@ -146,6 +175,9 @@ After the import, `core_main` writes two files into `output/<meta-scenario>/`:
 
 ## Status
 
-The import builds the structure, the hydro fleet, lost load, border trade, Swiss demand and renewable
-infeed. Until the following inputs are built, a back-cast stops with an error that names them: fixed
-plants, reservoir inflow and reservoir stocks.
+The import builds the structure, the hydro fleet, lost load, border trade, Swiss demand, renewable infeed
+and the fixed plants. Until the following inputs are built, a back-cast stops with an error that names
+them: reservoir inflow and reservoir stocks.
+
+The processed folder needs `ch_installed_power_yearly.csv`, which `process` writes since the commit
+"Pipeline: installed power by category and year"; rerun `process` on a folder made before it.

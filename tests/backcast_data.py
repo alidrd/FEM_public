@@ -18,7 +18,8 @@ def write_processed(folder, period):
     """Write the processed tables a back-cast reads. Prices rise by 1 EUR/MWh per hour from 50 (DE00 from -5);
     demand_MW rises by 1 MW per hour from 6000, with the solar-shaped column 100 MW below and the flat one 100 MW
     above; every month is published definitively. Solar, wind and run-of-river rise by 1 MW per hour from 100, 10
-    and 1000."""
+    and 1000, nuclear from 2000 and others from 300 (these two restart every 500 hours). Installed power: nuclear
+    2973 MW (net capacity), others 1300 MW in 2024 and 1200 MW in 2025, the latest published year."""
     folder.mkdir(parents=True, exist_ok=True)
     hours = period_hours(period)
     steps = range(len(hours))
@@ -38,7 +39,14 @@ def write_processed(folder, period):
                   "demand_flat_MW": [d + 100 for d in demand], "onsite_solar_share_assumed": 0.5,
                   "bfe_month_definitive": 1.0}).to_csv(folder / "ch_demand_option_a_hourly.csv", index=False,
                                                        float_format="%.3f")
+    nuclear = [2000.0 + k % 500 for k in steps]
     pd.DataFrame({"time_utc": hours, "solar": [100.0 + k for k in steps], "wind_onshore": [10.0 + k for k in steps],
-                  "hydro_run_of_river": [1000.0 + k for k in steps], "load": 7000.0}).to_csv(
+                  "hydro_run_of_river": [1000.0 + k for k in steps], "nuclear": nuclear,
+                  "others": [300.0 + k % 500 for k in steps], "load": 7000.0}).to_csv(
         folder / "ch_public_power_hourly.csv", index=False, float_format="%.3f")
+    pd.DataFrame({"time_utc": hours, "generation_MW": nuclear, "net_capacity_MW": 2973.0,
+                  "outage_MW": [2973.0 - n for n in nuclear]}).to_csv(
+        folder / "nuclear_availability_hourly.csv", index=False, float_format="%.3f")
+    pd.DataFrame({"year": [2024, 2025], "nuclear": 2973.0, "others": [1300.0, 1200.0]}).to_csv(
+        folder / "ch_installed_power_yearly.csv", index=False, float_format="%.3f")
     return folder
