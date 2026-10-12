@@ -239,11 +239,33 @@ After the import, `core_main` writes two files into `output/<meta-scenario>/`:
 - `historical_inputs_manifest.json`: the period and model steps, every file read with its checksum and
   columns, the assumptions, and the git commit with a flag for uncommitted changes.
 
+## Scenario and data tests
+
+`scenarios/scen_to_run_CH_only_historical.csv` defines the first back-cast: meta-scenario
+`hist_2526_octaug` with one sub-scenario, `obs`, of weight 1. It sets `CH_only = True`,
+`allow_investment = False`, `NodeDH_list = []`, `slack_soc = False`, the period 1 October 2025 to
+30 August 2026, the processed folder `input/historical/processed/2023-10-01_2026-09-30`,
+`historical_demand = "demand_MW"` and `historical_hydro_end = "equal"`. To run it, point `target_csv` in
+`scenarios/scenarios.py` at this file and restore the line afterwards.
+
+Two tests in `tests/test_backcast_scenario.py` need that processed folder (marker `needs_data`, run with
+`poetry run pytest -m needs_data`). They first name every table missing from it.
+- **Import completeness:** the scenario builds from the historical import alone, and its plants, lines and
+  consumers are the back-cast fleet, the four border lines and `CH00_fixedconsumer`.
+- **Invariance:** builds with `run_year` 2035 and `weather_year` 2008 and 2009 have the same canonical
+  model data as the scenario as it is (2050, 1995): the coefficients, bounds and right-hand sides by
+  constraint and variable name, and the objective coefficients. LP text and order are not compared. Any
+  difference fails the test and is listed.
+
+Each build runs `tests/backcast_build.py` in a fresh process through `core_main(..., solve=False)`, with a
+spy that fails the build if a solver is created; the four builds take a few minutes.
+
 ## Status
 
 The import builds every input. `NOT_YET_BUILT` in `data_prep/historical_import.py` is empty; an
 input added to it stops a back-cast with an error that names it, until the step that builds the input
-removes it. A one-week back-cast builds and solves; the scenario file of the first run is a later step.
+removes it. A one-week back-cast builds and solves; its run then stops in `investment_summary`, which
+cannot read the empty capacity files of a back-cast.
 
 The processed folder needs `ch_installed_power_yearly.csv` and `pecd_inflow_weekly_ch00.csv`, which
 `process` writes since the commits "Pipeline: installed power by category and year" and "Pipeline: weekly

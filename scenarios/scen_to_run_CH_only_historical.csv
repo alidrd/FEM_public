@@ -1,0 +1,11 @@
+Item,hist_2526_octaug
+sub_secn,obs
+weight_in_objective_fcn,1
+CH_only,True
+allow_investment,False
+NodeDH_list,[]
+slack_soc,False
+historical_period,'2025-10-01/2026-08-30'
+historical_data_dir,'input/historical/processed/2023-10-01_2026-09-30'
+historical_demand,'demand_MW'
+historical_hydro_end,'equal'
