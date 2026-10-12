@@ -176,6 +176,7 @@ def test_energy_or_fuel_limit_or_a_missing_plant_raises(settings_for, change, me
 
 
 def test_hook_adds_fixed_generation_to_a_conforming_model(settings_for, monkeypatch, tmp_path):
+    monkeypatch.setattr(ch, "add_reservoir_boundaries", lambda model: None)  # the model has no storage
     settings = settings_for()
     m = small_model(hi.read_fixed_plants(NAME, settings)[0], settings)
     m.P = pyo.Set(initialize=list(hi.FIXED_PLANT_TECH))

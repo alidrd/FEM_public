@@ -2015,47 +2015,11 @@ def generation_limit_Constraint(model, p, t, s):
 def storeBalance_Constraint(model, p, t, s):
     if p in model.P: # electricity side of the system
         sf = model.constraint_scaling['storage_soc']
-        # state of charge at t
-        soc_t = model.soc[p, t, s]
-
         # state of charge at t-1
         soc_t_1 = model.soc[p, model.T.prevw(t), s]
+        stock_t, flows_t = storage_balance_terms(model, p, t, s)
+        return sf * stock_t == sf * (soc_t_1 + flows_t)
 
-        # energy charged to the plant via pumping (only for specific plants model.P_pumping)
-        charged = sum(
-            [
-                model.storage_charge[p, t, s] * model.storage_charge_eff_in[p, s]
-                if p in model.P_pumping
-                else 0
-            ]
-        )
-
-        # energy discharged from the plant (plants with no generation are exluded, e.g., v1g EVs)
-        discharged = sum(
-            [model.gen[p, t, s] / model.storage_charge_eff_out[p, s] if p in model.P_gen else 0]
-        )
-
-        # inflow
-        inflow = sum([model.inflow[p, t, s] if p in model.P_inflow else 0])
-
-        # outflows
-        outflow = sum([model.outflow[p, t, s] if p in model.P_outflow else 0])
-        # if model.slack_soc exists and is True
-        if hasattr(model, "slack_soc") and model.slack_soc:
-            slack_pos = model.slackSOC_POS[p, t, s]
-            slack_neg = model.slackSOC_NEG[p, t, s]
-        else:
-            slack_pos = 0
-            slack_neg = 0
-
-        # allow for spilling water
-        spill_energy = sum([model.spill_water[p, t, s] if p in model.P_hydro else 0])
-        
-        return (
-            sf * (soc_t + slack_neg)
-            == sf * (soc_t_1 + charged - discharged + inflow - outflow + slack_pos - spill_energy)
-        )
-    
     elif p in model.PDH: # thermal side of the system
         sf = model.constraint_scaling['storageTh_soc']
         soc_t = model.socTh[p, t, s]
@@ -2075,6 +2039,44 @@ def storeBalance_Constraint(model, p, t, s):
             == sf * ((1-model.TES_decayrate[p])*soc_t_1 + charged - discharged + slack_pos)
         )
 
+
+def storage_balance_terms(model, p, t, s):
+    """Terms of the electric storage balance in hour t besides the previous stock, unscaled: the stock at the end
+    of the hour (plus the negative slack) and the net flows of the hour (also used by a back-cast's first hour)."""
+    # state of charge at t
+    soc_t = model.soc[p, t, s]
+
+    # energy charged to the plant via pumping (only for specific plants model.P_pumping)
+    charged = sum(
+        [
+            model.storage_charge[p, t, s] * model.storage_charge_eff_in[p, s]
+            if p in model.P_pumping
+            else 0
+        ]
+    )
+
+    # energy discharged from the plant (plants with no generation are exluded, e.g., v1g EVs)
+    discharged = sum(
+        [model.gen[p, t, s] / model.storage_charge_eff_out[p, s] if p in model.P_gen else 0]
+    )
+
+    # inflow
+    inflow = sum([model.inflow[p, t, s] if p in model.P_inflow else 0])
+
+    # outflows
+    outflow = sum([model.outflow[p, t, s] if p in model.P_outflow else 0])
+    # if model.slack_soc exists and is True
+    if hasattr(model, "slack_soc") and model.slack_soc:
+        slack_pos = model.slackSOC_POS[p, t, s]
+        slack_neg = model.slackSOC_NEG[p, t, s]
+    else:
+        slack_pos = 0
+        slack_neg = 0
+
+    # allow for spilling water
+    spill_energy = sum([model.spill_water[p, t, s] if p in model.P_hydro else 0])
+
+    return soc_t + slack_neg, charged - discharged + inflow - outflow + slack_pos - spill_energy
 
 
 

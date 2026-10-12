@@ -13,6 +13,7 @@ seetings_default_param = {
     "historical_period": False,  # back-cast: "YYYY-MM-DD/YYYY-MM-DD", local dates, both included (docs/backcast.md)
     "historical_data_dir": False,  # back-cast: processed folder of data_prep/historical
     "historical_demand": "demand_MW",  # back-cast: demand column of ch_demand_option_a_hourly.csv
+    "historical_hydro_end": "equal",  # back-cast: national reservoir stock at the period end, "equal", "at_least" or "free"
     "t_start": 6553,
     "t_end": 6552,
     "consumer_start": 1,

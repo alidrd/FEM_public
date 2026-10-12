@@ -21,7 +21,8 @@ def write_processed(folder, period):
     and 1000, nuclear from 2000 and others from 300 (these two restart every 500 hours). Installed power: nuclear
     2973 MW (net capacity), others 1300 MW in 2024 and 1200 MW in 2025, the latest published year. PECD weeks
     (Monday 00:00 UTC) from the week before the period to the week after it: HRI 168 * (10 + i) MWh in week i,
-    HOL 336 MWh."""
+    HOL 336 MWh. BFE readings on the local Mondays from the week before the period to the week after it:
+    TotalCH 6000 + 70 * i GWh in week i, maximum 8895 GWh."""
     folder.mkdir(parents=True, exist_ok=True)
     hours = period_hours(period)
     steps = range(len(hours))
@@ -52,7 +53,18 @@ def write_processed(folder, period):
     pd.DataFrame({"year": [2024, 2025], "nuclear": 2973.0, "others": [1300.0, 1200.0]}).to_csv(
         folder / "ch_installed_power_yearly.csv", index=False, float_format="%.3f")
     pecd_weeks(hours).to_csv(folder / "pecd_inflow_weekly_ch00.csv", index=False, float_format="%.3f")
+    bfe_readings(hours).to_csv(folder / "reservoir_weekly_bfe.csv", index=False)
     return folder
+
+
+def bfe_readings(hours):
+    """BFE weekly national stocks in the pipeline's format: one row per local Monday (the reading for Sunday 24:00
+    local), from the Monday before the week of the first hour to the Monday after the last hour."""
+    local = hours.tz_convert("Europe/Zurich")
+    first = (local[0] - pd.Timedelta(days=local[0].dayofweek)).normalize().tz_localize(None) - pd.Timedelta(days=7)
+    dates = pd.date_range(first, local[-1].tz_localize(None) + pd.Timedelta(days=8), freq="7D")
+    return pd.DataFrame({"date": dates.strftime("%Y-%m-%d"),
+                         "TotalCH_GWh": [6000.0 + 70 * i for i in range(len(dates))], "TotalCH_max_GWh": 8895.0})
 
 
 def pecd_weeks(hours):

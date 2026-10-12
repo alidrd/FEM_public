@@ -77,7 +77,8 @@ def test_staged_inputs_hold_the_fleet_the_lines_and_lost_load(settings):
     assert hi.COST_WORKBOOK in files and any("representative 2030 fleet" in a for a in assumptions)
 
 
-def test_import_stops_naming_exactly_the_inputs_not_built(settings, isolated_globals):
+def test_import_stops_naming_exactly_the_inputs_not_built(settings, isolated_globals, monkeypatch):
+    monkeypatch.setattr(hi, "NOT_YET_BUILT", ["an input", "another input"])  # every input is built today
     before = snapshot()
     with pytest.raises(NotImplementedError) as stop:
         run_import()
@@ -106,6 +107,7 @@ def test_complete_inputs_are_written_and_recorded(settings, isolated_globals, mo
     assert len(common.Demand_data) == 48 and len(common.Infeed_consumers) == 5 * 48
     assert common.EV_inflexible_demand_data == {} and common.HP_inflexible_demand_data == {}
     assert sorted(common.Plant_inflow_list) == HYDRO_FLEET and len(common.Inflow_data) == 5 * 48
+    assert len(common.Reservoir_start_stock) == 3 and common.Reservoir_end_target[NAME]["mode"] == "equal"
     hi.write_run_records(tmp_path, [NAME])
     time_map = pd.read_csv(tmp_path / "historical_time_map.csv")
     assert time_map["t"].tolist() == settings["T_list"]
@@ -114,7 +116,7 @@ def test_complete_inputs_are_written_and_recorded(settings, isolated_globals, mo
     assert all(len(record["sha256"]) == 64 for record in manifest["files"])
     read = [Path(record["path"]).name for record in manifest["files"]]
     tables = {hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE, hi.POWER_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE,
-              hi.PECD_TABLE}
+              hi.PECD_TABLE, hi.RESERVOIR_TABLE}
     assert tables <= set(read) and len(read) == len(set(read))
     assert any(assumption.startswith("transfer limits") for assumption in manifest["assumptions"])
 

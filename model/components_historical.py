@@ -4,11 +4,12 @@ the checks that reject a model which is not a back-cast model, and the audit of 
 The hook runs after the presets so that no preset can undo a back-cast constraint. Constraints a back-cast
 adds go through add_backcast_constraint, which registers them for the default dual export.
 """
-from pyomo.environ import Constraint, Set
+from pyomo.environ import Constraint, Param, Set
 from pyomo.repn import generate_standard_repn
 
-from data_prep.definitions_common import Map_plant_node, Map_plant_tech
-from data_prep.historical_import import FIXED_PLANT_TECH
+from data_prep.definitions_common import Map_plant_node, Map_plant_tech, Reservoir_end_target, Reservoir_start_stock
+from data_prep.historical_import import FIXED_PLANT_TECH, HYDRO_END_MODES
+from model.components_common import storage_balance_terms
 from model.variable_presets import read_variable_presets
 
 NODE = "CH00"
@@ -45,6 +46,7 @@ def apply_historical_constraints(model, scenario_name, preset_file):
     """The back-cast hook: check the built model, add the back-cast constraints and audit the objective."""
     check_historical_model(model, scenario_name, preset_file)
     add_fixed_generation(model)
+    add_reservoir_boundaries(model)
     for line in audit_objective(model):
         print("objective audit:", line)
 
@@ -65,6 +67,47 @@ def add_fixed_generation(model):
 
 def fixed_generation_rule(model, p, t, s):
     return model.gen[p, t, s] == model.gen_max[p, s] * model.avail_plant[p, t, s]
+
+
+def add_reservoir_boundaries(model):
+    """Observed boundaries of the open plants: the first hour starts from each plant's start stock instead of the
+    cyclic link to the last hour, the start condition is dropped, and the national stock after the last hour meets
+    the end target. Both new constraints are unscaled, so their duals are in EUR/MWh."""
+    plants = sorted({p for p, _ in Reservoir_start_stock})
+    problems = [] if plants else ["no start stock is staged"]
+    problems += [f"{p} is no storage plant with inflow" for p in plants if p not in model.P_inflow]
+    problems += [f"no start stock of {p} in {s}" for p in plants for s in model.Scenarios
+                 if (p, s) not in Reservoir_start_stock]
+    problems += [f"no valid end target for {s}" for s in model.Scenarios
+                 if Reservoir_end_target.get(s, {}).get("mode") not in HYDRO_END_MODES]
+    if problems:
+        raise ValueError("reservoir boundaries: " + "; ".join(problems))
+    for p in plants:
+        for s in model.Scenarios:
+            model.storage_soc[p, model.T.first(), s].deactivate()
+            model.storage_start_condition[p, s].deactivate()
+    model.P_reservoir = Set(initialize=plants, within=model.P_storage, doc="open plants with observed boundaries")
+    model.reservoir_start_stock = Param(model.P_reservoir, model.Scenarios,
+                                        initialize={key: Reservoir_start_stock[key] for key in Reservoir_start_stock},
+                                        doc="observed stock before the first hour (MWh)")
+    add_backcast_constraint(model, "reservoir_first_hour",
+                            Constraint(model.P_reservoir, model.Scenarios, rule=reservoir_first_hour_rule))
+    if any(Reservoir_end_target[s]["mode"] != "free" for s in model.Scenarios):
+        add_backcast_constraint(model, "reservoir_end_target", Constraint(model.Scenarios, rule=reservoir_end_rule))
+
+
+def reservoir_first_hour_rule(model, p, s):
+    """The production storage balance of the first hour, unscaled, with the start stock as the previous stock."""
+    stock, flows = storage_balance_terms(model, p, model.T.first(), s)
+    return stock == model.reservoir_start_stock[p, s] + flows
+
+
+def reservoir_end_rule(model, s):
+    target = Reservoir_end_target[s]
+    if target["mode"] == "free":
+        return Constraint.Skip
+    national = sum(model.soc[p, model.T.last(), s] for p in model.P_reservoir)
+    return national == target["MWh"] if target["mode"] == "equal" else national >= target["MWh"]
 
 
 def add_backcast_constraint(model, name, constraint):

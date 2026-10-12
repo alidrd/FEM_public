@@ -42,6 +42,11 @@ Inflow_data = {}
 
 Outflow_data = {}  # dictionary of inflow data for all related plants, e.g., EVs
 
+# back-cast only (docs/backcast.md): observed start stock of each open hydro plant in MWh, keyed (plant, scenario)
+Reservoir_start_stock = {}
+# back-cast only: national end target of the open hydro plants per scenario, {"mode": ..., "MWh": ...}
+Reservoir_end_target = {}
+
 # Infeed = {} # dictionary of Infeed data for all related plants. e.g., Infeed[node, tech, t] = 123.2 where node is nodes in the model, tech is in tech_infeed_list, t is the time step
 
 # dictionary of Infeed data for all related consumers. Infeed_consumers[c,t]

@@ -42,9 +42,7 @@ AVAILABILITY_TABLE = "input/availability_factor_conventional.csv"
 COST_WORKBOOK = "input/cost_assumptions.xlsx"
 WORKBOOK_YEARS = (2035, 2050)
 # Inputs the historical import does not build yet; the step that builds one removes its entry
-NOT_YET_BUILT = [
-    "reservoir stocks",
-]
+NOT_YET_BUILT = []
 RUN_RECORDS = {}  # sub-scenario -> time map and inputs manifest, written by core_main into the run folder
 # Tables of the processed folder of data_prep/historical (historical_data_dir)
 PRICES_TABLE = "prices_day_ahead_hourly.csv"
@@ -70,6 +68,9 @@ PECD_TABLE = "pecd_inflow_weekly_ch00.csv"
 # storage (HOL)
 PECD_SERIES = ("HRI", "HOL")
 WEEK_HOURS = 168
+RESERVOIR_TABLE = "reservoir_weekly_bfe.csv"
+HYDRO_END_MODES = ("equal", "at_least", "free")  # setting historical_hydro_end
+MAX_READING_GAP = pd.Timedelta(days=8)  # longest gap between the two readings an instant is interpolated from
 
 
 def is_backcast(settings):
@@ -193,9 +194,11 @@ def read_historical_inputs(scenario_name, settings):
     stage(staged, {"Map_node_plant": {NODE: list(staged["Plant_list"])}})
     inflow, inflow_files, inflow_assumptions = read_inflow(scenario_name, settings, fleet["Plant_list"])
     stage(staged, inflow)
+    stocks, stock_files, stock_assumptions = read_reservoir_stocks(scenario_name, settings, fleet)
+    stage(staged, stocks)
     files = [*FLEET_TABLES, AVAILABILITY_TABLE, COST_WORKBOOK,
              f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files, *demand_files,
-             *infeed_files, *fixed_files, *inflow_files]
+             *infeed_files, *fixed_files, *inflow_files, *stock_files]
     files = list(dict.fromkeys(files))  # a table two inputs read is recorded once
     assumptions = [
         f"border lines HVAC_<neighbour>_{NODE} for {', '.join(BORDER_NEIGHBOURS)}, the neighbour as start node",
@@ -206,6 +209,7 @@ def read_historical_inputs(scenario_name, settings):
         *infeed_assumptions,
         *fixed_assumptions,
         *inflow_assumptions,
+        *stock_assumptions,
     ]
     return staged, files, assumptions
 
@@ -420,6 +424,71 @@ def spread_weeks(weeks, time_map, series):
     overlap = (int((position == position[0]).sum()), int((position == position[-1]).sum()))
     releases = used["release"].value_counts().to_dict()
     return pd.Series(values, index=time_map["t"].to_numpy()), overlap, releases
+
+
+def read_reservoir_stocks(scenario_name, settings, fleet):
+    """Start stock of each open plant and the national end target, from the BFE weekly national stock, with the
+    files read and the assumptions. The observed fill fraction at the period start instant (before the first hour)
+    and at the end instant (after the last hour) times the model storage of the open plants; the start stock is
+    split by equal fill fraction."""
+    mode = settings["historical_hydro_end"]
+    if mode not in HYDRO_END_MODES:
+        raise ValueError(f"historical_hydro_end must be one of {list(HYDRO_END_MODES)}, got {mode!r}")
+    path = processed_table(settings, RESERVOIR_TABLE, ["date", "TotalCH_GWh", "TotalCH_max_GWh"])
+    readings = fill_readings(pd.read_csv(path, usecols=["date", "TotalCH_GWh", "TotalCH_max_GWh"]))
+    start, end = period_bounds_utc(settings["historical_period"])
+    s = scenario_name
+    storage = {p: fleet["Plant_capacity_strg"][(p, s)] for p in inflow_shares()}
+    total = sum(storage.values())
+    start_fill, start_source = fill_at(readings, start)
+    staged = {"Reservoir_start_stock": {(p, s): start_fill * capacity for p, capacity in storage.items()}}
+    assumptions = [
+        f"reservoir stocks: BFE weekly national stock ({RESERVOIR_TABLE}), each reading dated Monday for Sunday "
+        f"24:00 local; fill fraction = TotalCH_GWh / TotalCH_max_GWh of the same reading",
+        f"start stock at {start} (before the first hour): fill fraction {start_fill:.6f}, {start_source}; times "
+        f"the storage of each open plant {storage} MWh (equal fill fraction, an assumption: BFE observes only the "
+        f"national stock)",
+    ]
+    if mode == "free":
+        staged["Reservoir_end_target"] = {s: {"mode": mode, "MWh": None}}
+        assumptions.append("end target: none (historical_hydro_end = 'free')")
+    else:
+        end_fill, end_source = fill_at(readings, end)
+        staged["Reservoir_end_target"] = {s: {"mode": mode, "MWh": end_fill * total}}
+        assumptions.append(f"end target at {end} (after the last hour), historical_hydro_end = {mode!r}: fill "
+                           f"fraction {end_fill:.6f}, {end_source}; times the storage of the open plants, "
+                           f"{total} MWh")
+    return staged, [str(path)], assumptions
+
+
+def fill_readings(table):
+    """Fill fraction of each BFE reading, indexed by its UTC instant (the Monday date is Sunday 24:00 local)."""
+    instants = pd.to_datetime(table["date"]).dt.tz_localize(LOCAL_TZ).dt.tz_convert("UTC")
+    if instants.duplicated().any():
+        raise ValueError(f"{RESERVOIR_TABLE}: duplicate dates {sorted(table.loc[instants.duplicated(), 'date'])}")
+    valid = table["TotalCH_GWh"].notna() & table["TotalCH_max_GWh"].notna()
+    not_positive = table.loc[valid & ~(table["TotalCH_max_GWh"] > 0), "date"]
+    if len(not_positive):
+        raise ValueError(f"{RESERVOIR_TABLE}: TotalCH_max_GWh is not positive on {list(not_positive)}")
+    fill = (table["TotalCH_GWh"] / table["TotalCH_max_GWh"])[valid]
+    return pd.Series(fill.to_numpy(), index=pd.DatetimeIndex(instants[valid])).sort_index()
+
+
+def fill_at(readings, instant):
+    """Fill fraction at an instant: a reading at that instant, else the linear interpolation between the two
+    surrounding readings, at most MAX_READING_GAP apart; no extrapolation. Also a description of the source."""
+    if instant in readings.index:
+        return float(readings[instant]), f"reading at {instant}"
+    before, after = readings[readings.index < instant], readings[readings.index > instant]
+    if before.empty or after.empty:
+        raise ValueError(f"{RESERVOIR_TABLE}: no reading {'before' if before.empty else 'after'} {instant}; "
+                         f"stocks are not extrapolated")
+    (t0, f0), (t1, f1) = (before.index[-1], before.iloc[-1]), (after.index[0], after.iloc[0])
+    if t1 - t0 > MAX_READING_GAP:
+        raise ValueError(f"{RESERVOIR_TABLE}: the readings around {instant}, {t0} and {t1}, are more than "
+                         f"{MAX_READING_GAP.days} days apart")
+    fill = f0 + (f1 - f0) * ((instant - t0) / (t1 - t0))
+    return float(fill), f"interpolated between the readings at {t0} ({f0:.6f}) and {t1} ({f1:.6f})"
 
 
 def installed_capacity(settings, column):

@@ -132,10 +132,11 @@ def test_settings_without_historical_period_are_unchanged(scenario):
     assert (settings["t_start"], settings["t_end"]) == (6553, 6552) and len(settings["T_list"]) == 8760
 
 
-def test_backcast_import_stops_until_it_is_built(scenario, tmp_path):
+def test_backcast_switch_hands_over_to_the_historical_import(scenario, tmp_path, monkeypatch):
     from data_prep.data_import_TYNDP import data_import_TYNDP_fcn
 
+    monkeypatch.setattr(hi, "NOT_YET_BUILT", ["an input"])  # stops after reading, before any global changes
     name = scenario("hist_s", CH_only=True, allow_investment=False, NodeDH_list=[], historical_period=FIRST_RUN,
                     historical_data_dir=str(write_processed(tmp_path, FIRST_RUN)))
-    with pytest.raises(NotImplementedError, match="back-cast inputs not built yet"):
+    with pytest.raises(NotImplementedError, match="back-cast inputs not built yet: an input"):
         data_import_TYNDP_fcn(name)

@@ -14,6 +14,7 @@ from the processed folder of `data_prep/historical` (see its README).
 | `historical_period` | `False` | Turns a sub-scenario into a back-cast: a quoted `"YYYY-MM-DD/YYYY-MM-DD"` of local (Europe/Zurich) dates, both included |
 | `historical_data_dir` | `False` | The processed folder of `data_prep/historical`, e.g. `"input/historical/processed/2023-10-01_2026-09-30"` |
 | `historical_demand` | `"demand_MW"` | Demand column of `ch_demand_option_a_hourly.csv` (section Demand) |
+| `historical_hydro_end` | `"equal"` | National reservoir stock at the period end: `"equal"`, `"at_least"` or `"free"` (section Reservoir stocks) |
 
 Quote the period in the scenario CSV. The reader evaluates cells with `eval`, so an unquoted
 `2025-11-15/2026-12-20` becomes a number and an empty cell becomes `"nan"`; both stop the run.
@@ -44,7 +45,8 @@ by default. It stops the run, naming every reason, unless:
   district-heating weeks);
 - no variable preset applies to the back-cast meta-scenario.
 
-It then adds the back-cast constraints: `fixed_generation` (section Fixed plants). Last, it audits the
+It then adds the back-cast constraints: `fixed_generation` (section Fixed plants), and
+`reservoir_first_hour` and `reservoir_end_target` (section Reservoir stocks). Last, it audits the
 objective and prints each group of cost terms with its unit: hydro O&M, lost load and trade in EUR,
 investment in CHF. An investment term with a non-zero coefficient or constant stops the run; terms whose
 variables are all fixed appear as a constant offset.
@@ -87,6 +89,8 @@ reads:
 - **Renewable infeed**: observed solar, wind and run-of-river generation (section Renewable infeed).
 - **Fixed plants**: nuclear and "others", whose output equals the observed series (section Fixed plants).
 - **Reservoir inflow**: PECD natural inflow of the open plants (section Reservoir inflow).
+- **Reservoir stocks**: the observed start stock and end target of the open plants (section Reservoir
+  stocks).
 
 Nothing outside the back-cast fleet is built: EV, V2G, electrolyzer, building heat pumps, district
 heating, fuel limits, KVA infeed, energy limits and investment candidates stay empty.
@@ -193,6 +197,41 @@ round trip is unchanged. The closed loop and the dam keep the workbook values. T
 is taken as electrical energy, as the ENTSO-E methodology strongly implies without stating it; the
 manifest declares this.
 
+## Reservoir stocks
+
+A back-cast replaces the cyclic storage condition of the open plants with observed boundary values.
+
+**Readings.** `reservoir_weekly_bfe.csv` holds the BFE weekly national stock `TotalCH_GWh`, dated Monday
+for Sunday 24:00 local, so each reading is the instant Monday 00:00 local in UTC. The fill fraction of a
+reading is `TotalCH_GWh / TotalCH_max_GWh` of the same reading.
+- The **start stock** is taken at the period start instant, before the first hour's flows; the **end
+  target** at the period end instant, after the last hour.
+- An exact reading is used directly; otherwise the two surrounding readings, at most 8 days apart, are
+  interpolated linearly. Nothing is extrapolated.
+- The fill fraction times the model storage of the open plants (8.8 TWh) gives the stocks. The start
+  stock is split to plants by equal fill fraction, an assumption, since BFE observes only the national
+  stock.
+- In the first run the start lies 48 hours after the reading of 29 September (fill fraction 0.8528, 7.51
+  TWh); the end is the reading of 31 August (0.7182, 6.32 TWh).
+
+Duplicate dates, a `TotalCH_max_GWh` that is not positive, readings more than 8 days apart around an
+instant, or an instant without a reading on one side stops the run.
+
+**Model side.** For the open plants, the hook deactivates the cyclic link of the first model step
+(`storage_soc` at the first step) and the 0.95 start condition. It adds:
+- `reservoir_first_hour`: the production storage balance of the first hour (the same terms, from
+  `storage_balance_terms` in `model/components_common.py`) with the plant's start stock as the previous
+  stock;
+- `reservoir_end_target`: the sum of the open plants' stocks after the last hour equals the end target
+  (`historical_hydro_end = "equal"`), or is at least it (`"at_least"`); `"free"` adds no target and needs
+  no reading after the end.
+
+The later hourly balances, optimised spill and the closed loop (cyclic, with its start condition) are
+unchanged. Both new constraints are unscaled, so their exported duals are in EUR/MWh:
+`reservoir_end_target_dual.csv` is the cost of one more MWh required in storage at the period end, the
+value of stored energy; `reservoir_first_hour_dual.csv` is minus the value of one more MWh of start
+stock. The dual export leaves out the deactivated rows (`docs/duals.md`).
+
 ## Run records
 
 After the import, `core_main` writes two files into `output/<meta-scenario>/`:
@@ -202,9 +241,9 @@ After the import, `core_main` writes two files into `output/<meta-scenario>/`:
 
 ## Status
 
-The import builds the structure, the hydro fleet, lost load, border trade, Swiss demand, renewable infeed,
-the fixed plants and reservoir inflow. Until reservoir stocks are built, a back-cast stops with an error
-that names them.
+The import builds every input. `NOT_YET_BUILT` in `data_prep/historical_import.py` is empty; an
+input added to it stops a back-cast with an error that names it, until the step that builds the input
+removes it. A one-week back-cast builds and solves; the scenario file of the first run is a later step.
 
 The processed folder needs `ch_installed_power_yearly.csv` and `pecd_inflow_weekly_ch00.csv`, which
 `process` writes since the commits "Pipeline: installed power by category and year" and "Pipeline: weekly
