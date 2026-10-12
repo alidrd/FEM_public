@@ -63,7 +63,8 @@ def run_import():
 def test_staged_inputs_hold_the_fleet_the_lines_and_lost_load(settings):
     staged, files, assumptions = hi.read_historical_inputs(NAME, settings)
     assert staged["Plant_list"] == FLEET and staged["Map_node_plant"] == {"CH00": FLEET}
-    assert staged["Map_eff_in_plant"]["large_psp"] == staged["Map_eff_out_plant"]["large_psp"] == 0.87
+    # electrical basis of an open plant: discharge 1, charge the workbook round trip 0.87 x 0.87
+    assert staged["Map_eff_out_plant"]["large_psp"] == 1.0 and staged["Map_eff_in_plant"]["large_psp"] == 0.87 * 0.87
     assert staged["Map_plant_startcondition"]["large_psp"] == Map_tech_startcondition["psp_open"]
     assert len(staged["Avail_plant"]) == len(FLEET) * len(settings["T_list"]) == 7 * 48
     assert staged["Avail_plant"][("large_psp", "t_6553", NAME)] == 0.966
@@ -104,6 +105,7 @@ def test_complete_inputs_are_written_and_recorded(settings, isolated_globals, mo
     assert len(common.Line_trade_price) == len(common.ATC_exportlimit) == len(common.ATC_importlimit) == 4 * 48
     assert len(common.Demand_data) == 48 and len(common.Infeed_consumers) == 5 * 48
     assert common.EV_inflexible_demand_data == {} and common.HP_inflexible_demand_data == {}
+    assert sorted(common.Plant_inflow_list) == HYDRO_FLEET and len(common.Inflow_data) == 5 * 48
     hi.write_run_records(tmp_path, [NAME])
     time_map = pd.read_csv(tmp_path / "historical_time_map.csv")
     assert time_map["t"].tolist() == settings["T_list"]
@@ -111,7 +113,8 @@ def test_complete_inputs_are_written_and_recorded(settings, isolated_globals, mo
     assert len(manifest["code"]["git_commit"]) == 40 and manifest["model_steps"] == [6553, 6600]
     assert all(len(record["sha256"]) == 64 for record in manifest["files"])
     read = [Path(record["path"]).name for record in manifest["files"]]
-    tables = {hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE, hi.POWER_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE}
+    tables = {hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE, hi.POWER_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE,
+              hi.PECD_TABLE}
     assert tables <= set(read) and len(read) == len(set(read))
     assert any(assumption.startswith("transfer limits") for assumption in manifest["assumptions"])
 

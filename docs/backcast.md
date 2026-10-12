@@ -73,11 +73,12 @@ reads:
   same process stops the run. `run_scenarios.py` runs each meta-scenario in its own process.
 - **Structure.** Node CH00 with its fixed consumer `CH00_fixedconsumer`, and the border lines
   `HVAC_{AT,DE,FR,IT}00_CH00` with the neighbour as start node.
-- **Representative hydro fleet** (`input/hydro_PECD`): `large_psp`, `medium_reservior` and
-  `small_reservior`, the closed loop `CH00_psp_close`, and `CH00_dam` with zero capacity. Storage
+- **Representative hydro fleet** (`input/hydro_PECD`): the open plants `large_psp`, `medium_reservior`
+  and `small_reservior`, the closed loop `CH00_psp_close`, and `CH00_dam` with zero capacity. This is the
+  repository's 2030 fleet (about 8.8 TWh of storage), not observed 2025/26 capacities. Storage
   efficiencies, O&M and emission factors come from the cost workbook, used only where its 2035 and 2050
-  values agree; availability comes from `input/availability_factor_conventional.csv` and must not vary
-  by month (0.966).
+  values agree; the open plants are on an electrical basis (section Reservoir inflow). Availability comes
+  from `input/availability_factor_conventional.csv` and must not vary by month (0.966).
 - **No investment and no fuel model.** Every investment slope is 0, the operating-cost calibration is 1,
   and the set of limited fuels is empty.
 - **Lost load** as in the normal import.
@@ -85,6 +86,7 @@ reads:
 - **Swiss demand**: option A as the demand of `CH00_fixedconsumer` (section Demand).
 - **Renewable infeed**: observed solar, wind and run-of-river generation (section Renewable infeed).
 - **Fixed plants**: nuclear and "others", whose output equals the observed series (section Fixed plants).
+- **Reservoir inflow**: PECD natural inflow of the open plants (section Reservoir inflow).
 
 Nothing outside the back-cast fleet is built: EV, V2G, electrolyzer, building heat pumps, district
 heating, fuel limits, KVA infeed, energy limits and investment candidates stay empty.
@@ -166,6 +168,31 @@ A **fixed plant** produces exactly its observed output in every hour:
 
 `gen.csv` shows both plants by name.
 
+## Reservoir inflow
+
+The open plants receive the natural inflow of CH00 from `pecd_inflow_weekly_ch00.csv` (Copernicus PECD
+4.2, written by `process` when a PECD archive is registered; `data_prep/historical/README.md`):
+- **Series:** HRI (reservoir) plus HOL (open-loop pumped storage), kept apart in the manifest with their
+  energy and the weeks of each release (`COM` annual, `ITE` interim).
+- **Weeks:** each week is 168 UTC hours from Monday 00:00 UTC (inferred from the files; PECD does not
+  state the time zone). Its energy is spread flat over those hours, clipped to the period and mapped to
+  model steps. A partial first or last week contributes only its overlap, 122/168 and 166/168 in the first
+  run; nothing is renormalised and no missing week is interpolated.
+- **Split:** `inflow_share` of the representative fleet table, one value per plant (the table repeats it
+  on each of the plant's rows): 0.716, 0.245 and 0.039. The closed loop and the dam get 0.
+
+A week that is not 168 hours, overlapping weeks, an hour of the period no week covers, a missing,
+non-finite or negative energy of a week in the period, a plant whose rows disagree on its share, or shares
+that do not sum to 1 stops the run.
+
+**Electrical basis.** PECD inflow is electrical energy at grid level (C3S user guide), and so are the BFE
+stocks. The balance divides generation by the discharge efficiency, so with the workbook's 0.87 every
+100 MWh of inflow would allow only 87 MWh of generation. The open plants therefore get discharge
+efficiency 1 and charging efficiency 0.87 × 0.87 = 0.7569, both derived from the workbook values; the
+round trip is unchanged. The closed loop and the dam keep the workbook values. The fleet table's storage
+is taken as electrical energy, as the ENTSO-E methodology strongly implies without stating it; the
+manifest declares this.
+
 ## Run records
 
 After the import, `core_main` writes two files into `output/<meta-scenario>/`:
@@ -175,9 +202,11 @@ After the import, `core_main` writes two files into `output/<meta-scenario>/`:
 
 ## Status
 
-The import builds the structure, the hydro fleet, lost load, border trade, Swiss demand, renewable infeed
-and the fixed plants. Until the following inputs are built, a back-cast stops with an error that names
-them: reservoir inflow and reservoir stocks.
+The import builds the structure, the hydro fleet, lost load, border trade, Swiss demand, renewable infeed,
+the fixed plants and reservoir inflow. Until reservoir stocks are built, a back-cast stops with an error
+that names them.
 
-The processed folder needs `ch_installed_power_yearly.csv`, which `process` writes since the commit
-"Pipeline: installed power by category and year"; rerun `process` on a folder made before it.
+The processed folder needs `ch_installed_power_yearly.csv` and `pecd_inflow_weekly_ch00.csv`, which
+`process` writes since the commits "Pipeline: installed power by category and year" and "Pipeline: weekly
+PECD inflow for CH00" (the latter with a registered PECD archive); rerun `process` on a folder made before
+them.

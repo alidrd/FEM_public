@@ -19,7 +19,9 @@ def write_processed(folder, period):
     demand_MW rises by 1 MW per hour from 6000, with the solar-shaped column 100 MW below and the flat one 100 MW
     above; every month is published definitively. Solar, wind and run-of-river rise by 1 MW per hour from 100, 10
     and 1000, nuclear from 2000 and others from 300 (these two restart every 500 hours). Installed power: nuclear
-    2973 MW (net capacity), others 1300 MW in 2024 and 1200 MW in 2025, the latest published year."""
+    2973 MW (net capacity), others 1300 MW in 2024 and 1200 MW in 2025, the latest published year. PECD weeks
+    (Monday 00:00 UTC) from the week before the period to the week after it: HRI 168 * (10 + i) MWh in week i,
+    HOL 336 MWh."""
     folder.mkdir(parents=True, exist_ok=True)
     hours = period_hours(period)
     steps = range(len(hours))
@@ -49,4 +51,18 @@ def write_processed(folder, period):
         folder / "nuclear_availability_hourly.csv", index=False, float_format="%.3f")
     pd.DataFrame({"year": [2024, 2025], "nuclear": 2973.0, "others": [1300.0, 1200.0]}).to_csv(
         folder / "ch_installed_power_yearly.csv", index=False, float_format="%.3f")
+    pecd_weeks(hours).to_csv(folder / "pecd_inflow_weekly_ch00.csv", index=False, float_format="%.3f")
     return folder
+
+
+def pecd_weeks(hours):
+    """Weekly PECD rows in the pipeline's format, from the Monday week before the first hour to the week after the
+    last hour."""
+    first = (hours[0] - pd.Timedelta(days=hours[0].dayofweek)).normalize() - pd.Timedelta(days=7)
+    starts = pd.date_range(first, hours[-1] + pd.Timedelta(days=7), freq="7D")
+    rows = []
+    for series in ("HRI", "HOL"):
+        for i, start in enumerate(starts):
+            rows.append({"series": series, "week_end_utc": start + pd.Timedelta(hours=168), "week_start_utc": start,
+                         "energy_MWh": 168.0 * (10 + i) if series == "HRI" else 336.0, "release": "COM"})
+    return pd.DataFrame(rows)

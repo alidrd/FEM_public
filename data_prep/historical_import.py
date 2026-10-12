@@ -37,12 +37,12 @@ FLEET_TABLES = (
     "input/hydro_PECD/PECD_EERA2021_reservoir_pumping_2030_table.csv",
     "input/hydro_PECD/PECD_EERA2021_reservoir_pumping_2030_table_representative_plants.csv",
 )
+REPRESENTATIVE_TABLE = FLEET_TABLES[1]  # the open plants of the fleet, with their inflow_share
 AVAILABILITY_TABLE = "input/availability_factor_conventional.csv"
 COST_WORKBOOK = "input/cost_assumptions.xlsx"
 WORKBOOK_YEARS = (2035, 2050)
 # Inputs the historical import does not build yet; the step that builds one removes its entry
 NOT_YET_BUILT = [
-    "reservoir inflow",
     "reservoir stocks",
 ]
 RUN_RECORDS = {}  # sub-scenario -> time map and inputs manifest, written by core_main into the run folder
@@ -65,6 +65,11 @@ INSTALLED_TABLE = "ch_installed_power_yearly.csv"
 # Fixed plants, whose output equals an observed column of POWER_TABLE: plant -> technology and observed column
 FIXED_PLANT_TECH = {"CH03_nuclear": "nuclear", "CH01_other": "other"}
 FIXED_PLANT_SERIES = {"CH03_nuclear": "nuclear", "CH01_other": "others"}
+PECD_TABLE = "pecd_inflow_weekly_ch00.csv"
+# PECD series of CH00 whose sum is the natural inflow of the open plants: reservoir (HRI) and open-loop pumped
+# storage (HOL)
+PECD_SERIES = ("HRI", "HOL")
+WEEK_HOURS = 168
 
 
 def is_backcast(settings):
@@ -186,9 +191,11 @@ def read_historical_inputs(scenario_name, settings):
     fixed, fixed_files, fixed_assumptions = read_fixed_plants(scenario_name, settings)
     stage(staged, fixed)
     stage(staged, {"Map_node_plant": {NODE: list(staged["Plant_list"])}})
+    inflow, inflow_files, inflow_assumptions = read_inflow(scenario_name, settings, fleet["Plant_list"])
+    stage(staged, inflow)
     files = [*FLEET_TABLES, AVAILABILITY_TABLE, COST_WORKBOOK,
              f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files, *demand_files,
-             *infeed_files, *fixed_files]
+             *infeed_files, *fixed_files, *inflow_files]
     files = list(dict.fromkeys(files))  # a table two inputs read is recorded once
     assumptions = [
         f"border lines HVAC_<neighbour>_{NODE} for {', '.join(BORDER_NEIGHBOURS)}, the neighbour as start node",
@@ -198,6 +205,7 @@ def read_historical_inputs(scenario_name, settings):
         *demand_assumptions,
         *infeed_assumptions,
         *fixed_assumptions,
+        *inflow_assumptions,
     ]
     return staged, files, assumptions
 
@@ -352,6 +360,68 @@ def read_fixed_plants(scenario_name, settings):
     return staged, files, assumptions
 
 
+def read_inflow(scenario_name, settings, hydro_plants):
+    """Natural inflow of the open plants at every model step, PECD HRI + HOL split by inflow_share, and 0 for the
+    other plants of the hydro fleet; with the files read and the assumptions. Inflow is electrical energy at grid
+    level (C3S user guide), which the electrical basis of read_hydro_fleet matches."""
+    path = processed_table(settings, PECD_TABLE, ["series", "week_start_utc", "week_end_utc", "energy_MWh", "release"])
+    table = pd.read_csv(path, usecols=["series", "week_start_utc", "week_end_utc", "energy_MWh", "release"])
+    time_map = historical_time_map(settings["historical_period"])
+    hourly, overlap, releases = {}, {}, {}
+    for series in PECD_SERIES:
+        hourly[series], overlap[series], releases[series] = spread_weeks(table[table["series"] == series], time_map,
+                                                                       series)
+    total = sum(hourly.values())
+    shares = inflow_shares()
+    s = scenario_name
+    inflow = {(p, t, s): float(share * total[t]) for p, share in shares.items() for t in total.index}
+    others = [p for p in hydro_plants if p not in shares]
+    inflow.update({(p, t, s): 0.0 for p in others for t in total.index})
+    energy = ", ".join(f"{series} {hourly[series].sum() / 1e6:.3f} TWh" for series in PECD_SERIES)
+    assumptions = [
+        f"reservoir inflow: PECD 4.2 HRI + HOL of CH00 ({PECD_TABLE}), electrical energy at grid level; {energy} "
+        f"over the period; weeks by release {releases}",
+        f"each PECD week is 168 UTC hours from Monday 00:00 UTC (inferred from the files, not stated by the "
+        f"provider); its energy is spread flat and clipped to the period, nothing renormalised and no week "
+        f"interpolated; hours of the first and last week in the period, of {WEEK_HOURS}: {overlap}",
+        f"inflow split by inflow_share of {REPRESENTATIVE_TABLE}: {shares}; inflow of {', '.join(others)}: 0",
+    ]
+    staged = {"Inflow_data": inflow, "Plant_inflow_list": [*shares, *others]}
+    return staged, [str(path), REPRESENTATIVE_TABLE], assumptions
+
+
+def spread_weeks(weeks, time_map, series):
+    """Hourly inflow of one PECD series at every model step: each week's energy spread flat over its 168 UTC hours.
+    Also the hours of the first and last week that lie in the period, and the weeks per release. Raises on a week
+    that is not 168 hours, overlapping weeks, an hour no week covers, or a missing, non-finite or negative energy of
+    a week in the period."""
+    start = pd.to_datetime(weeks["week_start_utc"], utc=True)
+    end = pd.to_datetime(weeks["week_end_utc"], utc=True)
+    weeks = weeks.assign(start=start, end=end).sort_values("start").reset_index(drop=True)
+    wrong = weeks[(weeks["end"] - weeks["start"]) != pd.Timedelta(hours=WEEK_HOURS)]
+    if len(wrong):
+        raise ValueError(f"{PECD_TABLE}: {series} week starting {wrong['start'].iloc[0]} is not {WEEK_HOURS} hours")
+    overlapping = weeks[weeks["start"] < weeks["end"].shift()]
+    if len(overlapping):
+        raise ValueError(f"{PECD_TABLE}: {series} weeks overlap, e.g. at {overlapping['start'].iloc[0]}")
+    hours = pd.DatetimeIndex(time_map["time_utc"])
+    position = pd.DatetimeIndex(weeks["start"]).searchsorted(hours, side="right") - 1
+    covered = position >= 0
+    covered[covered] = hours[covered] < pd.DatetimeIndex(weeks["end"])[position[covered]]
+    if not covered.all():
+        raise ValueError(f"{PECD_TABLE}: no {series} week covers {int((~covered).sum())} hours of the period, "
+                         f"e.g. {hours[~covered][0]}")
+    used = weeks.loc[sorted(set(position))]
+    bad = used[~used["energy_MWh"].between(0, math.inf, inclusive="left")]
+    if len(bad):
+        raise ValueError(f"{PECD_TABLE}: {series} weeks with missing, non-finite or negative energy in the period, "
+                         f"e.g. the week starting {bad['start'].iloc[0]} ({bad['energy_MWh'].iloc[0]})")
+    values = weeks["energy_MWh"].to_numpy()[position] / WEEK_HOURS
+    overlap = (int((position == position[0]).sum()), int((position == position[-1]).sum()))
+    releases = used["release"].value_counts().to_dict()
+    return pd.Series(values, index=time_map["t"].to_numpy()), overlap, releases
+
+
 def installed_capacity(settings, column):
     """Installed power of one category at every model step (index: model step), and the published year used for
     each local year of the period: for each hour, the value of the latest published year not after the hour's local
@@ -448,6 +518,16 @@ def read_hydro_fleet(scenario_name, settings):
     om_cost = year_independent("om_cost_eurMWH", techs)
     emission = year_independent("emission_factor", techs)
     availability = hydro_availability(techs)
+    open_plants = list(inflow_shares())
+    outside = [p for p in open_plants if p not in plants]
+    if outside:
+        raise ValueError(f"{REPRESENTATIVE_TABLE}: open plants {outside} are not in the hydro fleet {list(plants)}")
+    # Electrical basis: inflow and stocks are electrical energy, so an open plant discharges with efficiency 1 and
+    # charges with the workbook round trip; the closed loop and the dam keep the workbook values
+    basis_in = {p: eff_in[plant_tech[p]] * eff_out[plant_tech[p]] if p in open_plants else eff_in[plant_tech[p]]
+                for p in plants}
+    basis_out = {p: 1.0 if p in open_plants else eff_out[plant_tech[p]] for p in plants}
+    open_in = {p: basis_in[p] for p in open_plants}
     s = scenario_name
     fleet = {
         "Plant_list": list(plants),
@@ -457,8 +537,8 @@ def read_hydro_fleet(scenario_name, settings):
         "Plant_capacity_gen": {(p, s): value for p, value in gen_max.items()},
         "Plant_capacity_pmp": {(p, s): value for p, value in pumping.items()},
         "Plant_capacity_strg": {(p, s): value for p, value in storage.items()},
-        "Map_eff_in_plant": {p: eff_in[plant_tech[p]] for p in plants},
-        "Map_eff_out_plant": {p: eff_out[plant_tech[p]] for p in plants},
+        "Map_eff_in_plant": basis_in,
+        "Map_eff_out_plant": basis_out,
         "Map_plant_startcondition": {p: Map_tech_startcondition[plant_tech[p]] for p in plants},
         "Avail_plant": {(p, t, s): availability[plant_tech[p]] for p in plants for t in settings["T_list"]},
         "cost_data_opr_slp": {(tech, s): om_cost[tech] for tech in techs},
@@ -475,8 +555,29 @@ def read_hydro_fleet(scenario_name, settings):
         f"hydro availability {availability} (availability table, constant over the months)",
         f"storage efficiencies in {eff_in}, out {eff_out} and O&M {om_cost} EUR/MWh: cost-workbook values, "
         f"identical for {WORKBOOK_YEARS}",
+        f"electrical basis of the open plants {open_plants}: discharge efficiency 1 and charging efficiency "
+        f"{open_in} (workbook in x out), so the round trip is unchanged; the fleet "
+        f"table's storage (sto_GWh) is taken as electrical energy, as the ENTSO-E methodology strongly implies "
+        f"without stating it",
     ]
     return fleet, assumptions
+
+
+def inflow_shares():
+    """One inflow share per open plant of REPRESENTATIVE_TABLE, which repeats it on each of the plant's rows; raises
+    if a plant's rows disagree or the shares do not sum to 1."""
+    table = pd.read_csv(REPRESENTATIVE_TABLE)
+    shares, problems = {}, []
+    for plant, rows in table.groupby("name", sort=False):
+        values = sorted(set(rows["inflow_share"]))
+        if len(values) != 1:
+            problems.append(f"the rows of {plant} disagree on inflow_share ({values})")
+        shares[plant] = float(values[0])
+    if not math.isclose(sum(shares.values()), 1.0, abs_tol=1e-9):
+        problems.append(f"the shares {shares} sum to {sum(shares.values()):.9g}, not 1")
+    if problems:
+        raise ValueError(f"{REPRESENTATIVE_TABLE}: " + "; ".join(problems))
+    return shares
 
 
 def year_independent(component, techs):
