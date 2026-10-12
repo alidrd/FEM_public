@@ -53,7 +53,7 @@ import os
 # %% main function -----------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------
 
-def core_main(scenario_name, sub_scenarios_list, model_version=None):
+def core_main(scenario_name, sub_scenarios_list, model_version=None, solve=True):
     # Start timer for total runtime tracking
     total_timer_start = time.time()
     
@@ -199,6 +199,8 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     if nuclear_plant in model.P_gen and (nuclear_plant, first_scen) in model.gen_max:
         model.gen_max[nuclear_plant, first_scen].setlb(1e-2)
         print(f"Set lower bound for gen_max[{nuclear_plant}, {first_scen}] = 1e-2 MW (prevents presolve fixing)")
+    if not solve:  # the built model, for tests that must not solve (docs/codebase_map.md)
+        return model
 
     # %% solve model -------------------------------------------------------------------------------------
     # export_model_to_txt("before_solve" + scenario_name, model, scenario_name) # Exporting the model (debugging purposes)

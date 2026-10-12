@@ -29,6 +29,9 @@ contents, list the folder; this guide records what a listing does not tell you.
      hard-coded in `core.py`;
    - exports results (see "Exports" below).
 
+   `core_main(..., solve=False)` returns the built model after the presets, before any solver is created;
+   tests that check the model a run builds use it (`tests/test_build_model.py`).
+
 ## Where to change what
 
 | Task | Where |
