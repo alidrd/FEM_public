@@ -239,6 +239,31 @@ After the import, `core_main` writes two files into `output/<meta-scenario>/`:
 - `historical_inputs_manifest.json`: the period and model steps, every file read with its checksum and
   columns, the assumptions, and the git commit with a flag for uncommitted changes.
 
+## Price comparison
+
+`tools/compare_historical_prices.py` compares a back-cast's modelled Swiss price with the observed
+day-ahead price, in EUR/MWh:
+
+```bash
+poetry run python tools/compare_historical_prices.py output/hist_2526_octaug
+```
+
+- **Pairing:** the CH00 rows of `energy_balance_dual.csv`, divided by the sub-scenario weight (1 in a
+  back-cast), are dated through the run's `historical_time_map.csv`. Observed prices, transfer limits and
+  scheduled exchange come from the processed folder the run's manifest names. Every hour of the time map
+  needs exactly one dual, one flow per border line and one observed value; a gap, a repeat, a model step
+  outside the time map or a non-finite value stops the tool. The report states the expected and the
+  paired hours.
+- **Tables** in `<run>/price_comparison/`:
+  - `metrics.csv`: MAE, RMSE, bias (model minus observed) and correlation, for the model and for a
+    benchmark, the mean neighbour price. The correlation of a constant series is undefined (empty).
+  - `monthly.csv`: mean prices per local month. A month the period cuts (August 2026 ends on the 30th)
+    is listed but not compared.
+  - `duration_curve.csv`: both prices sorted from highest to lowest.
+  - `border_limits.csv`: the hours each border flow is within 1 MW of its limit, modelled (flows against
+    NTC times `NTC_CH_ratio`) and observed (scheduled exchange against NTC), over the run's period. The
+    plan's 69% (FR to CH) and 34% (CH to IT) describe October 2025 to September 2026.
+
 ## Scenario and data tests
 
 `scenarios/scen_to_run_CH_only_historical.csv` defines the first back-cast: meta-scenario
