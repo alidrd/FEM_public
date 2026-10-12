@@ -52,9 +52,16 @@ the two price files.
 e.g. `generation_limit`, `storage_rate_limit` (electric charging, incl. DH heat pumps and
 resistive heaters), `lineATClimit` (transmission limits), `building_heat_demand`. The
 electrolyzer limits are scalar constraints, one file each:
-`consume_tot_limit_<plant>_<n>_<sub-scenario>_dual.csv`. A few constraints print
-`Error in exporting duals for <name>` and produce no file (empty constraints, or rows the solver
-never received); the rest of the export continues.
+`consume_tot_limit_<plant>_<n>_<sub-scenario>_dual.csv`.
+
+**Rows without a dual**, in both modes:
+- deactivated rows are left out;
+- rows the solver never received are left out with a printed count: rows without a finite bound
+  (e.g. `lostload_limit` at its last step, whose capacity is infinite) and rows whose variables are
+  all fixed;
+- a constraint without rows writes no file and prints `<name>: no row to export`;
+- an active row the solver received but returned no dual for stops the run. Its constraint gets no
+  file; after all other exports are written, the error names each such row by constraint and index.
 
 ## Signs
 

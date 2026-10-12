@@ -344,8 +344,13 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
         constraint_list = [v for v in model.component_objects(ctype=Constraint, active=True, descend_into=True)
                         if v.name in constraint_names_to_export]
     
-    # export all dual values of constraints in constraint_list
-    dual_values_dict = res_export.constraints(constraint_list, scenario_name, model, write_csv=True)
+    # export all dual values of constraints in constraint_list; an active row without a dual fails the run, after the
+    # remaining exports below are written
+    missing_duals = None
+    try:
+        dual_values_dict = res_export.constraints(constraint_list, scenario_name, model, write_csv=True)
+    except res_export.MissingDualsError as error:
+        dual_values_dict, missing_duals = error.exported, error
 
     # Reduced costs for investment variables --------------------------------
     # These tell you how much cheaper a technology would need to be to become competitive
@@ -378,6 +383,8 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     )
 
     investment_summary.investment_summary(r"output/" + scenario_name + "/")
+    if missing_duals is not None:
+        raise missing_duals
     
     # Calculate total runtime
     total_time_seconds = time.time() - total_timer_start

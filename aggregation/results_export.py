@@ -1,6 +1,9 @@
+import math
+
 import pandas as pd
 import pyomo.environ as pyo
 from pathlib import Path
+from pyomo.repn import generate_standard_repn
 
 
 def par_var(var_list, scenario_name):
@@ -63,55 +66,84 @@ def constraint_scaling_factor(constraint_name, model):
     return pyo.value(model.constraint_scaling[key])
 
 
+class MissingDualsError(RuntimeError):
+    """Active rows the solver received but returned no dual for; `exported` holds the duals that were exported."""
+
+    def __init__(self, missing, exported):
+        super().__init__(f"no dual for {len(missing)} active rows the solver received, e.g. {missing[:5]}")
+        self.missing = missing
+        self.exported = exported
+
+
+def never_sent_to_solver(row):
+    """A row with no finite bound, or with no free variable, is not passed to the solver and has no dual."""
+    bounds = [pyo.value(bound) for bound in (row.lower, row.upper) if bound is not None]
+    if not any(math.isfinite(bound) for bound in bounds):
+        return True
+    return generate_standard_repn(row.body, compute_values=True).is_constant()
+
+
 def constraints(constraint_list, scenario_name, model, write_csv=True):
     """Export constraint duals in the units of the unscaled constraint.
 
     Each row is scaled by sf on both sides in the model, so the solver's dual is 1/sf times the
-    dual of the original constraint; the exported value is sf * solver dual.
+    dual of the original constraint; the exported value is sf * solver dual. Deactivated rows and
+    rows never sent to the solver have no dual and are left out. A constraint with an active row
+    the solver received but returned no dual for is not written; after all other constraints are
+    exported, MissingDualsError names each such row by constraint and index.
     """
     print("Exporting duals...")
     result_duals_dict = {}
+    missing = []
     for constraint in constraint_list:
-        data = {}
-        counter = 0
         sf = constraint_scaling_factor(constraint.name, model)
-        try:
-            for index in constraint:
-                if constraint.dim() == 0:
-                    data[counter] = [constraint.name] + [
-                        sf * model.dual[constraint[index]]
-                    ]  # NOTE: there will be so may constraints for limited energy plants, because every duration has its own constraint
-                elif constraint.dim() != 1:
-                    data[counter] = [i for i in index] + [sf * model.dual[constraint[index]]]
+        data, lacking, unsent = [], [], 0
+        for index in constraint:
+            row = constraint[index]
+            if not row.active:
+                continue
+            if row not in model.dual:
+                if never_sent_to_solver(row):
+                    unsent += 1
                 else:
-                    data[counter] = [index] + [sf * model.dual[constraint[index]]]
-                counter += 1
-
-            result_duals = pd.DataFrame.from_dict(data, orient="index")
-
-            if constraint._implicit_subsets is None:
-                header_list = [
-                    constraint.name,
-                ]
+                    lacking.append(f"{constraint.name}[{index}]")
+                continue
+            if constraint.dim() == 0:
+                data.append([constraint.name, sf * model.dual[row]])
+            elif constraint.dim() != 1:
+                data.append([*index, sf * model.dual[row]])
             else:
-                header_list = [
-                    constraint.__dict__["_implicit_subsets"][domain_counter].name
-                    for domain_counter in range(
-                        len(constraint.__dict__["_implicit_subsets"])
-                    )
-                ]
+                data.append([index, sf * model.dual[row]])
+        if unsent:
+            print(f"{constraint.name}: {unsent} rows without a finite bound or a free variable have no dual")
+        if lacking:
+            missing += lacking
+            continue
+        if not data:
+            print(f"{constraint.name}: no row to export")
+            continue
 
-            result_duals.columns = header_list + ["value"]
+        if constraint._implicit_subsets is None:
+            header_list = [
+                constraint.name,
+            ]
+        else:
+            header_list = [
+                constraint.__dict__["_implicit_subsets"][domain_counter].name
+                for domain_counter in range(
+                    len(constraint.__dict__["_implicit_subsets"])
+                )
+            ]
+        result_duals = pd.DataFrame(data, columns=header_list + ["value"])
 
-            if write_csv:
-                output_path = Path("output") / scenario_name / f"{constraint.name}_dual.csv"
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-                result_duals.to_csv(output_path, index=False)
+        if write_csv:
+            output_path = Path("output") / scenario_name / f"{constraint.name}_dual.csv"
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            result_duals.to_csv(output_path, index=False)
 
-            result_duals_dict[constraint.name] = result_duals
-
-        except Exception as e:
-            print(f"Error in exporting duals for {constraint.name}: {e}")
+        result_duals_dict[constraint.name] = result_duals
+    if missing:
+        raise MissingDualsError(missing, result_duals_dict)
     return result_duals_dict
 
 
