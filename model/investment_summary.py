@@ -16,8 +16,14 @@ def investment_summary(dir):
 
     def import_and_keep_only_CH(filepath, index_col=0, usecols=None):
         if os.path.isfile(filepath):
+            # an empty export (par_var writes a component without entries as "") has no rows
+            if not file_is_nonempty_csv(filepath):
+                return pd.DataFrame()
             # Import the data
-            df = pd.read_csv(filepath, index_col=index_col, usecols=usecols)
+            try:
+                df = pd.read_csv(filepath, index_col=index_col, usecols=usecols)
+            except ValueError as error:
+                raise ValueError(f"{filepath}: {error}") from error
             # Keep only the rows where the index contains "CH"
             return df.loc[df.index.astype(str).str.contains("CH")]
         else:
