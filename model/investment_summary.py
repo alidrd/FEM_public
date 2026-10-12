@@ -24,8 +24,13 @@ def investment_summary(dir):
                 df = pd.read_csv(filepath, index_col=index_col, usecols=usecols)
             except ValueError as error:
                 raise ValueError(f"{filepath}: {error}") from error
-            # Keep only the rows where the index contains "CH"
-            return df.loc[df.index.astype(str).str.contains("CH")]
+            # Keep only the rows of plants at a Swiss node, whatever their name (e.g. large_psp at CH00)
+            names = df.index.astype(str)
+            unmapped = sorted(set(names) - set(node_of))
+            if unmapped:
+                raise ValueError(f"{filepath}: no node in Map_node_plant.csv or Map_infeedplant_node.csv for "
+                                 f"{len(unmapped)} entries, e.g. {unmapped[:5]}")
+            return df.loc[names.isin(swiss)]
         else:
             return pd.DataFrame()
     
@@ -42,6 +47,7 @@ def investment_summary(dir):
 
         return df
 
+    node_of, swiss = plants_at_swiss_nodes(dir)
 
     # Import the data: ----------------------------------------------------------------------------------------------
 
@@ -160,6 +166,26 @@ def investment_summary(dir):
                 df[column].loc[row] = first_val
 
     df.to_csv(dir + "investment_summary.csv")
+
+def plants_at_swiss_nodes(dir):
+    """The node of every plant and infeed plant, from the run's exported Map_node_plant.csv (each node, then its
+    plants) and Map_infeedplant_node.csv, and the set of those at a node whose country is CH (Map_node_country.csv)."""
+    def rows(name):
+        with open(dir + name, newline="", encoding="utf-8") as f:
+            return list(csv.reader(f))[1:]  # an empty export ("") has no row after the first
+
+    node_of = {plant: row[0] for row in rows("Map_node_plant.csv") for plant in row[1:] if plant}
+    infeed_node_of = {row[0]: row[1] for row in rows("Map_infeedplant_node.csv")}
+    conflicting = sorted(p for p in infeed_node_of if p in node_of and node_of[p] != infeed_node_of[p])
+    if conflicting:
+        raise ValueError(f"Map_node_plant.csv and Map_infeedplant_node.csv place {conflicting} at different nodes")
+    node_of.update(infeed_node_of)
+    country = {row[0]: row[1] for row in rows("Map_node_country.csv")}
+    without_country = sorted(set(node_of.values()) - set(country))
+    if without_country:
+        raise ValueError(f"Map_node_country.csv has no country for the nodes {without_country}")
+    return node_of, {plant for plant, node in node_of.items() if country[node] == "CH"}
+
 
 def get_first_value(value):
     if isinstance(value, pd.Series):
