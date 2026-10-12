@@ -264,8 +264,7 @@ spy that fails the build if a solver is created; the four builds take a few minu
 
 The import builds every input. `NOT_YET_BUILT` in `data_prep/historical_import.py` is empty; an
 input added to it stops a back-cast with an error that names it, until the step that builds the input
-removes it. A one-week back-cast builds and solves; its run then stops in `investment_summary`, which
-cannot read the empty capacity files of a back-cast.
+removes it. A one-week back-cast builds, solves and writes all its outputs.
 
 The processed folder needs `ch_installed_power_yearly.csv` and `pecd_inflow_weekly_ch00.csv`, which
 `process` writes since the commits "Pipeline: installed power by category and year" and "Pipeline: weekly
