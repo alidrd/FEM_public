@@ -37,6 +37,7 @@ contents, list the folder; this guide records what a listing does not tell you.
 | Cost term | `obj_expression` in `model/components_common.py`. Multiply every term by `model.weight_in_objective_fcn[scen]` inside the loop over `model.Scenarios` (`docs/multi_weather_year.md`). |
 | New setting | Default in `scenarios/settings_default.py`; read as `settings_scen["<name>"]` in `model/core.py` or the data import. A row in the scenario CSV overrides the default; values are parsed with `eval`, so `True`, `0.5` and lists work. |
 | Input data | Files in `input/`, read by `model/data_import_fcns.py` and `data_prep/`. District-heating plants: `input/plants_DH_CH_features.csv` (existing, incl. `efficiency` = COP for heat pumps) and `input/plants_DH_invest_candidates.csv`. Cost data: `input/cost_operation_invest_data.py`. |
+| Swiss rooftop-PV candidates | Aggregated (default): rows `CH0x_pvrf` of `input/plants_invest_candidates_res_CH.csv` with EMHIRES profiles. Per plant: setting `high_resolution_PV`, loader `model/high_res_PV.py`, two `if high_resolution_PV:` branches in `model/data_import_fcns.py` (`docs/high_res_pv.md`). |
 | Technology cost category | `Map_plant_tech_cost_component` in `model/structural_parameters.py` (`cap_op` or `cap_op_energy`). |
 | Fix or start values for one scenario | `input/model_variable_presets.csv` (format in its header). |
 | Solver options | `solver_parameters` in `model/core.py` (e.g. append `method=2` for barrier only on large runs). |
@@ -64,5 +65,5 @@ hard-coded list of run folders; edit it to your runs first (`docs/running.md`).
 ## Tests
 
 `tests/` holds unit tests for helpers with no solver: the DH demand overlay
-(`model/dh_demand_adjustment.py`), its generator (`utils/make_dh_adjustment.py`) and the dual
-export. How to run them and what new code needs: `docs/running.md`.
+(`model/dh_demand_adjustment.py`), its generator (`utils/make_dh_adjustment.py`), the dual
+export and the Nexus-E rooftop-PV loader (`model/high_res_PV.py`). How to run them and what new code needs: `docs/running.md`.

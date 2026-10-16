@@ -40,7 +40,9 @@ The CSV named on the `target_csv =` line of `scenarios/scenarios.py` defines wha
   2050).
 
 `scenarios/scen_to_run_STORSUPPORT.csv` is the default and a full example of a three-weather-year
-setup; `scenarios/scen_to_run_dh_ab.csv` is a one-week A/B example for the DH demand overlay.
+setup; `scenarios/scen_to_run_dh_ab.csv` is a one-week A/B example for the DH demand overlay;
+`scenarios/scen_to_run_high_res_pv.csv` compares aggregated with per-plant Swiss rooftop PV
+(`docs/high_res_pv.md`).
 
 ## Test run
 
@@ -57,6 +59,10 @@ a few minutes, mostly data import; the solve itself takes seconds. Results go to
 `output/2050_st/` and overwrite the previous test run. `output/2050_st/statistics.csv` should
 report `Termination_Condition` `optimal`.
 
+`scenarios/scen_to_run_test_high_res_pv.csv` is the same 25 hours with `weather_year` 2009 and
+`high_resolution_PV` on; it needs the Nexus-E input files (`docs/high_res_pv.md`) and writes to
+`output/2050_st_hrpv/`.
+
 The test scenario has a single sub-scenario and does not use the DH demand overlay, so it does
 not exercise multi-weather-year logic. To check such a change, put a temporary copy of the test
 column, repeated with different `sub_secn` values and weights summing to 1, in a CSV outside
@@ -69,7 +75,8 @@ poetry run pytest
 ```
 
 `pyproject.toml` puts the repo root on the import path. The tests cover helpers that need no
-solver: the DH demand overlay, its generator, and the dual export. Nothing tests building or
+solver: the DH demand overlay, its generator, the dual export and the Nexus-E rooftop-PV loader
+(synthetic input files, no data download needed). Nothing tests building or
 solving the model, which is what the test run is for.
 
 Every new or changed function gets unit tests in `tests/` that fail on the old code. Prefer

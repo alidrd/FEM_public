@@ -166,3 +166,6 @@ input/hydro_WATSA/camels_ch/
 
 # Per-user Poetry config written by the Euler walkthrough — local-only by design
 poetry.toml
+
+# Bulk Nexus-E rooftop-PV input (input/RES_nexuse/PV/<weather_year>/, ~1.2 GB) is kept outside version control
+input/RES_nexuse/

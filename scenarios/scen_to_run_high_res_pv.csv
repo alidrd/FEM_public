@@ -1,0 +1,25 @@
+Item,2050_pv_agg,2050_pv_hires,2050_res45_pv_agg,2050_res45_pv_hires
+sub_secn,wy2009,wy2009,wy2009,wy2009
+comment,"7 aggregated CHxx_pvrf candidates (EMHIRES), no RES target","per-plant Nexus-E rooftop PV, no RES target","7 aggregated CHxx_pvrf candidates, CH RES target 45 TWh","per-plant Nexus-E rooftop PV, CH RES target 45 TWh"
+weight_in_objective_fcn,1,1,1,1
+NTC_CH_ratio,1,1,1,1
+weather_year,2009,2009,2009,2009
+run_year,2050,2050,2050,2050
+t_start,6553,6553,6553,6553
+t_end,6552,6552,6552,6552
+electrolyzer_demand_reduction_coefficient,1,1,1,1
+flexible_household_heatpump_share,0.5,0.5,0.5,0.5
+share_of_flexibly_charging_EV,0.5,0.5,0.5,0.5
+V2G_share_of_flexibly_charging_EV,0.5,0.5,0.5,0.5
+reduce_inflex_demand_by_[MWh],-5659884,-5659884,-5659884,-5659884
+reduce_DH_demand_by_[MWh],0,0,0,0
+ror_annual_TWh,18.55,18.55,18.55,18.55
+hydro_inflow_TWh,20.06,20.06,20.06,20.06
+pump_capacity_GW,5.54,5.54,5.54,5.54
+adding_hydro_storage_cap_TWh,2,2,2,2
+heat_flexibility_Kelvin,0.5,0.5,0.5,0.5
+battery_cost_factor,1,1,1,1
+resistive_heater_investment_cap_MW_total,10000,10000,10000,10000
+battery_investment_nodes_in_addition_to_CH,"AT01, DE01, FR01, IT01","AT01, DE01, FR01, IT01","AT01, DE01, FR01, IT01","AT01, DE01, FR01, IT01"
+minimum_RES_target_CH,False,False,45000000,45000000
+high_resolution_PV,False,True,False,True

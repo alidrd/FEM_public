@@ -36,4 +36,5 @@ Setup, Euler and SciCORE: `README.md`. All guides: `docs/README.md`.
 | Prices, capacity rents, any `*_dual.csv` or `*_reduced_cost.csv` | `docs/duals.md` |
 | Several weather years in one optimisation | `docs/multi_weather_year.md` |
 | Perturb district-heating demand | `input/demand/adjustments/README.md` |
+| Per-plant Swiss rooftop PV from Nexus-E, or its input files | `docs/high_res_pv.md` |
 | Browser dashboard of one run | `README.md`, section "Standalone Results Dashboard" |

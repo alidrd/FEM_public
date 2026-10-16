@@ -11,6 +11,7 @@ HPC setup are in the [main README](../README.md); rules for coding agents are in
 | [outputs.md](outputs.md) | The files in `output/<run>/`: time index, nodes, dispatch, capacities, trade | Reading results |
 | [duals.md](duals.md) | Which duals are exported, their units, signs and weights; reduced costs | Using prices, rents or any `*_dual.csv` |
 | [multi_weather_year.md](multi_weather_year.md) | Meta-scenarios with several sub-scenarios: setup, shared investment, outputs, memory | Running or reading a multi-weather-year optimisation |
+| [high_res_pv.md](high_res_pv.md) | The `high_resolution_PV` flag: one candidate per Nexus-E rooftop-PV unit; input files and their format; known data problems | Running with per-plant Swiss PV, or requesting Nexus-E data |
 | [../input/demand/adjustments/README.md](../input/demand/adjustments/README.md) | Overlay files that change district-heating demand per scenario | Perturbing DH demand |
 
 Every guide starts with a "Checked against" line: the commit of `main` its statements were
