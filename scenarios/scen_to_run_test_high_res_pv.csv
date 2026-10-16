@@ -1,4 +1,4 @@
-Item,2050_st_hrpv
+Item,2050_st_pv09
 sub_secn,wy2009_aa
 weight_in_objective_fcn,1
 NTC_CH_ratio,1
@@ -24,3 +24,4 @@ battery_cost_factor,1
 source_for_CH_NTC,TYNDP22
 lost_load_cost_mode,multi_step_v1
 high_resolution_PV,True
+high_resolution_PV_dataset,pv09_ewopt

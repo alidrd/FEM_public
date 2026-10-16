@@ -59,9 +59,14 @@ a few minutes, mostly data import; the solve itself takes seconds. Results go to
 `output/2050_st/` and overwrite the previous test run. `output/2050_st/statistics.csv` should
 report `Termination_Condition` `optimal`.
 
-`scenarios/scen_to_run_test_high_res_pv.csv` is the same 25 hours with `weather_year` 2009 and
-`high_resolution_PV` on; it needs the Nexus-E input files (`docs/high_res_pv.md`) and writes to
-`output/2050_st_hrpv/`.
+`scenarios/scen_to_run_test_high_res_pv.csv` and `scenarios/scen_to_run_test_high_res_pv_old.csv`
+are the same 25 hours with `high_resolution_PV` on, one per Nexus-E dataset (`2050_st_pv09` and
+`2050_st_pvold`, both on weather year 2009); they need the exported dataset folders
+(`docs/high_res_pv.md`) and write to `output/2050_st_pv09/` and `output/2050_st_pvold/`. They are
+separate files because one `run_scenarios.py` process cannot run two meta-scenarios whose Swiss
+investment candidates differ: the candidate list only grows between meta-scenarios, and the second
+one fails in `define_params_op` with a `KeyError` on a plant of the first. Run such sets one
+meta-scenario per process, as the Euler array script does.
 
 The test scenario has a single sub-scenario and does not use the DH demand overlay, so it does
 not exercise multi-weather-year logic. To check such a change, put a temporary copy of the test

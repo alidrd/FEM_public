@@ -11,7 +11,7 @@ Covers the loader's contract (docs/high_res_pv.md):
      input/plants_invest_candidates_res_CH.csv so the rows concatenate cleanly.
 
 These tests construct small synthetic input files in a `tmp_path`
-fixture and monkeypatch ``model.high_res_PV.PV_DIR`` to point at the
+fixture (layout `<dataset>/<weather_year>/`) and monkeypatch ``model.high_res_PV.PV_DIR`` to point at the
 fixture root. The lru_cache on ``load_high_res_PV`` is cleared
 between tests so independent fixtures do not collide.
 """
@@ -28,16 +28,19 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CANDIDATES_CSV = REPO_ROOT / "input" / "plants_invest_candidates_res_CH.csv"
 
 
+DATASET = "ds"
+
+
 def _write_fixture(tmp_path: Path, units_rows: list[dict], profile_rows: list[dict],
-                   weather_year: int = 2009) -> Path:
-    """Write a NewUnits.xlsx + NexusInput_profiles_newPV_mv.csv pair under
-    tmp_path/<weather_year>/ and return the parent (the PV root)."""
+                   weather_year: int = 2009, dataset: str = DATASET) -> Path:
+    """Write a units.csv + NexusInput_profiles_newPV_mv.csv pair under
+    tmp_path/<dataset>/<weather_year>/ and return the parent (the PV root)."""
     pv_root = tmp_path
-    folder = pv_root / str(weather_year)
+    folder = pv_root / dataset / str(weather_year)
     folder.mkdir(parents=True, exist_ok=True)
 
     units_df = pd.DataFrame(units_rows)
-    units_df.to_excel(folder / "NewUnits.xlsx", index=False)
+    units_df.to_csv(folder / "units.csv", index=False)
 
     profiles_df = pd.DataFrame(profile_rows)
     profiles_df.to_csv(folder / "NexusInput_profiles_newPV_mv.csv", index=False)
@@ -80,7 +83,7 @@ def test_happy_path(patched_pv_dir):
     ]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    plant_records, avail = hires.load_high_res_PV(2009, 2050)
+    plant_records, avail = hires.load_high_res_PV(DATASET, 2009, 2050)
 
     # plant_records shape and index
     assert len(plant_records) == 2
@@ -113,7 +116,7 @@ def test_plant_id_sanitization(patched_pv_dir):
     profiles = [_profile_row("foo-bar-baz", 2050, 0.3)]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    plant_records, avail = hires.load_high_res_PV(2009, 2050)
+    plant_records, avail = hires.load_high_res_PV(DATASET, 2009, 2050)
 
     pid = plant_records.index[0]
     assert pid == "CH00_foo_bar_baz_pvrf"
@@ -140,7 +143,7 @@ def test_availability_scaling_and_clipping(patched_pv_dir):
     ]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    _, avail = hires.load_high_res_PV(2009, 2050)
+    _, avail = hires.load_high_res_PV(DATASET, 2009, 2050)
 
     assert avail[("CH00_half_pvrf", "t_100")] == pytest.approx(0.5)
     assert avail[("CH00_over_pvrf", "t_100")] == pytest.approx(1.0)
@@ -161,7 +164,7 @@ def test_pmax_filter_drops_zero_and_negative(patched_pv_dir):
     ]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    plant_records, avail = hires.load_high_res_PV(2009, 2050)
+    plant_records, avail = hires.load_high_res_PV(DATASET, 2009, 2050)
 
     assert set(plant_records.index) == {"CH00_good_pvrf"}
     plants_in_avail = {pid for (pid, _t) in avail}
@@ -180,7 +183,7 @@ def test_orphan_profile_dropped_and_logged(patched_pv_dir, capsys):
     ]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    plant_records, avail = hires.load_high_res_PV(2009, 2050)
+    plant_records, avail = hires.load_high_res_PV(DATASET, 2009, 2050)
 
     assert set(plant_records.index) == {"CH00_alpha_pvrf"}
     plants_in_avail = {pid for (pid, _t) in avail}
@@ -204,7 +207,7 @@ def test_orphan_unit_dropped_and_logged(patched_pv_dir, capsys):
     ]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    plant_records, _ = hires.load_high_res_PV(2009, 2050)
+    plant_records, _ = hires.load_high_res_PV(DATASET, 2009, 2050)
 
     assert set(plant_records.index) == {"CH00_alpha_pvrf"}
 
@@ -220,7 +223,7 @@ def test_exact_year_match_no_fallback_log(patched_pv_dir, capsys):
     profiles = [_profile_row("alpha", 2050, 2.0)]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    plant_records, _ = hires.load_high_res_PV(2009, 2050)
+    plant_records, _ = hires.load_high_res_PV(DATASET, 2009, 2050)
 
     assert len(plant_records) == 1
     captured = capsys.readouterr().out
@@ -237,7 +240,7 @@ def test_year_fallback_picks_closest_and_logs(patched_pv_dir, capsys):
     profiles = [_profile_row("alpha", 2050, 2.0)]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    plant_records, avail = hires.load_high_res_PV(2009, 2035)
+    plant_records, avail = hires.load_high_res_PV(DATASET, 2009, 2035)
 
     assert len(plant_records) == 1
     assert avail[("CH00_alpha_pvrf", "t_1")] == pytest.approx(0.5)
@@ -258,7 +261,7 @@ def test_missing_weather_year_folder_raises(patched_pv_dir):
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
     with pytest.raises(FileNotFoundError) as exc_info:
-        hires.load_high_res_PV(1995, 2050)
+        hires.load_high_res_PV(DATASET, 1995, 2050)
 
     msg = str(exc_info.value)
     assert "weather_year=1995" in msg
@@ -274,13 +277,13 @@ def test_loader_caches_repeated_calls(patched_pv_dir):
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
     # First call: miss
-    hires.load_high_res_PV(2009, 2050)
+    hires.load_high_res_PV(DATASET, 2009, 2050)
     info_after_first = hires.load_high_res_PV.cache_info()
     assert info_after_first.misses == 1
     assert info_after_first.hits == 0
 
     # Second call with same args: must be a cache hit
-    hires.load_high_res_PV(2009, 2050)
+    hires.load_high_res_PV(DATASET, 2009, 2050)
     info_after_second = hires.load_high_res_PV.cache_info()
     assert info_after_second.misses == 1
     assert info_after_second.hits == 1
@@ -295,7 +298,7 @@ def test_schema_compatibility_with_candidates_csv(patched_pv_dir):
     profiles = [_profile_row("alpha", 2050, 1.0)]
     _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
 
-    plant_records, _ = hires.load_high_res_PV(2009, 2050)
+    plant_records, _ = hires.load_high_res_PV(DATASET, 2009, 2050)
 
     candidates = pd.read_csv(CANDIDATES_CSV, header=0, index_col=0)
 
@@ -306,3 +309,57 @@ def test_schema_compatibility_with_candidates_csv(patched_pv_dir):
     combined = pd.concat([candidates, plant_records])
     assert list(combined.columns) == list(candidates.columns)
     assert "CH00_alpha_pvrf" in combined.index
+
+
+def test_missing_dataset_folder_raises_listing_datasets(patched_pv_dir):
+    """A dataset name without a folder must raise and name the datasets present."""
+    units = [{"GenName": "alpha", "Pmax": 4.0, "Technology": "PV-roof"}]
+    profiles = [_profile_row("alpha", 2050, 2.0)]
+    _write_fixture(patched_pv_dir, units, profiles, weather_year=2009, dataset="present")
+
+    with pytest.raises(FileNotFoundError) as exc_info:
+        hires.load_high_res_PV("absent", 2009, 2050)
+
+    msg = str(exc_info.value)
+    assert "'absent'" in msg
+    assert "present" in msg
+
+
+@pytest.mark.parametrize("dataset", [None, ""])
+def test_unset_dataset_raises_value_error(patched_pv_dir, dataset):
+    """The flag on without a dataset name is a configuration error, not a default."""
+    units = [{"GenName": "alpha", "Pmax": 4.0, "Technology": "PV-roof"}]
+    profiles = [_profile_row("alpha", 2050, 2.0)]
+    _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
+
+    with pytest.raises(ValueError) as exc_info:
+        hires.load_high_res_PV(dataset, 2009, 2050)
+
+    assert "high_resolution_PV_dataset" in str(exc_info.value)
+    assert DATASET in str(exc_info.value)
+
+
+def test_units_csv_missing_column_raises(patched_pv_dir):
+    """units.csv without one of GenName, Pmax, Technology must raise a clear error."""
+    units = [{"GenName": "alpha", "Pmax": 4.0}]          # no Technology column
+    profiles = [_profile_row("alpha", 2050, 2.0)]
+    _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
+
+    with pytest.raises(ValueError) as exc_info:
+        hires.load_high_res_PV(DATASET, 2009, 2050)
+
+    assert "Technology" in str(exc_info.value)
+    assert "units.csv" in str(exc_info.value)
+
+
+def test_missing_units_csv_raises(patched_pv_dir):
+    """A dataset folder without units.csv must raise FileNotFoundError naming the file."""
+    units = [{"GenName": "alpha", "Pmax": 4.0, "Technology": "PV-roof"}]
+    profiles = [_profile_row("alpha", 2050, 2.0)]
+    _write_fixture(patched_pv_dir, units, profiles, weather_year=2009)
+    (patched_pv_dir / DATASET / "2009" / "units.csv").unlink()
+
+    with pytest.raises(FileNotFoundError) as exc_info:
+        hires.load_high_res_PV(DATASET, 2009, 2050)
+
+    assert "units.csv" in str(exc_info.value)

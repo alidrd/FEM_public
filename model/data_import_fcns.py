@@ -350,7 +350,7 @@ def read_ror_Infeed_data(
     return ror_Infeed_hourly_data, Plant_list, Map_plant_tech, Map_plant_node
 
 
-def read_RES_avail_data(weather_year, Node_list, run_year=None, high_resolution_PV=False):
+def read_RES_avail_data(weather_year, Node_list, run_year=None, high_resolution_PV=False, high_resolution_PV_dataset=None):
     """
     Read renewable availability factors of a given technology data from csv file and store in dictionary Avail_plant_region.
 
@@ -444,7 +444,7 @@ def read_RES_avail_data(weather_year, Node_list, run_year=None, high_resolution_
     # PV technologies --------------------------------------------------------------
     if high_resolution_PV:
         from model.high_res_PV import load_high_res_PV
-        _, hires_avail = load_high_res_PV(weather_year, run_year)
+        _, hires_avail = load_high_res_PV(high_resolution_PV_dataset, weather_year, run_year)
         Avail_plant_RES_region.update(hires_avail)
         # Per-plant CH00_*_pvrf availability is loaded ADDITIONALLY here.
         # The EMHIRES pvrf loop below still runs because preexisting installed
@@ -637,7 +637,7 @@ def cross_match_plant_list(Plant_capacity_gen_list, Plant_non_hydro_list):
     return Plant_non_hydro_diff_list
 
 
-def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only=False, weather_year=None, run_year=None, high_resolution_PV=False):
+def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only=False, weather_year=None, run_year=None, high_resolution_PV=False, high_resolution_PV_dataset=None):
     """
     Read plant data from plants_non_hydro.csv file and store data in:
     Plant_non_hydro_list: list of plants
@@ -683,7 +683,7 @@ def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investmen
 
         if high_resolution_PV:
             from model.high_res_PV import load_high_res_PV
-            hires_plants, _ = load_high_res_PV(weather_year, run_year)
+            hires_plants, _ = load_high_res_PV(high_resolution_PV_dataset, weather_year, run_year)
 
             # drop the 7 aggregated CHxx_pvrf rows
             idx_match = pd.Series(
