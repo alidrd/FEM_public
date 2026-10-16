@@ -1,14 +1,19 @@
 # Codebase map
 
-Checked against: `main` @ 54d6be28 (2026-10-09).
+Checked against: `main` @ 96a3203 (2026-10-16).
 
 How one run moves through the code, and which file to change for which task. For folder
 contents, list the folder; this guide records what a listing does not tell you.
 
 ## How a run flows
 
-1. **`run_scenarios.py`** loops over `meta_scenarios_list` and calls `model.core.core_main` once
-   per meta-scenario. `run_scenarios_hpc.py --scenario <name>` runs a single one (SLURM).
+1. **`run_scenarios.py`** runs each meta-scenario of `meta_scenarios_list` in its own process by
+   calling `run_scenarios_hpc.py --scenario <name>` (`run_all` in the same file) and stops at the
+   first one that fails. `run_scenarios_hpc.py` runs a single meta-scenario, which is also what each
+   task of the Euler array does. The separate process is required: the data import accumulates
+   plant lists and maps in module-level containers of `data_prep/definitions_common.py` and
+   `definitions_TYNDP.py`, so a second meta-scenario in the same interpreter would inherit the
+   first one's plants and fail or build the wrong plants.
 2. **`scenarios/scenarios.py`** reads the CSV named on its `target_csv =` line and groups its
    columns into meta-scenarios and sub-scenarios (rules in `docs/running.md`).
 3. **`model/core.py`, `core_main`** (about 390 lines, orchestration only):
@@ -21,7 +26,8 @@ contents, list the folder; this guide records what a listing does not tell you.
      `define_constraints`, then `define_constraints_central` (`model/components_central.py`:
      electrolyzer energy, winter import limit, Swiss RES target) and `fixing_capacities_central`
      (fixes pre-existing capacities);
-   - applies presets from `input/model_variable_presets.csv` (`model/variable_presets.py`);
+   - applies presets from `input/model_variable_presets.csv` (`model/variable_presets.py`); a
+     preset that cannot be applied (variable or index not in the model) stops the run;
    - solves with `pyo.SolverFactory(solver_name)` and the options string `solver_parameters`,
      hard-coded in `core.py`;
    - exports results (see "Exports" below).

@@ -7,8 +7,6 @@ _MODEL_VERSION = MODEL_VERSION  # Alias for backwards compatibility
 #%% import data definitions and vlues -----------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 
-import data_prep.definitions_common
-import data_prep.definitions_TYNDP
 
 from data_prep.definitions_common import *
 from data_prep.definitions_TYNDP import *
@@ -17,7 +15,6 @@ from data_prep.data_import_TYNDP import data_import_TYNDP_fcn
 from model.components_common import *
 from model.components_central import *
 from model.read_settings import read_scenario_settings
-from model.reset_items import get_lists_and_dicts
 from pyomo.opt import ProblemFormat
 import model.data_import_fcns as data_import_fcns
 #import tariff_calibration.tariff_adjustments as tariff_adjustments
@@ -34,6 +31,7 @@ from model.structural_parameters import (
     tariff_import_definitions,
 )
 import utils.export_solve_statistics as export_model_stats
+from model.solver_status import require_optimal_solve
 import model.price_setting_tech as price_setting_tech
 
 import model.investment_summary as investment_summary
@@ -174,7 +172,7 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     print("Applying variable presets from model_variable_presets.csv...")
     preset_summary = apply_variable_presets(model, scenario_name, preset_file_path="input/model_variable_presets.csv", verbose=True)
     applicable_count = len([p for p in read_variable_presets('input/model_variable_presets.csv') if p['scenario_name'] == '' or p['scenario_name'] == scenario_name])
-    print(f"Presets applied: {preset_summary['applied']}, Failed: {preset_summary['failed']}, Total applicable: {applicable_count}")
+    print(f"Presets applied: {preset_summary['applied']}, Total applicable: {applicable_count}")
     if preset_summary['details']:
         print("Preset details:")
         for preset, status, message in preset_summary['details']:
@@ -223,6 +221,8 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     )
     solve_time = time.time() - solve_timer_start
     print("time to solve the model: ", solve_time)    
+    # stop unless the solve ended optimal (otherwise there is no optimal solution to export)
+    require_optimal_solve(result, log_path)
     # %% export result ----------------------------------------------------------------------------------
     print("Exporting the results ...")
     # export statistics and settings ---------------------------------
@@ -334,14 +334,11 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
         "storageTh_rate_limit",    # shadow price of charging/pumping rate (MW_th/el) — HP, PTES, RH
         "storageTh_soc_limit",     # shadow price of thermal energy storage capacity (MWh_th) — PTES TTES
         "storageTh_soc",           # shadow price of thermal energy storage level (MWh_th) - PTES TTES
+        # exist only if a sub-scenario switches on the winter import limit or the Swiss RES target (one row per such sub-scenario)
+        "Constraint_winter_limit",
+        "Constraint_investment_res_CH",
     ]
 
-    if winter_limit[sub_scen]["mode"]:
-        constraint_names_to_export.append("Constraint_winter_limit")
-
-    if minimum_RES_target_CH[sub_scen]:
-        constraint_names_to_export.append("Constraint_investment_res_CH")
-    
     if any(duals_export_all.values()): # If DUALS_EXPORT_ALL is True for any subscenario, export all duals
         constraint_list = [v for v in model.component_objects(ctype=Constraint, active=True, descend_into=True)]
     else:
@@ -373,13 +370,6 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     #     model,
     #     dual_values_dict,
     # )
-
-    list_of_lists_common, list_of_dicts_common = get_lists_and_dicts(
-        data_prep.definitions_common, []
-    )
-    list_of_lists_tyndp, list_of_dicts_tyndp = get_lists_and_dicts(
-        data_prep.definitions_TYNDP, []
-    )
 
     investment_summary.investment_summary(r"output/" + scenario_name + "/")
     
