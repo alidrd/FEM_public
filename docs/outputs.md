@@ -1,6 +1,6 @@
 # Output files
 
-Checked against: `main` @ a90496c (2026-10-11).
+Checked against: `main` @ 5f0e737 (2026-10-16).
 
 What a run writes to `output/<meta-scenario>/` and how to read it. Prices and every other dual:
 `docs/duals.md`. A rerun of the same meta-scenario overwrites its folder.
@@ -25,7 +25,7 @@ What a run writes to `output/<meta-scenario>/` and how to read it. Prices and ev
 | `weight_in_objective_fcn.csv` | Weight of each sub-scenario in the objective |
 | `constraint_scaling.csv` | Row-scaling factor per constraint name (`docs/duals.md`) |
 | `cost_inv_dict.csv`, `cost_op_dict.csv`, `cost_inv_thermal_dict.csv`, `cost_op_thermal_dict.csv`, `cost_inv_fuel_storage_dict.csv`, `lostload_cost_dict.csv`, `trade_cost_dict.csv`, `emissions_dict.csv` | Objective terms per plant and sub-scenario (CHF, already multiplied by the sub-scenario weight); emissions in tCO2 |
-| `investment_summary.csv` | Plants at Swiss nodes only, whatever their name (from `Map_node_plant.csv`, `Map_infeedplant_node.csv` and `Map_node_country.csv`): existing and added power, limits, storage, investment cost |
+| `investment_summary.csv` | Swiss plants only: existing and added power, limits, storage, investment cost |
 | `*_dual.csv`, `*_reduced_cost.csv` | `docs/duals.md` |
 | `large_objective_coefficients.csv` | Only written when an objective coefficient exceeds 1e6 |
 

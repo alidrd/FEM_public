@@ -7,8 +7,6 @@ _MODEL_VERSION = MODEL_VERSION  # Alias for backwards compatibility
 #%% import data definitions and vlues -----------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
 
-import data_prep.definitions_common
-import data_prep.definitions_TYNDP
 
 from data_prep.definitions_common import *
 from data_prep.definitions_TYNDP import *
@@ -18,7 +16,6 @@ from data_prep import historical_import
 from model.components_common import *
 from model.components_central import *
 from model.read_settings import read_scenario_settings
-from model.reset_items import get_lists_and_dicts
 from pyomo.opt import ProblemFormat
 import model.data_import_fcns as data_import_fcns
 #import tariff_calibration.tariff_adjustments as tariff_adjustments
@@ -182,7 +179,7 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None, solve=True)
     print("Applying variable presets from model_variable_presets.csv...")
     preset_summary = apply_variable_presets(model, scenario_name, preset_file_path="input/model_variable_presets.csv", verbose=True)
     applicable_count = len([p for p in read_variable_presets('input/model_variable_presets.csv') if p['scenario_name'] == '' or p['scenario_name'] == scenario_name])
-    print(f"Presets applied: {preset_summary['applied']}, Failed: {preset_summary['failed']}, Total applicable: {applicable_count}")
+    print(f"Presets applied: {preset_summary['applied']}, Total applicable: {applicable_count}")
     if preset_summary['details']:
         print("Preset details:")
         for preset, status, message in preset_summary['details']:
@@ -340,7 +337,9 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None, solve=True)
     # exports all dual values of constraints automatically in seperate files named after variable's name
 
     constraint_names_to_export = dual_constraint_names(
-        model, winter_limit[sub_scen]["mode"], minimum_RES_target_CH[sub_scen]
+        model,
+        any(winter_limit[s]["mode"] for s in sub_scenarios_list),
+        any(minimum_RES_target_CH[s] for s in sub_scenarios_list),
     )
 
     if any(duals_export_all.values()): # If DUALS_EXPORT_ALL is True for any subscenario, export all duals
@@ -379,13 +378,6 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None, solve=True)
     #     model,
     #     dual_values_dict,
     # )
-
-    list_of_lists_common, list_of_dicts_common = get_lists_and_dicts(
-        data_prep.definitions_common, []
-    )
-    list_of_lists_tyndp, list_of_dicts_tyndp = get_lists_and_dicts(
-        data_prep.definitions_TYNDP, []
-    )
 
     investment_summary.investment_summary(r"output/" + scenario_name + "/")
     if missing_duals is not None:
