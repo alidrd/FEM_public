@@ -7,9 +7,14 @@ PV read sites.
 """
 import os
 import functools
+import numpy as np
 import pandas as pd
 
 PV_DIR = os.path.join("input", "RES_nexuse", "PV")
+
+# Hourly columns of the Nexus-E profile CSV and the FEM time labels they map to.
+HOUR_COLS = [str(h) for h in range(1, 8761)]
+T_LABELS = [f"t_{h}" for h in range(1, 8761)]
 
 
 def _sanitize(name: str) -> str:
@@ -80,12 +85,14 @@ def load_high_res_PV(weather_year, run_year):
     units["plant_id"] = units["GenName"].map(plant_id)
 
     # --- profiles -----------------------------------------------------------
-    profiles = pd.read_csv(os.path.join(folder, "NexusInput_profiles_newPV_mv.csv"))
+    # Only the join key, the profile year and the 8760 hourly columns are read;
+    # the descriptive columns of the Nexus-E export are skipped at parse time.
+    profiles = pd.read_csv(
+        os.path.join(folder, "NexusInput_profiles_newPV_mv.csv"),
+        usecols=["Name", "year"] + HOUR_COLS,
+    )
     resolved_year = _resolve_run_year(profiles, run_year)
     profiles = profiles[profiles["year"] == resolved_year]
-
-    hour_cols = [str(h) for h in range(1, 8761)]
-    profiles = profiles[["Name"] + hour_cols]
 
     # --- inner-join ---------------------------------------------------------
     merged = units.merge(profiles, left_on="GenName", right_on="Name", how="inner")
@@ -98,15 +105,16 @@ def load_high_res_PV(weather_year, run_year):
         )
 
     # --- scale to availability factor ---------------------------------------
-    af = merged[hour_cols].div(merged["Pmax"].values, axis=0).clip(lower=0.0, upper=1.0)
-    af.index = merged["plant_id"].values
+    af = merged[HOUR_COLS].to_numpy(dtype=float) / merged["Pmax"].to_numpy(dtype=float)[:, None]
+    np.clip(af, 0.0, 1.0, out=af)
 
     # --- build avail dict ---------------------------------------------------
-    avail = {
-        (pid, f"t_{int(h)}"): float(af.at[pid, h])
-        for pid in af.index
-        for h in hour_cols
-    }
+    # One bulk update per plant. The hour labels are shared objects and no
+    # per-element DataFrame lookup is made: with 4,535 plants the dict has
+    # about 40 million entries, and element-wise `.at` access took minutes.
+    avail = {}
+    for pid, row in zip(merged["plant_id"], af):
+        avail.update(zip(((pid, t) for t in T_LABELS), row.tolist()))
 
     # --- build plant_records ------------------------------------------------
     n = len(merged)
