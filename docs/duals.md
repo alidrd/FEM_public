@@ -93,6 +93,28 @@ changed some industrial heat prices (`ILHT_*`, `ILLT_*`) by up to about 490 CHF/
 objective and the electricity prices stayed identical. Compare duals between runs only when
 they used the same solver settings, and treat a single hour's price at such nodes with care.
 
+## Crossover
+
+`model/core.py` solves with `solver_parameters = "threads=8 method=2 crossover=0"`: Gurobi's
+barrier without crossover, which returns an interior solution instead of a vertex. Delete
+`crossover=0` to get a vertex. Four full-year 2050 runs solved both ways had the same objective
+and the same capacities except `V2G_CH`; the duals compare as follows (without vs with crossover):
+
+| Dual | Difference |
+|---|---|
+| Electricity prices, line-limit duals | at most 0.005 CHF/MWh |
+| Heat prices at the `DH_*` nodes | at most 1.3 CHF/MWh |
+| Heat prices at `ILHT_*`, `ILLT_*` | up to 47 CHF/MWh; more than 1 CHF/MWh in up to 46% of the hours |
+| Storage values (`storage_soc`) | more than 1 CHF/MWh in 4.6 to 6.0% of the entries |
+| Heat capacity limits (`generationTh_limit`) | 3.4 to 4.2 times as many non-zero (binding) hours |
+| Reduced costs of unbuilt candidates | 214 of 343 fall from above 1% to below 0.1% of the annuity |
+
+Crossover costs 34 minutes to 3.8 hours per one-weather-year run and 10.7 hours for three. Switch
+it on for runs whose heat prices at industrial nodes, storage values, capacity rents, binding hours
+or reduced costs are analysed, and compare duals only between runs solved the same way. Full
+documentation (setup, timings, per-run and per-node tables, test-run check):
+[crossover.md](crossover.md).
+
 ## Reduced costs
 
 Written for the investment variables `gen_max`, `genTh_max`, `gen_energy_max` and

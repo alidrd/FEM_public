@@ -10,6 +10,7 @@ HPC setup are in the [main README](../README.md); rules for coding agents are in
 | [running.md](running.md) | Scenario CSVs, test run, unit tests, aggregation and plots, HPC notes | Running anything |
 | [outputs.md](outputs.md) | The files in `output/<run>/`: time index, nodes, dispatch, capacities, trade | Reading results |
 | [duals.md](duals.md) | Which duals are exported, their units, signs and weights; reduced costs | Using prices, rents or any `*_dual.csv` |
+| [crossover.md](crossover.md) | Barrier without crossover on `main`: how to switch crossover on, its cost, how much each dual changes | Analysing heat prices, storage values, binding hours or reduced costs |
 | [multi_weather_year.md](multi_weather_year.md) | Meta-scenarios with several sub-scenarios: setup, shared investment, outputs, memory | Running or reading a multi-weather-year optimisation |
 | [../input/demand/adjustments/README.md](../input/demand/adjustments/README.md) | Overlay files that change district-heating demand per scenario | Perturbing DH demand |
 
