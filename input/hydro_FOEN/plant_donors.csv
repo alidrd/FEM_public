@@ -1,0 +1,86 @@
+﻿name,category,wasta_id,region,nat_inflow_GWh,intake_alt_m,wasta_donor,donor,donor_name,donor_altitude_m,donor_glacier_pct,distance_km,reason
+Bieudron,dam,504950,Wallis,2103.1,2364.0,2219,2219,Simme - Oberried / Lenk,2347.0,22.6,32.0,WASTA donor
+Riddes,dam,505400,Wallis,714.0,1491.3,2251,2251,"Rotenbach - Plaffeien, Schwyberg",1455.0,0.0,59.1,WASTA donor
+Nendaz,dam,505100,Wallis,332.5,1486.8,2251,2251,"Rotenbach - Plaffeien, Schwyberg",1455.0,0.0,56.2,WASTA donor
+Fionnay GD,dam,505000,Wallis,267.6,2364.45,2219,2219,Simme - Oberried / Lenk,2347.0,22.6,45.3,WASTA donor
+Châtelard Barberine,psp_open,506700,Wallis,130.830755,1934.05,2232,2232,Allenbach - Adelboden,1863.0,0.0,65.7,WASTA donor
+Ferrera 1,psp_open,101900,Graubuenden,217.531744,1931.0,2474,2474,Calancasca - Buseno,1931.0,0.2,36.9,WASTA donor
+La Bâtiaz,dam,507300,Wallis,435.0,1122.0,2486,2486,"Veveyse - Vevey, Copet",1098.0,0.0,43.2,WASTA donor
+Vernayaz CFF,dam,507200,Wallis,215.9,1117.0,2486,2486,"Veveyse - Vevey, Copet",1098.0,0.0,40.0,WASTA donor
+Stalden KWM,dam,501800,Wallis,527.4,1744.1,2232,2232,Allenbach - Adelboden,1863.0,0.0,37.5,WASTA donor
+Sedrun 1,dam,100200,Graubuenden,246.1,1908.04,2276,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,37.6,"WASTA donor 2276 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+Fionnay FMM,dam,505300,Wallis,295.0,1975.0,2232,2232,Allenbach - Adelboden,1863.0,0.0,54.0,WASTA donor
+Biasca,dam,601300,Tessin,630.7,990.0,2321,2321,Cassarate - Pregassona,987.0,0.0,35.3,WASTA donor
+Pradella,dam,801000,Graubuenden,969.3,1630.0,2185,2185,"Plessur - Chur, nur Hauptstation",1868.0,0.0,63.2,WASTA donor
+Bavona,dam,602600,Tessin,316.5,1940.8,2356,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,4.6,WASTA donor
+Olivone,dam,601200,Tessin,206.6,1606.0,2605,2605,"Verzasca - Lavertezzo, Campiòi",1651.0,0.0,33.2,WASTA donor
+Tavanasa KVR,dam,100300,Graubuenden,559.8,1277.0,2300,2300,"Minster - Euthal, Rüti",1352.0,0.0,40.7,WASTA donor
+Sils KHR,dam,102300,Graubuenden,598.5,1080.0,2187,2187,Werdenberger Binnenkanal - Salez,1003.0,0.0,59.6,WASTA donor
+Bärenburg,dam,102100,Graubuenden,475.0,1401.0,2206,2206,Melera - Melera (Valle Morobbia),1423.0,0.0,53.3,WASTA donor
+Rothenbrunnen KWZ,dam,101300,Graubuenden,326.6,1295.4,2300,2300,"Minster - Euthal, Rüti",1352.0,0.0,57.8,WASTA donor
+Tierfehd Limmern,dam,400200,UebrigCH,395.47,1861.8,2276,2426,Seez - Mels,1803.0,0.1,37.9,"WASTA donor 2276 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+Miéville,dam,507500,Wallis,118.4,1925.0,2232,2232,Allenbach - Adelboden,1863.0,0.0,55.3,WASTA donor
+Innertkirchen 1 und 1a,dam,200800,UebrigCH,767.8,1319.8,2436,2300,"Minster - Euthal, Rüti",1352.0,0.0,60.8,"WASTA donor 2436 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+Campocologno 1,dam,700500,Graubuenden,203.7,966.25,2321,2321,Cassarate - Pregassona,987.0,0.0,94.4,WASTA donor
+Mottec,psp_open,503200,Wallis,114.19162,2248.0,2244,2244,Krummbach - Klusmatten,2271.0,0.4,31.6,WASTA donor
+Ritom,dam,600400,Tessin,160.0,1850.14,2356,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,19.3,WASTA donor
+Cavergno,dam,602700,Tessin,376.4,1032.7,2321,2321,Cassarate - Pregassona,987.0,0.0,47.0,WASTA donor
+Castasegna,dam,701400,Graubuenden,266.66,1417.3,2206,2206,Melera - Melera (Valle Morobbia),1423.0,0.0,38.0,WASTA donor
+Löbbia Albigna,dam,700800,Graubuenden,120.66,2161.0,2141,2141,Albula - Tiefencastel,2128.0,0.5,32.6,WASTA donor
+Handeck 1,dam,200400,UebrigCH,116.62,1916.64,2356,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,32.9,WASTA donor
+Göschenen Göscheneralp,dam,300400,UebrigCH,293.3,1792.0,2491,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,33.2,"WASTA donor 2491 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+Lucendro,dam,600100,Tessin,102.3,2135.5,2356,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,17.9,WASTA donor
+Zermeiggern,psp_open,501500,Wallis,133.4,2198.0,2244,2244,Krummbach - Klusmatten,2271.0,0.4,16.5,WASTA donor
+Navizence,dam,503400,Wallis,298.7,1120.0,2486,2486,"Veveyse - Vevey, Copet",1098.0,0.0,57.7,WASTA donor
+Croix,dam,503500,Wallis,146.5,1779.7,2232,2232,Allenbach - Adelboden,1863.0,0.0,21.7,WASTA donor
+Safien Platz,dam,101200,Graubuenden,159.8,1721.5,2185,2185,"Plessur - Chur, nur Hauptstation",1868.0,0.0,25.1,WASTA donor
+Grimsel 1 Oberaar,dam,200200,UebrigCH,72.0,2306.7,2607,2607,Goneri - Oberwald,2383.0,4.0,5.2,WASTA donor
+Tremorgio,dam,600600,Tessin,6.8,1833.5,2356,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,20.0,WASTA donor
+Peccia Sambuco,psp_open,602400,Tessin,77.515765,1461.0,2605,2605,"Verzasca - Lavertezzo, Campiòi",1651.0,0.0,25.7,WASTA donor
+Handeck 2 und 2a,dam,200500,UebrigCH,328.5,1776.7,2276,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,32.8,"WASTA donor 2276 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+Vissoie,dam,503300,Wallis,213.0,1563.5,2151,2151,Simme - Oberwil,1641.0,2.4,50.7,WASTA donor
+Ova Spin,psp_open,800800,Graubuenden,45.491785,1804.7,2185,2185,"Plessur - Chur, nur Hauptstation",1868.0,0.0,52.5,WASTA donor
+La Dernier,dam,205200,UebrigCH,32.65,1007.2,2433,2433,"Aubonne - Allaman, Le Coulet",952.0,0.0,25.8,WASTA donor
+Rempen,psp_open,404100,UebrigCH,58.349958,906.5,2604,2410,Liechtensteiner Binnenkanal - Ruggell,853.0,0.0,48.8,"WASTA donor 2604 incomplete: 2025-09-29 (0 days), 2025-10-06 (0 days), 2025-10-13 (0 days) ...; best complete gauge by WASTA's matching rule"
+Gordola,dam,602200,Tessin,215.44,470.0,2463,2321,Cassarate - Pregassona,987.0,0.0,21.5,WASTA donor 2463 no FOEN table for the period; best complete gauge by WASTA's matching rule
+Tinizong,dam,103100,Graubuenden,202.34,1680.0,2185,2185,"Plessur - Chur, nur Hauptstation",1868.0,0.0,31.8,WASTA donor
+Z'Mutt Centrale pomp. et turb.,psp_open,504700,Wallis,0.0,2044.0,2244,2244,Krummbach - Klusmatten,2271.0,0.4,33.5,WASTA donor
+Siebnen,dam,404200,UebrigCH,63.0,642.0,2414,2410,Liechtensteiner Binnenkanal - Ruggell,853.0,0.0,47.8,"WASTA donor 2414 incomplete: 2025-12-01 (0 days), 2025-12-08 (0 days), 2025-12-15 (0 days) ...; best complete gauge by WASTA's matching rule"
+Verbano 1,dam,602800,Tessin,346.3,486.7,2463,2321,Cassarate - Pregassona,987.0,0.0,22.9,WASTA donor 2463 no FOEN table for the period; best complete gauge by WASTA's matching rule
+Verbano 2,dam,602900,Tessin,160.4,486.7,2463,2321,Cassarate - Pregassona,987.0,0.0,22.8,WASTA donor 2463 no FOEN table for the period; best complete gauge by WASTA's matching rule
+Hauterive,dam,204400,UebrigCH,211.6,677.0400000000001,2034,2034,"Broye - Payerne, Caserne d'aviation",715.0,0.0,16.4,WASTA donor
+Robiei,psp_open,602500,Tessin,26.209165,2310.0,2607,2607,Goneri - Oberwald,2383.0,4.0,15.2,WASTA donor
+Handeck 3,psp_open,200600,UebrigCH,0.5361000000000011,1767.0,2276,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,32.9,"WASTA donor 2276 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+St-Léonard,dam,503700,Wallis,99.0,919.5,2412,2412,"Sionge - Vuippens, Château",865.0,0.0,52.4,WASTA donor
+Tiefencastel Ost,dam,103200,Graubuenden,150.64,1200.0,2187,2187,Werdenberger Binnenkanal - Salez,1003.0,0.0,63.9,WASTA donor
+Martina,dam,801100,Graubuenden,281.5,1144.5,2187,2187,Werdenberger Binnenkanal - Salez,1003.0,0.0,82.7,WASTA donor
+Am Löntsch,dam,401900,UebrigCH,116.6,854.95,2414,2410,Liechtensteiner Binnenkanal - Ruggell,853.0,0.0,41.5,"WASTA donor 2414 incomplete: 2025-12-01 (0 days), 2025-12-08 (0 days), 2025-12-15 (0 days) ...; best complete gauge by WASTA's matching rule"
+Rothenbrunnen ewz,dam,103600,Graubuenden,185.66,824.0,2410,2410,Liechtensteiner Binnenkanal - Ruggell,853.0,0.0,52.8,WASTA donor
+Robbia,dam,700400,Graubuenden,120.0,1694.0,2347,2347,"Riale di Roggiasca - Roveredo, Bacino di compenso",1702.0,0.0,70.7,WASTA donor
+Sarelli,dam,104700,UebrigCH,179.8,869.6,2410,2410,Liechtensteiner Binnenkanal - Ruggell,853.0,0.0,29.6,WASTA donor
+Klosters,dam,104200,Graubuenden,27.0,1559.0,2426,2426,Seez - Mels,1803.0,0.1,41.8,WASTA donor
+Seekraftwerk Zervreila,dam,101100,Graubuenden,24.3,1862.0,2474,2474,Calancasca - Buseno,1931.0,0.2,32.8,WASTA donor
+Pallazuit,dam,505900,Wallis,107.0,1811.0,2232,2232,Allenbach - Adelboden,1863.0,0.0,62.7,WASTA donor
+Grimsel 1 Nachschubmaschine,dam,200300,UebrigCH,47.0,1922.2,2356,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,28.0,WASTA donor
+Diablerets,dam,508700,UebrigCH,14.9,1557.3,2251,2251,"Rotenbach - Plaffeien, Schwyberg",1455.0,0.0,38.3,WASTA donor
+Verdan,dam,505525,Wallis,8.2,1552.74,2251,2251,"Rotenbach - Plaffeien, Schwyberg",1455.0,0.0,61.7,WASTA donor
+Unteraa Lungerersee,dam,303700,UebrigCH,72.0,683.5,2608,2412,"Sionge - Vuippens, Château",865.0,0.0,85.7,WASTA donor 2608 incomplete: 2026-07-27 (3 days); best complete gauge by WASTA's matching rule
+Altstafel,dam,500100,Wallis,21.45,2386.5,2607,2607,Goneri - Oberwald,2383.0,4.0,7.2,WASTA donor
+Linthal Limmern,dam,400400,UebrigCH,62.7,811.5,2604,2410,Liechtensteiner Binnenkanal - Ruggell,853.0,0.0,54.5,"WASTA donor 2604 incomplete: 2025-09-29 (0 days), 2025-10-06 (0 days), 2025-10-13 (0 days) ...; best complete gauge by WASTA's matching rule"
+Spina Isola,dam,601400,Graubuenden,61.05,1606.85,2347,2347,"Riale di Roggiasca - Roveredo, Bacino di compenso",1702.0,0.0,25.7,WASTA donor
+Oberems Argessa,psp_open,502600,Wallis,8.633314,2363.05,2219,2219,Simme - Oberried / Lenk,2347.0,22.6,22.9,WASTA donor
+Bitsch,dam,501200,Wallis,770.3,1436.5,2151,2151,Simme - Oberwil,1641.0,2.4,56.4,WASTA donor
+Hugschwendi,dam,303800,UebrigCH,37.7,1893.0,2276,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,51.8,"WASTA donor 2276 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+Palü,dam,700100,Graubuenden,14.0,2235.54,2366,2366,Poschiavino - La Rösa,2285.0,0.0,4.2,WASTA donor
+Unteraa Melchaa,dam,303650,UebrigCH,30.0,622.5,2608,2412,"Sionge - Vuippens, Château",865.0,0.0,85.7,WASTA donor 2608 incomplete: 2026-07-27 (3 days); best complete gauge by WASTA's matching rule
+Turtmann,dam,502800,Wallis,80.1,1368.8,2252,2252,"Schwändlibach - Plaffeien, Schwyberg",1439.0,0.0,53.6,WASTA donor
+Cavaglia,dam,700300,Graubuenden,23.0,1940.24,2141,2141,Albula - Tiefencastel,2128.0,0.5,48.3,WASTA donor
+Ilanz 2,dam,101000,Graubuenden,135.0,1450.0,2300,2300,"Minster - Euthal, Rüti",1352.0,0.0,44.7,WASTA donor
+Schwanden Niederenbach,dam,401500,UebrigCH,39.6,1611.3,2426,2426,Seez - Mels,1803.0,0.1,25.8,WASTA donor
+Innergsteig,dam,203600,UebrigCH,38.6,2034.0,2232,2232,Allenbach - Adelboden,1863.0,0.0,24.3,WASTA donor
+Ganterbrücke,dam,501375,Wallis,22.2,1968.0,2356,2356,"Riale di Calneggia - Cavergno, Pontit",2003.0,0.0,38.0,WASTA donor
+Bortelalp,psp_open,501350,Wallis,4.357686,2462.5,2244,2244,Krummbach - Klusmatten,2271.0,0.4,9.5,WASTA donor
+Oberrickenbach,dam,303300,UebrigCH,13.0,1591.5,2491,2300,"Minster - Euthal, Rüti",1352.0,0.0,37.2,"WASTA donor 2491 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+Fuhren Gental,dam,200900,UebrigCH,16.7,1536.5,2436,2300,"Minster - Euthal, Rüti",1352.0,0.0,53.7,"WASTA donor 2436 incomplete: 2025-12-29 (4 days), 2026-01-05 (0 days), 2026-01-12 (0 days) ...; best complete gauge by WASTA's matching rule"
+Sella,dam,600050,Tessin,2.9,2256.0,2607,2607,Goneri - Oberwald,2383.0,4.0,17.7,WASTA donor
+Campocologno 2,dam,700600,Graubuenden,5.9,528.9200000000001,2463,2321,Cassarate - Pregassona,987.0,0.0,94.4,WASTA donor 2463 no FOEN table for the period; best complete gauge by WASTA's matching rule

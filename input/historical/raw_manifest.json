@@ -194,6 +194,426 @@
   "sha256": "426c729a2e58875ce5d2be9856f415a740df21a3357797c8bfff090f2a2a497c",
   "note": "downloaded before the manifest existed; retrieval time unknown, file modified 2026-10-09T11:47:12+00:00"
  },
+ "entsoe/generation_A75/A75_CH00_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A75&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:41:52+00:00",
+  "bytes": 6351555,
+  "sha256": "4dc53a265a7d0e6c48d6e6083c0761c6c58e3d760de600e440c95fcf5f765b03",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_A75/A75_CH00_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A75&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:43:14+00:00",
+  "bytes": 6621351,
+  "sha256": "6507b71418645e593d56702dcbd3963c8f76b41e114c293762029f4c6c7471f3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_A75/A75_CH00_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A75&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:03+00:00",
+  "bytes": 6792869,
+  "sha256": "b25ee5f2f6058f10fc869e2f08ed2886ca401ed351fd7484743aa28f75eff141",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_AT_to_CH_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YAT-APG------L&in_Domain=10YCH-SWISSGRIDZ&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:38+00:00",
+  "bytes": 59778,
+  "sha256": "6b520ce5be1bbfeb9a0efab4abe02acb430dcbc694b0071f315d34d30008e3da",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_AT_to_CH_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YAT-APG------L&in_Domain=10YCH-SWISSGRIDZ&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:10+00:00",
+  "bytes": 100499,
+  "sha256": "fa3e227714ab3a4ebe4ac04922452beeeb2a8c6c4900f64253c1f5383c3491e4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_AT_to_CH_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YAT-APG------L&in_Domain=10YCH-SWISSGRIDZ&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:58+00:00",
+  "bytes": 360460,
+  "sha256": "937c115e891014a2d70fc5a591c9338144d2f0424ec5e5ec5603dcf3dabd6053",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_AT_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10YAT-APG------L&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:36+00:00",
+  "bytes": 27012,
+  "sha256": "49922d90706881b4421e6bbdfee2d74a7486d65212e69e38b1a56025f492abba",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_AT_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10YAT-APG------L&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:06+00:00",
+  "bytes": 13710,
+  "sha256": "f8301abe148772d1996ba2bd2e7177c6a3794496eca55e2b5878a680e04dd569",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_AT_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10YAT-APG------L&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:53+00:00",
+  "bytes": 246524,
+  "sha256": "5852a393361b87318afe5917f57ada4a7238c757ff6c1efbfed7488f0c544ab2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_DE_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10Y1001A1001A82H&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:07+00:00",
+  "bytes": 130910,
+  "sha256": "e31dac8fa2952e5e5e8cad8f11d4ad43891adad82f3a75f50e7f0ebb5a9aeec0",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_DE_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10Y1001A1001A82H&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:43+00:00",
+  "bytes": 71599,
+  "sha256": "87461331b91a158b211522f35304f4b86a95a66bb6aa8540050fb6f29cd7a3d8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_DE_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10Y1001A1001A82H&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:17+00:00",
+  "bytes": 487617,
+  "sha256": "3413b6eb5e1c5540970d795f22e33131a02b2d35a11743d16e8b88f1934ad6e6",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_FR_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10YFR-RTE------C&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:21+00:00",
+  "bytes": 49889,
+  "sha256": "5ba92145460d9c8784711fb4479cc804fc221dda77673c3bb9e4103ceeefb8a3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_FR_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10YFR-RTE------C&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:52+00:00",
+  "bytes": 68441,
+  "sha256": "489b1a62fad40e06b53ea7d9b86e46305fe1bf0ca6814bde93cb1a1e371d7adb",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_FR_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10YFR-RTE------C&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:31+00:00",
+  "bytes": 218634,
+  "sha256": "dc73eeca2e094ea59cde22f68de2522a5bcd0011f75711a5753692bec172d532",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_IT_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10Y1001A1001A73I&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:28+00:00",
+  "bytes": 584993,
+  "sha256": "46c04035fae99b7463dff463f1cb198e31f9f8951254fe7cc9c25e907516868c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_IT_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10Y1001A1001A73I&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:57+00:00",
+  "bytes": 615879,
+  "sha256": "1fa8303111d7f0d99ba5126567de1a6ac999d4ad85055476f53572cc31b6eff6",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_CH_to_IT_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YCH-SWISSGRIDZ&in_Domain=10Y1001A1001A73I&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:40+00:00",
+  "bytes": 587036,
+  "sha256": "05075c2a734715b668fbe5fbc5f2cbf25c8ab9f011f01b93b4589e377c3fcff6",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_DE_to_CH_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10Y1001A1001A82H&in_Domain=10YCH-SWISSGRIDZ&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:13+00:00",
+  "bytes": 110533,
+  "sha256": "a5d69043d4b41862fe09fcc8c1163a24f4a8c99f8a533cf22f8f94469b9638d2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_DE_to_CH_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10Y1001A1001A82H&in_Domain=10YCH-SWISSGRIDZ&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:48+00:00",
+  "bytes": 146710,
+  "sha256": "61603b13e25a42185f9c5e5e08aea1cbf3ae09182f493bbfb58e624fecb37afd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_DE_to_CH_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10Y1001A1001A82H&in_Domain=10YCH-SWISSGRIDZ&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:24+00:00",
+  "bytes": 222364,
+  "sha256": "36f4105dbea42e4507cce5b5cef63794bd7366a792db9b13f476c10d58b4a12c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_FR_to_CH_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YFR-RTE------C&in_Domain=10YCH-SWISSGRIDZ&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:24+00:00",
+  "bytes": 9262,
+  "sha256": "ac413be9df35e8414c3232659ddeb83674a75741d1c671b2cb1823d5a5adab2f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_FR_to_CH_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YFR-RTE------C&in_Domain=10YCH-SWISSGRIDZ&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:56+00:00",
+  "bytes": 43325,
+  "sha256": "ef4deb65f1e46f0a367f6fe18765ab2fbc359126dabae675607a8d1bf41437b5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_FR_to_CH_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YFR-RTE------C&in_Domain=10YCH-SWISSGRIDZ&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:37+00:00",
+  "bytes": 25496,
+  "sha256": "03dba329c52c2863071c7e3a4bea589eaffb4c071574c39b6e77f77c09815fcd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_IT_to_CH_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10Y1001A1001A73I&in_Domain=10YCH-SWISSGRIDZ&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:44:33+00:00",
+  "bytes": 105470,
+  "sha256": "28d5eb82a95cbaaf57eeed34cfdb015cdea9de151a9930d8b1a70bd5fe76c08a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_IT_to_CH_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10Y1001A1001A73I&in_Domain=10YCH-SWISSGRIDZ&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:02+00:00",
+  "bytes": 150759,
+  "sha256": "2128f72c3d675ea183bc666e9f55e97d0f85d2a17743893646d5fbf0661ee372",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/ntc_dayahead_A61/A61_IT_to_CH_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10Y1001A1001A73I&in_Domain=10YCH-SWISSGRIDZ&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:45:47+00:00",
+  "bytes": 195104,
+  "sha256": "99bc309b45a3f4d11304399200b37c85f189249ed8493105cb140afd73ba5ea8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_AT00_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YAT-APG------L&out_Domain=10YAT-APG------L&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:41:18+00:00",
+  "bytes": 6582948,
+  "sha256": "4a88b3b0c518ea2ba3de3e213f61750c1fbcd95b6a63b72a251860fd104be84d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_AT00_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YAT-APG------L&out_Domain=10YAT-APG------L&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:43:05+00:00",
+  "bytes": 6572726,
+  "sha256": "346388cecaae94a4f2fce7e882f7b6acc7ffb2bbf5ffa1d639b33900975af5b0",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_AT00_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YAT-APG------L&out_Domain=10YAT-APG------L&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:43:55+00:00",
+  "bytes": 10116556,
+  "sha256": "853c9dfd08dea0ba13b4bcd2cdb603af939d624db12ab8b277998b34f7021c28",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_CH00_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YCH-SWISSGRIDZ&out_Domain=10YCH-SWISSGRIDZ&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:40:09+00:00",
+  "bytes": 1479330,
+  "sha256": "34cb7c1a30dc9fd9e475034578723bca87af1e3901e197e03aee717fbd88ab3f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_CH00_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YCH-SWISSGRIDZ&out_Domain=10YCH-SWISSGRIDZ&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:42:00+00:00",
+  "bytes": 1478733,
+  "sha256": "924232de6a9266d3527e23a980b13975595359d4550a4ce4793fc16d21cd4bc4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_CH00_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YCH-SWISSGRIDZ&out_Domain=10YCH-SWISSGRIDZ&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:43:17+00:00",
+  "bytes": 1468721,
+  "sha256": "91cf24401f66ab237a5194793a165d16b7ac3ae34c7f63dd6e4754cee78ba20a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_DE00_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10Y1001A1001A82H&out_Domain=10Y1001A1001A82H&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:40:29+00:00",
+  "bytes": 6659774,
+  "sha256": "e97b1301505e4df950e71a11264fcb0f54d92ea6e71abda0c37abbff2a9401ea",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_DE00_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10Y1001A1001A82H&out_Domain=10Y1001A1001A82H&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:42:36+00:00",
+  "bytes": 6638184,
+  "sha256": "9fdf86b87268cfe6fcdd1718af9638be9a309bfec7c97b1a48a59c3055fcfb90",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_DE00_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10Y1001A1001A82H&out_Domain=10Y1001A1001A82H&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:43:31+00:00",
+  "bytes": 10172631,
+  "sha256": "312439f7c12deabb7a6fcacc3567746590fd6f833ba54289121ceef36737c8db",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_FR00_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YFR-RTE------C&out_Domain=10YFR-RTE------C&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:40:47+00:00",
+  "bytes": 1466720,
+  "sha256": "00d7927bcf1effe5ad53fab4d40be43537be3f0ddfdb7934bf25324c49d4894f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_FR00_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YFR-RTE------C&out_Domain=10YFR-RTE------C&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:42:51+00:00",
+  "bytes": 1452778,
+  "sha256": "4fe984808ffa44014423f79c14a51e7eec73e7ad6b7653894d8f88941bfada33",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_FR00_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10YFR-RTE------C&out_Domain=10YFR-RTE------C&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:43:39+00:00",
+  "bytes": 4837097,
+  "sha256": "5b4aa17d59058d204e26ded4563934d280117c6939c6f785db5f734702e9a27b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_IT00_2023-10-01_2024-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10Y1001A1001A73I&out_Domain=10Y1001A1001A73I&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:40:54+00:00",
+  "bytes": 1441302,
+  "sha256": "34ad11d049701a3a29f779649ca09396e7bb6c4eb629dce9ae4b084e4c1e54c7",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_IT00_2024-10-01_2025-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10Y1001A1001A73I&out_Domain=10Y1001A1001A73I&periodStart=202409302200&periodEnd=202509302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:42:55+00:00",
+  "bytes": 1441163,
+  "sha256": "f6e09fcc835460ff459ef71c0bcc4bcb71cf3b133a0c475d2d1a00d466802ecd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/prices_A44/A44_IT00_2025-10-01_2026-09-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A44&in_Domain=10Y1001A1001A73I&out_Domain=10Y1001A1001A73I&periodStart=202509302200&periodEnd=202609302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T06:43:46+00:00",
+  "bytes": 4637142,
+  "sha256": "fe198a6f4a6ee67940f3a328cbed20bf9f4601ab47fe5000e011ff453bc35201",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
  "pecd/pecd_36e21bb9a83c21c5.zip": {
   "url": "manual request on the Copernicus CDS, dataset sis-energy-pecd",
   "retrieved_at_utc": null,

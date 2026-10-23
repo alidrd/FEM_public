@@ -1,0 +1,2 @@
+Copied unchanged from github.com/alidrd/Future_Markets, branch price_setters, commit c8a969dc
+(David Holmer, 2026-08-10: WASTA 2025/26 hydro plants, clusters n4-n20, inflow profiles).

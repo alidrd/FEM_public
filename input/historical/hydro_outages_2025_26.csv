@@ -1,0 +1,4 @@
+plant,start_local,end_local,turbine_MW,pump_MW,source
+psp_close_Nant_de_Drance,2025-10-01 00:00,2025-12-01 00:00,0,0,"NdD Rapport d'activité 2025: ""indisponibilité complète des mois d'octobre et novembre (arrêt Swissgrid)"""
+dam_Bieudron,2026-02-01 00:00,2026-12-01 00:00,846,0,"Grande Dixence 31.3.2026 / 15.7.2026: one of 3 x 423 MW units out ~9 months, last unit back in November 2026; start date inferred, not published"
+psp_close_Veytaux,2025-10-01 00:00,2026-10-01 00:00,420,420,"FMHL press release 17.1.2017: turbines and pumps at most 420 MW, 60 MW kept in reserve (fleet has 498 MW of pumps)"
