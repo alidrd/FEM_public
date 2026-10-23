@@ -13,7 +13,7 @@ import model.read_settings as read_settings
 from data_prep import historical_import as hi
 from model import components_historical as ch
 from model.constraint_scaling import constraint_scaling
-from tests.backcast_data import write_processed
+from tests.backcast_data import GENERATION_TABLE, write_processed
 
 NAME = "hist_fixed_obs"
 PERIOD = "2025-10-01/2025-10-01"  # 24 hours, model steps t_6553 to t_6576; row k of a table is hour k of the period
@@ -50,7 +50,7 @@ def test_capacity_is_P_base_and_availability_is_observed_over_P_base(settings_fo
     assert staged["Avail_plant"][("CH01_other", "t_6576", NAME)] == 324.0 / 1200.0
     assert staged["Map_plant_tech"] == {"CH03_nuclear": "nuclear", "CH01_other": "other"}
     assert staged["cost_data_opr_slp"] == {("nuclear", NAME): 0.0, ("other", NAME): 0.0}
-    assert [Path(f).name for f in files] == [hi.POWER_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE]
+    assert [Path(f).name for f in files] == [GENERATION_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE]
 
 
 def test_nuclear_capacity_comes_from_the_nuclear_table_and_others_from_installed_power(settings_for):
@@ -77,11 +77,11 @@ def test_period_before_the_first_published_year_raises(settings_for):
 
 
 @pytest.mark.parametrize("period, table, change, message", [
-    (PERIOD, hi.POWER_TABLE, set_row("others", 5, 1250.0),
+    (PERIOD, GENERATION_TABLE, set_row("others", 5, 1250.0),
      r"CH01_other: 1 observed values above the capacity C\(t\), e.g. at t_6557 \(1250.0 > 1200.0 MW\)"),
-    (PERIOD, hi.POWER_TABLE, set_row("nuclear", 3, 3000.0), "CH03_nuclear: 1 observed values above the capacity"),
-    (NEW_YEAR, hi.POWER_TABLE, set_row("others", 30, 1250.0), "CH01_other: 1 observed values above the capacity C"),
-    (PERIOD, hi.POWER_TABLE, set_row("nuclear", 2, -1.0), "CH03_nuclear: 1 negative observed values, e.g. at t_6554"),
+    (PERIOD, GENERATION_TABLE, set_row("nuclear", 3, 3000.0), "CH03_nuclear: 1 observed values above the capacity"),
+    (NEW_YEAR, GENERATION_TABLE, set_row("others", 30, 1250.0), "CH01_other: 1 observed values above the capacity C"),
+    (PERIOD, GENERATION_TABLE, set_row("nuclear", 2, -1.0), "CH03_nuclear: 1 negative observed values, e.g. at t_6554"),
     (PERIOD, hi.NUCLEAR_TABLE, lambda f: f.assign(net_capacity_MW=float("nan")), "non-finite values of net_capacity_MW"),
     (PERIOD, hi.INSTALLED_TABLE, lambda f: f.assign(others=[1300.0, float("inf")]), "non-finite values of others"),
     (PERIOD, hi.INSTALLED_TABLE, lambda f: pd.concat([f, f.iloc[[1]]]), r"duplicate years \[2025\]"),
@@ -95,13 +95,13 @@ def test_invalid_observed_or_capacity_raises(settings_for, period, table, change
 
 def test_crossing_period_accepts_a_value_above_the_later_capacity_in_an_hour_of_the_earlier_year(settings_for):
     settings = settings_for(NEW_YEAR)
-    rewrite(settings, hi.POWER_TABLE, set_row("others", 20, 1250.0))  # a 2024 hour: C(t) is 1300 MW
+    rewrite(settings, GENERATION_TABLE, set_row("others", 20, 1250.0))  # a 2024 hour: C(t) is 1300 MW
     assert hi.read_fixed_plants(NAME, settings)[0]["Plant_capacity_gen"][("CH01_other", NAME)] == 1300.0
 
 
 def test_zero_normalisation_capacity_raises(settings_for):
     settings = settings_for()
-    rewrite(settings, hi.POWER_TABLE, lambda f: f.assign(others=0.0))
+    rewrite(settings, GENERATION_TABLE, lambda f: f.assign(others=0.0))
     rewrite(settings, hi.INSTALLED_TABLE, lambda f: f.assign(others=0.0))
     with pytest.raises(ValueError, match="CH01_other: the normalisation capacity P_base is 0.0, not positive"):
         hi.read_fixed_plants(NAME, settings)
@@ -149,7 +149,7 @@ def holds(row):
 def test_output_equals_the_series_within_the_generation_limit_across_a_change_of_capacity(settings_for):
     settings = settings_for(NEW_YEAR)
     staged = hi.read_fixed_plants(NAME, settings)[0]
-    observed = hi.read_processed_hourly(settings, hi.POWER_TABLE, ["nuclear", "others"])
+    observed = hi.read_processed_hourly(settings, GENERATION_TABLE, ["nuclear", "others"])
     m = small_model(staged, settings)
     ch.add_fixed_generation(m)
     assert ch.registered_constraints(m) == ["fixed_generation"] and list(m.P_fixed) == list(hi.FIXED_PLANT_TECH)
@@ -177,6 +177,7 @@ def test_energy_or_fuel_limit_or_a_missing_plant_raises(settings_for, change, me
 
 def test_hook_adds_fixed_generation_to_a_conforming_model(settings_for, monkeypatch, tmp_path):
     monkeypatch.setattr(ch, "add_reservoir_boundaries", lambda model: None)  # the model has no storage
+    monkeypatch.setattr(ch, "add_hydro_operation", lambda model: None)
     settings = settings_for()
     m = small_model(hi.read_fixed_plants(NAME, settings)[0], settings)
     m.P = pyo.Set(initialize=list(hi.FIXED_PLANT_TECH))

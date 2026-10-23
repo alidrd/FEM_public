@@ -44,8 +44,16 @@ Outflow_data = {}  # dictionary of inflow data for all related plants, e.g., EVs
 
 # back-cast only (docs/backcast.md): observed start stock of each open hydro plant in MWh, keyed (plant, scenario)
 Reservoir_start_stock = {}
-# back-cast only: national end target of the open hydro plants per scenario, {"mode": ..., "MWh": ...}
+# back-cast only: the reservoir group of each open hydro plant (TotalCH, or a BFE region), whose stock the targets bind
+Reservoir_group = {}
+# back-cast only: end target per scenario, {"mode": ..., "MWh": {group: stock of the group's open plants} or None}
 Reservoir_end_target = {}
+# back-cast experiment: stock of a reservoir group's open plants in MWh after a model step, keyed (step, group, scenario)
+Reservoir_path_target = {}
+# back-cast experiment: hydro operation per scenario, {"floor_MW": F or None, "reserve_up_MW": R or None}
+Hydro_operation = {}
+# back-cast experiment: outage caps of storage-hydro plants, keyed (plant, step, scenario) -> (turbine MW, pump MW)
+Hydro_outage_cap = {}
 
 # Infeed = {} # dictionary of Infeed data for all related plants. e.g., Infeed[node, tech, t] = 123.2 where node is nodes in the model, tech is in tech_infeed_list, t is the time step
 

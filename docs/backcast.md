@@ -14,6 +14,7 @@ from the processed folder of `data_prep/historical` (see its README).
 | `historical_period` | `False` | Turns a sub-scenario into a back-cast: a quoted `"YYYY-MM-DD/YYYY-MM-DD"` of local (Europe/Zurich) dates, both included |
 | `historical_data_dir` | `False` | The processed folder of `data_prep/historical`, e.g. `"input/historical/processed/2023-10-01_2026-09-30"` |
 | `historical_demand` | `"demand_MW"` | Demand column of `ch_demand_option_a_hourly.csv` (section Demand) |
+| `historical_generation_source` | `"entsoe_bfe_months"` | Table of the observed Swiss solar, wind, run-of-river, nuclear and "others" output: `"entsoe_bfe_months"`, `"entsoe"` or `"energy_charts"` (section Renewable infeed) |
 | `historical_hydro_end` | `"equal"` | National reservoir stock at the period end: `"equal"`, `"at_least"` or `"free"` (section Reservoir stocks) |
 
 Quote the period in the scenario CSV. The reader evaluates cells with `eval`, so an unquoted
@@ -100,7 +101,9 @@ heating, fuel limits, KVA infeed, energy limits and investment candidates stay e
 The back-cast trades with Austria, Germany, France and Italy at observed prices within observed limits,
 read from the processed folder for every hour of the period:
 - **Prices** from `prices_day_ahead_hourly.csv`: day-ahead, EUR/MWh, hourly mean of the quarter-hours,
-  each neighbour's price on its border line. Negative prices are kept.
+  each neighbour's price on its border line. Negative prices are kept. The pipeline fills this table from
+  ENTSO-E (`PRICE_SOURCE` in `data_prep/historical/config.py`); it equals Energy-Charts (SMARD) in every hour
+  except 26 June 2024 in Austria (`data_prep/historical/KNOWN_DATA_ISSUES.md`, KDI-2).
 - **Transfer limits** from `ntc_dayahead_combined_hourly.csv`: day-ahead NTC, Swissgrid D-2 where
   available and ENTSO-E otherwise, hourly minimum of the quarter-hours; intraday NTC is not used. On line
   `HVAC_X00_CH00`, positive flow runs into CH00: the upper bound (`ATC_exportlimit`) is `X_to_CH` and the
@@ -131,8 +134,21 @@ varies within the period stops the run.
 
 ## Renewable infeed
 
-Observed Swiss generation from `ch_public_power_hourly.csv` (Energy-Charts public power) is the
-infeed of `CH00_fixedconsumer` at every hour of the period:
+Observed Swiss generation is the infeed of `CH00_fixedconsumer` at every hour of the period. The
+setting `historical_generation_source` picks the table:
+
+| Setting | Table | Content |
+|---|---|---|
+| `"entsoe_bfe_months"` (default) | `ch_generation_entsoe_bfe_hourly.csv` | ENTSO-E hourly profiles, each local month scaled to BFE's production of the type |
+| `"entsoe"` | `ch_generation_entsoe_hourly.csv` | ENTSO-E A75 as published; it covers only part of Swiss generation (solar 67 %, run of river 52 % of BFE over Oct 2023 - Aug 2026) |
+| `"energy_charts"` | `ch_public_power_hourly.csv` | Energy-Charts public power; monthly totals within 1 % of BFE |
+
+The ENTSO-E tables take `others` from BFE, since ENTSO-E publishes none for Switzerland
+(`data_prep/historical/generation.py`). The default holds values only in the local months BFE has
+published and the table covers completely, so a period reaching into another month stops the run
+with missing values. It is the default because it lowered the censored price MAE of all 16 back-cast
+experiments against Energy-Charts, by 0.14 to 0.67 EUR/MWh (`experiments/backcast/LOG.md`). In all
+three the columns are:
 
 | Model technology | Column |
 |---|---|
@@ -150,7 +166,7 @@ stops the run.
 
 A **fixed plant** produces exactly its observed output in every hour:
 
-| Plant | Technology | Observed output (`ch_public_power_hourly.csv`) | Capacity C(t) |
+| Plant | Technology | Observed output (table of `historical_generation_source`) | Capacity C(t) |
 |---|---|---|---|
 | `CH03_nuclear` | `nuclear` | `nuclear` | `net_capacity_MW` of `nuclear_availability_hourly.csv` (2,973 MW) |
 | `CH01_other` | `other` | `others` | `others` of `ch_installed_power_yearly.csv`, the sum of the Energy-Charts "others" categories (`INSTALLED_POWER_OTHERS` in `data_prep/historical/config.py`) |
@@ -167,7 +183,7 @@ A **fixed plant** produces exactly its observed output in every hour:
   limit is built for them, so the annual cap on `other` of normal runs does not apply; the hook
   stops the run if one is.
 - **Operating cost 0:** their output is fixed, so a cost would only add a constant to the objective.
-- **"Others" is not an hourly measurement:** Energy-Charts gives the BFE monthly thermal total spread flat
+- **"Others" is not an hourly measurement:** in every table it is the BFE monthly thermal total spread flat
   over each month. Plots must not suggest an hourly profile.
 
 `gen.csv` shows both plants by name.

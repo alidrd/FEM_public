@@ -6,7 +6,9 @@ They report; they do not change data.
 import numpy as np
 import pandas as pd
 
-from data_prep.historical.config import COUNTRY_OF_NODE, NEIGHBOURS
+from data_prep.historical.config import COUNTRY_OF_NODE, DIRECTIONS, NEIGHBOURS, ZONES
+from data_prep.historical.demand import calendar_month_hours, local_month
+from data_prep.historical.generation import BFE_GENERATION, BFE_OTHERS
 
 
 def _compare(check: str, item: str, a: pd.Series, b: pd.Series, unit: str) -> dict:
@@ -106,8 +108,50 @@ def nuclear(nuclear_table: pd.DataFrame) -> list[dict]:
              "max_abs_diff": float((nuclear_table["generation_MW"] - nuclear_table["net_capacity_MW"]).max())}]
 
 
-def run_all(tables: dict[str, pd.DataFrame]) -> pd.DataFrame:
+def ntc_sources(api: pd.DataFrame, other: pd.DataFrame, other_source: str) -> list[dict]:
+    """a = ENTSO-E A61 day-ahead NTC from the API, b = the same direction from another source, per direction over
+    the hours both have; values_differing counts hours more than 0.5 MW apart."""
     rows = []
+    for direction in DIRECTIONS:
+        row = _compare(f"day-ahead NTC, ENTSO-E API vs {other_source}", direction, api[direction], other[direction], "MW")
+        both = api[direction].notna() & other[direction].notna()
+        row["values_differing"] = int(((api[direction] - other[direction]).abs()[both] > 0.5).sum())
+        rows.append(row)
+    return rows
+
+
+def price_sources(used: pd.DataFrame, other: pd.DataFrame, other_source: str) -> list[dict]:
+    """a = the price table runs read, b = the same prices from the other source."""
+    return [_compare(f"day-ahead price vs {other_source}", node, used[node], other[node], "EUR/MWh") for node in ZONES]
+
+
+def generation_vs_bfe(frame: pd.DataFrame, source: str, balance: pd.DataFrame) -> list[dict]:
+    """Energy per type over the local months the frame covers completely and BFE has published, against BFE."""
+    rows = []
+    month = local_month(frame.index)
+    hours = calendar_month_hours(pd.DatetimeIndex(month.unique()))
+    for column, bfe_columns in {**BFE_GENERATION, "others": BFE_OTHERS}.items():
+        if column not in frame.columns:
+            continue
+        complete = frame[column].notna().groupby(month).sum().eq(hours)
+        bfe_gwh = balance.reindex(complete.index)[list(bfe_columns)].sum(axis=1, min_count=len(bfe_columns))
+        months = complete.index[complete & bfe_gwh.notna()]
+        source_gwh = frame[column].groupby(month).sum().reindex(months).sum() / 1000
+        rows.append({"check": f"generation vs BFE monthly balance ({source})", "item": column, "unit": "GWh",
+                     "hours_compared": int(month.isin(months).sum()), "months_compared": len(months),
+                     "mean_a": source_gwh, "mean_b": bfe_gwh.reindex(months).sum(),
+                     "ratio_a_to_b": source_gwh / bfe_gwh.reindex(months).sum() if len(months) else float("nan")})
+    return rows
+
+
+def run_all(tables: dict[str, pd.DataFrame], balance: pd.DataFrame) -> pd.DataFrame:
+    rows = []
+    for source in ("entsoe", "energy_charts"):
+        if f"prices_day_ahead_{source}" in tables:
+            rows += price_sources(tables["prices_day_ahead"], tables[f"prices_day_ahead_{source}"], source)
+    rows += generation_vs_bfe(tables["ch_public_power"], "Energy-Charts", balance)
+    rows += generation_vs_bfe(tables["ch_generation_entsoe"], "ENTSO-E", balance)
+    rows += generation_vs_bfe(tables["ch_generation_entsoe_bfe"], "ENTSO-E scaled to BFE", balance)
     rows += price_spreads(tables["prices_day_ahead"], tables["swissgrid_cross_border"])
     rows += load(tables["ch_public_power"], tables["swissgrid_overview"])
     rows += physical_flows(tables["ch_exchanges_physical_energy_charts"], tables["swissgrid_overview"])
@@ -115,6 +159,9 @@ def run_all(tables: dict[str, pd.DataFrame]) -> pd.DataFrame:
     rows += schedules_within_ntc(tables["ch_exchanges_scheduled"], tables["ntc_swissgrid_d2"], "Swissgrid D-2")
     if "ntc_entsoe_a61" in tables:
         rows += schedules_within_ntc(tables["ch_exchanges_scheduled"], tables["ntc_entsoe_a61"], "ENTSO-E A61")
+        rows += ntc_sources(tables["ntc_entsoe_a61"], tables["ntc_swissgrid_d2"], "Swissgrid D-2")
+        if "ntc_entsoe_web" in tables:
+            rows += ntc_sources(tables["ntc_entsoe_a61"], tables["ntc_entsoe_web"], "ENTSO-E web copy")
     rows += entsoe_web_vs_d2(tables["ntc_swissgrid_d2"], tables.get("ntc_entsoe_web"))
     rows += nuclear(tables["nuclear_availability"])
     return pd.DataFrame(rows)

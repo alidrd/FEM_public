@@ -21,15 +21,16 @@ TWO_WEEKS = "2025-10-01/2025-10-12"
 HYDRO = ["CH00_dam", "CH00_psp_close", "large_psp", "medium_reservior", "small_reservior"]
 SHARES = {"large_psp": 0.716, "medium_reservior": 0.245, "small_reservior": 0.039}
 TOLERANCE = 1e-9
+ROUND_TRIP = 0.87 * 0.87  # the open plants' charging efficiency on the electrical basis
 
 
 @pytest.fixture
 def settings_for(monkeypatch, tmp_path):
-    def make(period=TWO_WEEKS):
+    def make(period=TWO_WEEKS, **changes):
         folder = write_processed(tmp_path / period.replace("/", "_"), period)
         monkeypatch.setitem(read_settings.scenarios_list, NAME, {
             "CH_only": True, "allow_investment": False, "NodeDH_list": [], "historical_period": period,
-            "historical_data_dir": str(folder)})
+            "historical_data_dir": str(folder), **changes})
         return read_settings.read_scenario_settings(NAME)
     return make
 
@@ -77,7 +78,7 @@ def test_disagreeing_rows_or_shares_not_summing_to_one_raise(tmp_path, monkeypat
 
 def test_partial_first_and_last_weeks_contribute_only_their_overlap(settings_for):
     settings = settings_for()
-    staged, _, assumptions = hi.read_inflow(NAME, settings, HYDRO)
+    staged, _, assumptions = hi.read_inflow(NAME, settings, HYDRO, ROUND_TRIP)
     first = week_energy(settings, "HRI", "2025-09-29") + week_energy(settings, "HOL", "2025-09-29")
     last = week_energy(settings, "HRI", "2025-10-06") + week_energy(settings, "HOL", "2025-10-06")
     total = total_inflow(staged)
@@ -88,7 +89,7 @@ def test_partial_first_and_last_weeks_contribute_only_their_overlap(settings_for
 
 def test_a_week_across_the_change_to_summer_time_keeps_its_168_hours(settings_for):
     settings = settings_for("2025-03-23/2025-03-31")  # the clocks change on Sunday 30 March
-    staged = hi.read_inflow(NAME, settings, HYDRO)[0]
+    staged = hi.read_inflow(NAME, settings, HYDRO, ROUND_TRIP)[0]
     time_map = hi.historical_time_map(settings["historical_period"]).set_index("t")
     utc = time_map.loc[total_inflow(staged).index, "time_utc"]
     in_week = ((utc >= pd.Timestamp("2025-03-24", tz="UTC")) & (utc < pd.Timestamp("2025-03-31", tz="UTC"))).to_numpy()
@@ -98,9 +99,9 @@ def test_a_week_across_the_change_to_summer_time_keeps_its_168_hours(settings_fo
 
 def test_energy_is_conserved_across_plants_and_other_plants_get_zero(settings_for):
     settings = settings_for()
-    staged = hi.read_inflow(NAME, settings, HYDRO)[0]
+    staged = hi.read_inflow(NAME, settings, HYDRO, ROUND_TRIP)[0]
     inflow = pd.Series(staged["Inflow_data"])
-    hourly = hi.read_inflow(NAME, settings, [])[0]
+    hourly = hi.read_inflow(NAME, settings, [], ROUND_TRIP)[0]
     assert set(staged["Plant_inflow_list"]) == set(HYDRO) and set(hourly["Plant_inflow_list"]) == set(SHARES)
     by_plant = inflow.groupby(level=0).sum()
     assert by_plant["CH00_dam"] == by_plant["CH00_psp_close"] == 0.0
@@ -125,20 +126,91 @@ def test_invalid_weeks_raise(settings_for, change, message):
     settings = settings_for()
     rewrite(settings, change)
     with pytest.raises(ValueError, match=message):
-        hi.read_inflow(NAME, settings, HYDRO)
+        hi.read_inflow(NAME, settings, HYDRO, ROUND_TRIP)
 
 
 def test_a_missing_value_outside_the_period_is_not_read(settings_for):
     settings = settings_for()
     rewrite(settings, lambda f: f.assign(energy_MWh=f["energy_MWh"].where(f.index != 0)))  # the week before
-    assert len(hi.read_inflow(NAME, settings, HYDRO)[0]["Inflow_data"]) == len(HYDRO) * 288
+    assert len(hi.read_inflow(NAME, settings, HYDRO, ROUND_TRIP)[0]["Inflow_data"]) == len(HYDRO) * 288
 
 
 def test_assumptions_record_the_series_and_the_split(settings_for):
-    staged, files, assumptions = hi.read_inflow(NAME, settings_for(), HYDRO)
+    staged, files, assumptions = hi.read_inflow(NAME, settings_for(), HYDRO, ROUND_TRIP)
     assert "HRI + HOL" in assumptions[0] and "weeks by release {'HRI': {'COM': 2}, 'HOL': {'COM': 2}}" in assumptions[0]
     assert "{'large_psp': 0.716, 'medium_reservior': 0.245, 'small_reservior': 0.039}" in assumptions[2]
     assert [Path(f).name for f in files] == [hi.PECD_TABLE, Path(hi.REPRESENTATIVE_TABLE).name]
+
+
+# --- monthly level from the BFE mass balance ------------------------------------------------------------------------
+
+TWO_MONTHS = "2025-10-01/2025-11-30"
+BALANCE = {(2025, 10): (1800.0, 270.0), (2025, 11): (1850.0, 260.0)}  # storage generation, pumping (GWh)
+
+
+def write_balance(tmp_path, monkeypatch, balance=BALANCE, columns=("Erzeugung_Speicherwerk_GWh",
+                                                                    "Verbrauch_Speicherpumpen_GWh")):
+    """The BFE monthly balance in its published layout, a notice line before and after the table."""
+    lines = ["Diese Daten werden nicht mehr weitergeführt.", ",".join(["Jahr", "Monat", "Definitiv", *columns])]
+    lines += [f"{y},{m},0,{g},{p}" for (y, m), (g, p) in balance.items()]
+    lines.append("Diese Daten werden nicht mehr weitergeführt.")
+    path = tmp_path / "ogd35.csv"
+    path.write_bytes(("\n".join(lines) + "\n").encode("latin-1"))
+    monkeypatch.setattr(hi, "BFE_BALANCE", str(path))
+    return path
+
+
+def stock_GWh(settings, instant):
+    """National BFE stock at a local instant, linear between the Monday readings (Sunday 24:00 local)."""
+    table = pd.read_csv(Path(settings["historical_data_dir"]) / hi.RESERVOIR_TABLE)
+    readings = pd.Series(table["TotalCH_GWh"].to_numpy(),
+                         index=pd.to_datetime(table["date"]).dt.tz_localize("Europe/Zurich"))
+    instant = pd.Timestamp(instant, tz="Europe/Zurich")
+    before, after = readings[readings.index <= instant], readings[readings.index >= instant]
+    t0, t1 = before.index[-1], after.index[0]
+    return before.iloc[-1] if t0 == t1 else before.iloc[-1] + (after.iloc[0] - before.iloc[-1]) * ((instant - t0) / (t1 - t0))
+
+
+def month_of_steps(settings):
+    time_map = hi.historical_time_map(settings["historical_period"])
+    return pd.Series(time_map["time_local"].dt.strftime("%Y-%m").to_numpy(), index=time_map["t"])
+
+
+def test_each_month_carries_the_bfe_mass_balance_with_the_pecd_shape_inside(settings_for, tmp_path, monkeypatch):
+    path = write_balance(tmp_path, monkeypatch)
+    settings = settings_for(TWO_MONTHS, historical_inflow_level="bfe_mass_balance")
+    staged, files, assumptions = hi.read_inflow(NAME, settings, HYDRO, ROUND_TRIP)
+    pecd = total_inflow(hi.read_inflow(NAME, settings_for(TWO_MONTHS), HYDRO, ROUND_TRIP)[0])
+    total = total_inflow(staged)
+    month = month_of_steps(settings).reindex(total.index)
+    starts = {"2025-10": ("2025-10-01", "2025-11-01"), "2025-11": ("2025-11-01", "2025-12-01")}
+    for (y, m), (generation, pumping) in BALANCE.items():
+        key = f"{y}-{m:02d}"
+        change = stock_GWh(settings, starts[key][1]) - stock_GWh(settings, starts[key][0])
+        expected = 1000 * (change + generation - ROUND_TRIP * pumping)
+        assert total[month == key].sum() == pytest.approx(expected, rel=TOLERANCE)
+        ratio = total[month == key] / pecd[month == key]
+        assert ratio.max() - ratio.min() <= TOLERANCE * ratio.mean()  # the PECD shape within the month
+    assert str(path) in files
+    assert any(a.startswith("monthly level: BFE mass balance") for a in assumptions)
+    assert any("2 lines of the BFE file are not data and were left out" in a for a in assumptions)
+
+
+@pytest.mark.parametrize("period, balance, columns, level, message", [
+    ("2025-10-01/2025-11-15", BALANCE, None, "bfe_mass_balance", "needs a period of whole local months"),
+    (TWO_MONTHS, {(2025, 10): (1800.0, 270.0)}, None, "bfe_mass_balance", "no BFE balance for 2025-11"),
+    (TWO_MONTHS, {(2025, 10): (1800.0, 270.0), (2025, 11): (10.0, 5000.0)}, None, "bfe_mass_balance",
+     "negative natural inflow in 2025-11"),
+    (TWO_MONTHS, BALANCE, ("Erzeugung_Speicherwerk_GWh", "Pumpen_GWh"), "bfe_mass_balance",
+     r"lacks the columns \['Verbrauch_Speicherpumpen_GWh'\]"),
+    (TWO_MONTHS, BALANCE, None, "bfe", "historical_inflow_level must be 'pecd' or 'bfe_mass_balance'"),
+])
+def test_invalid_mass_balance_inputs_raise(settings_for, tmp_path, monkeypatch, period, balance, columns, level,
+                                           message):
+    write_balance(tmp_path, monkeypatch, balance, *([columns] if columns else []))
+    settings = settings_for(period, historical_inflow_level=level)
+    with pytest.raises(ValueError, match=message):
+        hi.read_inflow(NAME, settings, HYDRO, ROUND_TRIP)
 
 
 def test_reservoir_inflow_is_no_longer_missing():
@@ -215,3 +287,24 @@ def test_closed_loop_and_dam_keep_the_workbook_efficiencies(settings_for):
     for plant, tech in (("CH00_psp_close", "psp_close"), ("CH00_dam", "dam")):
         assert fleet["Map_eff_in_plant"][plant] == hi.year_independent("efficiency_into_storage", [tech])[tech]
         assert fleet["Map_eff_out_plant"][plant] == hi.year_independent("efficiency", [tech])[tech]
+
+
+@pytest.mark.parametrize("fleet_name", ["representative_2030", "wasta_individual"])
+def test_pump_round_trip_is_the_same_for_every_plant_with_pumps(settings_for, fleet_name):
+    settings = settings_for(historical_hydro_fleet=fleet_name)
+    fleet = hi.read_hydro_fleet(NAME, settings)[0]
+    assert hi.pump_round_trip(fleet, NAME) == pytest.approx(ROUND_TRIP, rel=TOLERANCE)
+
+
+def test_pump_round_trips_that_differ_raise(settings_for):
+    fleet = hi.read_hydro_fleet(NAME, settings_for())[0]
+    fleet["Map_eff_out_plant"] = {**fleet["Map_eff_out_plant"], "CH00_psp_close": 0.9}
+    with pytest.raises(ValueError, match="disagree on their round trip"):
+        hi.pump_round_trip(fleet, NAME)
+
+
+def test_the_run_record_takes_the_bfe_columns_from_its_header_line(tmp_path, monkeypatch):
+    path = write_balance(tmp_path, monkeypatch)
+    record = hi.file_record(str(path))
+    assert record["columns"] == ["Jahr", "Monat", "Definitiv", "Erzeugung_Speicherwerk_GWh",
+                                 "Verbrauch_Speicherpumpen_GWh"]

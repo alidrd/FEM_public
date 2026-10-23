@@ -17,6 +17,7 @@ from pathlib import Path
 from data_prep.historical.config import RAW_DIR, REPO_ROOT, USER_AGENT
 
 MAX_ATTEMPTS = 5
+CONNECTION_RETRY_S = 10.0  # wait after a dropped connection before the next attempt
 MANIFEST = RAW_DIR.parent / "raw_manifest.json"
 SECRET_PARAMS = {"securityToken"}  # ENTSO-E API token
 _last_request_at: dict[str, float] = {}
@@ -60,8 +61,8 @@ def save_manifest(manifest: dict) -> None:
 
 def get_bytes(url: str, headers: dict | None = None, min_interval_s: float = 0.0, host_key: str = "") -> tuple[bytes, dict]:
     """GET url; return the body and HTTP metadata. Waits min_interval_s since the last call with the same
-    host_key. HTTP 429 and 5xx are retried (honouring Retry-After) up to MAX_ATTEMPTS, then raised.
-    Any other HTTP error is raised at once."""
+    host_key. HTTP 429 and 5xx are retried (honouring Retry-After), and so are connections the server drops
+    before answering; both up to MAX_ATTEMPTS, then raised. Any other HTTP error is raised at once."""
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, **(headers or {})})
     attempt = 0
     while True:
@@ -83,6 +84,11 @@ def get_bytes(url: str, headers: dict | None = None, min_interval_s: float = 0.0
             pause = float(retry_after) if retry_after and retry_after.isdigit() else 60.0
             print(f"  HTTP {err.code}, retrying in {pause:.0f} s (attempt {attempt}/{MAX_ATTEMPTS})")
             time.sleep(pause)
+        except (urllib.error.URLError, ConnectionError) as err:  # dropped connection, no HTTP answer
+            if attempt == MAX_ATTEMPTS:
+                raise RuntimeError(f"GET {redact(url)} failed after {attempt} attempts: {err}") from err
+            print(f"  connection error {err}, retrying in {CONNECTION_RETRY_S:.0f} s (attempt {attempt}/{MAX_ATTEMPTS})")
+            time.sleep(CONNECTION_RETRY_S)
 
 
 def download(url: str, dest: Path, force: bool, **kwargs) -> Path:

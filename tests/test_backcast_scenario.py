@@ -28,9 +28,10 @@ BORDER_LINES = ["HVAC_AT00_CH00", "HVAC_DE00_CH00", "HVAC_FR00_CH00", "HVAC_IT00
 def require_processed_tables():
     """Fail, naming each one, if a table the back-cast reads is missing from the scenario's processed folder."""
     from data_prep import historical_import as hi
+    from tests.backcast_data import GENERATION_TABLE
 
     folder = ast.literal_eval(pd.read_csv(REPO_ROOT / SCENARIO_CSV, index_col=0).loc["historical_data_dir", META])
-    tables = [hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE, hi.POWER_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE,
+    tables = [hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE, GENERATION_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE,
               hi.PECD_TABLE, hi.RESERVOIR_TABLE]
     require_local_data(*[f"{folder}/{table}" for table in tables])
 

@@ -73,6 +73,12 @@ BFE_BALANCE_URL = "https://www.bfe-ogd.ch/ogd35/ogd35_schweizerische_elektrizita
 
 ENTSOE_API = "https://web-api.tp.entsoe.eu/api"
 ENTSOE_TOKEN_ENV = "ENTSOE_API_KEY"
+# Source of prices_day_ahead_hourly.csv, the price table back-casts read: "entsoe" (A44) or "energy_charts"
+# (SMARD). The user asked for ENTSO-E over SMARD on 2026-10-23. The other source is written as
+# prices_day_ahead_<source>_hourly.csv, and validation_report.csv compares the two (equal in every hour of
+# Oct 2025 - Sep 2026).
+PRICE_SOURCE = "entsoe"
+PRICE_SOURCES = ("entsoe", "energy_charts")
 
 # Net electrical capacity of the Swiss nuclear units (MW), unchanged since Muehleberg shut down
 # in Dec 2019. Only the total is used; process.py checks it against Energy-Charts installed_power

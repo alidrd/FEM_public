@@ -13,11 +13,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from data_prep.historical import bfe, checks, demand, energy_charts, entsoe_ntc, entsoe_web, pecd, provenance, swissgrid
+from data_prep.historical import (
+    bfe, checks, demand, energy_charts, entsoe, entsoe_ntc, entsoe_web, generation, pecd, provenance, swissgrid,
+)
 from data_prep.historical.config import (
     CAPACITY_HOURLY_RULE, ONSITE_SOLAR_SHARE, DIRECTIONS, LOCAL_TZ, NEIGHBOURS, NTC_ENTSOE_SOURCE_ORDER,
     NTC_ENTSOE_WEB_PREFERRED_DAYS, NUCLEAR_UNITS_NET_MW, INSTALLED_POWER_OTHERS, INSTALLED_POWER_NOT_OTHERS,
-    PROCESSED_DIR, RAW_DIR, ZONES, COUNTRY_OF_NODE,
+    PRICE_SOURCE, PRICE_SOURCES, PROCESSED_DIR, RAW_DIR, ZONES, COUNTRY_OF_NODE,
 )
 from data_prep.historical.timeutils import hourly_index, period_bounds_utc, to_hourly, year_chunks
 
@@ -61,6 +63,31 @@ def build_prices(start_day, end_day, index) -> tuple[pd.DataFrame, pd.DatetimeIn
         columns[node] = frame["day_ahead_price"]
         irregular.extend(bad)
     return pd.DataFrame(columns, index=index), pd.DatetimeIndex(sorted(set(irregular)))
+
+
+def entsoe_paths(path_of, start_day: str, end_day: str) -> list[Path]:
+    paths = [path_of(a, b) for a, b in year_chunks(start_day, end_day)]
+    missing = [p for p in paths if not p.exists()]
+    if missing:
+        raise FileNotFoundError(f"run download.py --sources entsoe first, missing: {[str(p) for p in missing]}")
+    return paths
+
+
+def build_prices_entsoe(start_day, end_day, index) -> tuple[pd.DataFrame, pd.DatetimeIndex]:
+    """Day-ahead price per FEM node from ENTSO-E A44 (EUR/MWh); quarter-hour prices are averaged to the hour."""
+    columns, irregular = {}, []
+    for node in ZONES:
+        paths = entsoe_paths(lambda a, b: entsoe.price_path(node, a, b), start_day, end_day)
+        frame, bad = assemble_hourly([entsoe.read_price(p, node).to_frame(node) for p in paths], index, "mean")
+        columns[node] = frame[node]
+        irregular.extend(bad)
+    return pd.DataFrame(columns, index=index), pd.DatetimeIndex(sorted(set(irregular)))
+
+
+def build_generation_entsoe(start_day, end_day, index) -> tuple[pd.DataFrame, pd.DatetimeIndex]:
+    """Swiss generation per production type from ENTSO-E A75, MW, hourly means."""
+    paths = entsoe_paths(entsoe.generation_path, start_day, end_day)
+    return assemble_hourly([entsoe.read_generation(p) for p in paths], index, "mean")
 
 
 def build_exchanges(endpoint: str, start_day, end_day, index) -> tuple[pd.DataFrame, pd.DatetimeIndex]:
@@ -295,7 +322,13 @@ def main(argv: list[str] | None = None) -> None:
     out.mkdir(parents=True, exist_ok=True)
 
     tables, irregular = {}, {}
-    print("prices"); tables["prices_day_ahead"], irregular["prices_day_ahead"] = build_prices(start_day, end_day, index)
+    if PRICE_SOURCE not in PRICE_SOURCES:
+        raise ValueError(f"PRICE_SOURCE {PRICE_SOURCE!r} in config.py; expected one of {PRICE_SOURCES}")
+    print("prices, ENTSO-E"); prices = {"entsoe": build_prices_entsoe(start_day, end_day, index)}
+    print("prices, Energy-Charts"); prices["energy_charts"] = build_prices(start_day, end_day, index)
+    for source, (frame, bad) in prices.items():
+        name = "prices_day_ahead" if source == PRICE_SOURCE else f"prices_day_ahead_{source}"
+        tables[name], irregular[name] = frame, bad
     print("CH generation and load"); tables["ch_public_power"], irregular["ch_public_power"] = energy_charts_table(
         "public_power", "ch", start_day, end_day, index)
     print("scheduled exchanges"); tables["ch_exchanges_scheduled"], irregular["ch_exchanges_scheduled"] = build_exchanges(
@@ -331,16 +364,21 @@ def main(argv: list[str] | None = None) -> None:
     print("demand, option A")
     if not bfe.BALANCE_FILE.exists():
         raise FileNotFoundError(f"run download.py --sources bfe first, missing: {bfe.BALANCE_FILE}")
+    balance = bfe.read_balance(bfe.BALANCE_FILE)
     tables["ch_demand_option_a"] = demand.build_demand_option_a(
         tables["swissgrid_overview"]["consumption_end_users"], tables["ch_public_power"]["solar"],
-        bfe.read_balance(bfe.BALANCE_FILE), ONSITE_SOLAR_SHARE)
+        balance, ONSITE_SOLAR_SHARE)
+    print("CH generation, ENTSO-E and ENTSO-E scaled to BFE months")
+    profiles, irregular["ch_generation_entsoe"] = build_generation_entsoe(start_day, end_day, index)
+    tables["ch_generation_entsoe"], tables["ch_generation_entsoe_bfe"] = generation.build_tables(profiles, balance)
+    irregular["ch_generation_entsoe_bfe"] = irregular["ch_generation_entsoe"]
 
     for name, frame in tables.items():
         frame.to_csv(out / f"{name}_hourly.csv", float_format="%.3f")
     print("PECD weekly inflow"); pecd_record = write_pecd_inflow(out, start_utc, end_utc)
     build_reservoir(start_day, end_day).to_csv(out / "reservoir_weekly_bfe.csv")
     build_installed_power(start_day, end_day).to_csv(out / "ch_installed_power_yearly.csv", float_format="%.3f")
-    validation = checks.run_all(tables)
+    validation = checks.run_all(tables, balance)
     validation.to_csv(out / "validation_report.csv", index=False, float_format="%.3f")
     print(validation.to_string(max_colwidth=40))
     report = coverage(tables, irregular)

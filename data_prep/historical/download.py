@@ -2,7 +2,7 @@
 
 Usage (from the repo root):
     python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30
-    python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30 --sources entsoe_ntc
+    python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30 --sources entsoe entsoe_ntc         --token-file <path of the ENTSO-E token file>
 
 Days are local (Europe/Zurich) and inclusive. Files already on disk are kept; pass --force to
 fetch them again (needed for files of the running year, which the publishers keep extending).
@@ -11,12 +11,12 @@ import argparse
 
 import pandas as pd
 
-from data_prep.historical import bfe, energy_charts, entsoe_ntc, swissgrid
+from data_prep.historical import bfe, energy_charts, entsoe, entsoe_ntc, swissgrid
 from data_prep.historical.config import DIRECTIONS, ZONES
 from data_prep.historical.timeutils import year_chunks
 
 PUBLIC_SOURCES = ["energy_charts", "swissgrid", "bfe"]
-ALL_SOURCES = PUBLIC_SOURCES + ["entsoe_ntc"]
+ALL_SOURCES = PUBLIC_SOURCES + ["entsoe", "entsoe_ntc"]
 
 
 def download_energy_charts(start_day: str, end_day: str, force: bool) -> None:
@@ -40,12 +40,21 @@ def download_swissgrid(start_day: str, end_day: str, force: bool) -> None:
     swissgrid.download_listed("ntc_d2", [f"NTC-{d:%Y%m%d}.xml" for d in days], force)
 
 
-def download_entsoe(start_day: str, end_day: str, force: bool) -> None:
+def download_entsoe_ntc(start_day: str, end_day: str, force: bool) -> None:
     print("ENTSO-E day-ahead NTC (A61)")
-    entsoe_ntc.token()  # fail before any request if the token is missing
+    entsoe.token()  # fail before any request if the token is missing
     for first, last in year_chunks(start_day, end_day):
         for direction in DIRECTIONS:
             entsoe_ntc.download(direction, first, last, force)
+
+
+def download_entsoe(start_day: str, end_day: str, force: bool) -> None:
+    print("ENTSO-E day-ahead prices (A44) and Swiss generation per type (A75)")
+    entsoe.token()  # fail before any request if the token is missing
+    for first, last in year_chunks(start_day, end_day):
+        for node in ZONES:
+            entsoe.download_price(node, first, last, force)
+        entsoe.download_generation(first, last, force)
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -53,15 +62,20 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--start", required=True, help="first local day, YYYY-MM-DD")
     parser.add_argument("--end", required=True, help="last local day (inclusive), YYYY-MM-DD")
     parser.add_argument("--sources", nargs="+", choices=ALL_SOURCES, default=PUBLIC_SOURCES,
-                        help=f"default: {' '.join(PUBLIC_SOURCES)} (entsoe_ntc needs a token)")
+                        help=f"default: {' '.join(PUBLIC_SOURCES)} (entsoe and entsoe_ntc need a token)")
+    parser.add_argument("--token-file", help="file holding the ENTSO-E API token (one line); else the environment "
+                                             "variable ENTSOE_API_KEY is used")
     parser.add_argument("--force", action="store_true", help="re-download files already on disk")
     args = parser.parse_args(argv)
+    if args.token_file:
+        entsoe.use_token_file(args.token_file)
 
     steps = {
         "energy_charts": download_energy_charts,
         "swissgrid": download_swissgrid,
         "bfe": lambda s, e, f: bfe.download(f),
-        "entsoe_ntc": download_entsoe,
+        "entsoe": download_entsoe,
+        "entsoe_ntc": download_entsoe_ntc,
     }
     for source in args.sources:
         steps[source](args.start, args.end, args.force)

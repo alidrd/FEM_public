@@ -12,7 +12,17 @@ seetings_default_param = {
     "historical_period": False,  # back-cast: "YYYY-MM-DD/YYYY-MM-DD", local dates, both included (docs/backcast.md)
     "historical_data_dir": False,  # back-cast: processed folder of data_prep/historical
     "historical_demand": "demand_MW",  # back-cast: demand column of ch_demand_option_a_hourly.csv
+    "historical_generation_source": "entsoe_bfe_months",  # back-cast: Swiss solar, wind, run of river, nuclear, others from "entsoe_bfe_months" (ENTSO-E profiles scaled to BFE months), "entsoe" or "energy_charts"
     "historical_hydro_end": "equal",  # back-cast: national reservoir stock at the period end, "equal", "at_least" or "free"
+    "historical_hydro_fleet": "representative_2030",  # back-cast experiment: or "wasta_individual" (input/hydro_WATSA)
+    "historical_hydro_regions": False,  # back-cast experiment: "bfe_regions" = start, end and path per BFE region (WASTA fleet)
+    "historical_inflow_split": "fixed_shares",  # back-cast experiment: "foen_gauges" = weekly split by FOEN donor gauges (WASTA fleet)
+    "historical_inflow_level": "pecd",  # back-cast experiment: "bfe_mass_balance" = each month scaled to the BFE mass balance
+    "historical_hydro_floor_MW": False,  # back-cast experiment: storage-hydro output at least this every hour
+    "historical_hydro_reserve_up_MW": False,  # back-cast experiment: storage-hydro output at most available capacity minus this
+    "historical_hydro_availability": "workbook",  # back-cast experiment: or "outage_messages" (availability 1, every outage from historical_hydro_outages)
+    "historical_hydro_outages": False,  # back-cast experiment: CSV of unit outages and limits (input/historical/hydro_outages_2025_26.csv)
+    "historical_hydro_path": False,  # back-cast experiment: "bfe_weekly" = national stock equal to every BFE reading inside the period; N (hours) = every N hours, interpolated between readings
     "t_start": 6553,
     "t_end": 6552,
     "consumer_start": 1,

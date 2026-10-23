@@ -4,11 +4,13 @@ the checks that reject a model which is not a back-cast model, and the audit of 
 The hook runs after the presets so that no preset can undo a back-cast constraint. Constraints a back-cast
 adds go through add_backcast_constraint, which registers them for the default dual export.
 """
-from pyomo.environ import Constraint, Param, Set
+from pyomo.environ import Constraint, Param, Set, value
 from pyomo.repn import generate_standard_repn
 
-from data_prep.definitions_common import Map_plant_node, Map_plant_tech, Reservoir_end_target, Reservoir_start_stock
-from data_prep.historical_import import FIXED_PLANT_TECH, HYDRO_END_MODES
+from data_prep.definitions_common import (Hydro_operation, Hydro_outage_cap, Map_plant_node, Map_plant_tech,
+                                          Reservoir_end_target, Reservoir_group, Reservoir_path_target,
+                                          Reservoir_start_stock)
+from data_prep.historical_import import FIXED_PLANT_TECH, HYDRO_END_MODES, HYDRO_TECHS
 from model.components_common import storage_balance_terms
 from model.variable_presets import read_variable_presets
 
@@ -47,6 +49,7 @@ def apply_historical_constraints(model, scenario_name, preset_file):
     check_historical_model(model, scenario_name, preset_file)
     add_fixed_generation(model)
     add_reservoir_boundaries(model)
+    add_hydro_operation(model)
     for line in audit_objective(model):
         print("objective audit:", line)
 
@@ -71,15 +74,25 @@ def fixed_generation_rule(model, p, t, s):
 
 def add_reservoir_boundaries(model):
     """Observed boundaries of the open plants: the first hour starts from each plant's start stock instead of the
-    cyclic link to the last hour, the start condition is dropped, and the national stock after the last hour meets
-    the end target. Both new constraints are unscaled, so their duals are in EUR/MWh."""
+    cyclic link to the last hour, the start condition is dropped, and the stock of each reservoir group after the last
+    hour meets its end target; with path targets, also after each target step. The new constraints are unscaled, so
+    their duals are in EUR/MWh."""
     plants = sorted({p for p, _ in Reservoir_start_stock})
+    groups = list(dict.fromkeys(Reservoir_group[p] for p in plants if p in Reservoir_group))
+    path_steps = list(dict.fromkeys(t for t, _, _ in Reservoir_path_target))
     problems = [] if plants else ["no start stock is staged"]
     problems += [f"{p} is no storage plant with inflow" for p in plants if p not in model.P_inflow]
+    problems += [f"{p} has no reservoir group" for p in plants if p not in Reservoir_group]
     problems += [f"no start stock of {p} in {s}" for p in plants for s in model.Scenarios
                  if (p, s) not in Reservoir_start_stock]
     problems += [f"no valid end target for {s}" for s in model.Scenarios
                  if Reservoir_end_target.get(s, {}).get("mode") not in HYDRO_END_MODES]
+    problems += [f"no end target of group {g} in {s}" for s in model.Scenarios for g in groups
+                 if Reservoir_end_target.get(s, {}).get("mode") in ("equal", "at_least")
+                 and g not in (Reservoir_end_target[s]["MWh"] or {})]
+    problems += [f"path target step {t} is no model step" for t in path_steps if t not in model.T]
+    problems += [f"no path target of group {g} in {s} at {t}" for t in path_steps for g in groups for s in model.Scenarios
+                 if (t, g, s) not in Reservoir_path_target]
     if problems:
         raise ValueError("reservoir boundaries: " + "; ".join(problems))
     for p in plants:
@@ -92,8 +105,24 @@ def add_reservoir_boundaries(model):
                                         doc="observed stock before the first hour (MWh)")
     add_backcast_constraint(model, "reservoir_first_hour",
                             Constraint(model.P_reservoir, model.Scenarios, rule=reservoir_first_hour_rule))
+    model.Reservoir_groups = Set(initialize=groups, ordered=True, doc="reservoir groups whose stocks meet targets")
     if any(Reservoir_end_target[s]["mode"] != "free" for s in model.Scenarios):
-        add_backcast_constraint(model, "reservoir_end_target", Constraint(model.Scenarios, rule=reservoir_end_rule))
+        add_backcast_constraint(model, "reservoir_end_target",
+                                Constraint(model.Reservoir_groups, model.Scenarios, rule=reservoir_end_rule))
+    if path_steps:
+        model.T_reservoir_path = Set(initialize=path_steps, within=model.T, ordered=True,
+                                     doc="steps after which each group's stock meets a path target")
+        add_backcast_constraint(model, "reservoir_path_target",
+                                Constraint(model.T_reservoir_path, model.Reservoir_groups, model.Scenarios,
+                                           rule=reservoir_path_rule))
+
+
+def group_stock(model, g, t, s):
+    return sum(model.soc[p, t, s] for p in model.P_reservoir if Reservoir_group[p] == g)
+
+
+def reservoir_path_rule(model, t, g, s):
+    return group_stock(model, g, t, s) == Reservoir_path_target[t, g, s]
 
 
 def reservoir_first_hour_rule(model, p, s):
@@ -102,12 +131,91 @@ def reservoir_first_hour_rule(model, p, s):
     return stock == model.reservoir_start_stock[p, s] + flows
 
 
-def reservoir_end_rule(model, s):
+def reservoir_end_rule(model, g, s):
     target = Reservoir_end_target[s]
     if target["mode"] == "free":
         return Constraint.Skip
-    national = sum(model.soc[p, model.T.last(), s] for p in model.P_reservoir)
-    return national == target["MWh"] if target["mode"] == "equal" else national >= target["MWh"]
+    stock = group_stock(model, g, model.T.last(), s)
+    return stock == target["MWh"][g] if target["mode"] == "equal" else stock >= target["MWh"][g]
+
+
+def add_hydro_operation(model):
+    """Storage-hydro operating constraints (experiments/backcast/SPEC_hydro_operation.md), each only if staged: a
+    must-run floor on total storage-hydro output, an upward reserve withheld from the available turbine capacity
+    C(t) (gen_max x avail_plant, capped by outages), and per-plant outage caps on generation and pumping. Raises
+    before solving if the floor exceeds C(t) or C(t) minus the reserve. All rows unscaled: duals in EUR/MWh."""
+    plants = [p for p in model.P_gen if Map_plant_tech[p] in HYDRO_TECHS]
+    problems = [f"no hydro operation is staged for {s}" for s in model.Scenarios if s not in Hydro_operation]
+    problems += [f"outage of {p}, no storage-hydro plant of the model" for p in {p for p, _, _ in Hydro_outage_cap}
+                 if p not in plants]
+    problems += [f"outage step {t} is no model step" for t in {t for _, t, _ in Hydro_outage_cap} if t not in model.T]
+    if problems:
+        raise ValueError("hydro operation: " + "; ".join(problems))
+    capacity = {}
+    if any(Hydro_operation[s]["floor_MW"] is not None or Hydro_operation[s]["reserve_up_MW"] is not None
+           for s in model.Scenarios):
+        capacity = {(t, s): available_turbine_capacity(model, plants, t, s) for t in model.T for s in model.Scenarios}
+    for s in model.Scenarios:
+        floor, reserve = Hydro_operation[s]["floor_MW"], Hydro_operation[s]["reserve_up_MW"]
+        for t in model.T:
+            if floor is not None and floor > capacity[t, s]:
+                raise ValueError(f"hydro operation: the floor of {floor} MW exceeds the available storage-hydro turbine "
+                                 f"capacity of {capacity[t, s]:.1f} MW in {t} of {s}")
+            if reserve is not None and capacity[t, s] - reserve < (floor or 0):
+                raise ValueError(f"hydro operation: available capacity minus the upward reserve, "
+                                 f"{capacity[t, s] - reserve:.1f} MW, is below the floor of "
+                                 f"{floor if floor is not None else 0} MW in {t} of {s}")
+    if capacity:
+        model.P_hydro_operation = Set(initialize=plants, within=model.P_gen, doc="storage-hydro plants of a back-cast")
+    if any(Hydro_operation[s]["floor_MW"] is not None for s in model.Scenarios):
+        add_backcast_constraint(model, "hydro_reserve_floor",
+                                Constraint(model.T, model.Scenarios, rule=hydro_reserve_floor_rule))
+    if any(Hydro_operation[s]["reserve_up_MW"] is not None for s in model.Scenarios):
+        model.hydro_reserve_up_limit = Param(
+            model.T, model.Scenarios, doc="available storage-hydro turbine capacity minus the upward reserve (MW)",
+            initialize={(t, s): capacity[t, s] - Hydro_operation[s]["reserve_up_MW"] for t in model.T
+                        for s in model.Scenarios if Hydro_operation[s]["reserve_up_MW"] is not None})
+        add_backcast_constraint(model, "hydro_reserve_up",
+                                Constraint(model.T, model.Scenarios, rule=hydro_reserve_up_rule))
+    if Hydro_outage_cap:
+        model.P_hydro_outage = Set(initialize=sorted({p for p, _, _ in Hydro_outage_cap}), within=model.P_gen,
+                                   doc="storage-hydro plants with an outage or limit")
+        add_backcast_constraint(model, "hydro_outage_turbine", Constraint(
+            model.P_hydro_outage, model.T, model.Scenarios, rule=hydro_outage_turbine_rule))
+        if any(p in model.P_pumping for p in model.P_hydro_outage):
+            add_backcast_constraint(model, "hydro_outage_pump", Constraint(
+                model.P_hydro_outage, model.T, model.Scenarios, rule=hydro_outage_pump_rule))
+
+
+def available_turbine_capacity(model, plants, t, s):
+    """C(t): the storage-hydro plants' gen_max x avail_plant, each capped by an outage in that step."""
+    return sum(min(value(model.gen_max[p, s]) * value(model.avail_plant[p, t, s]),
+                   Hydro_outage_cap[(p, t, s)][0] if (p, t, s) in Hydro_outage_cap else float("inf")) for p in plants)
+
+
+def hydro_reserve_floor_rule(model, t, s):
+    floor = Hydro_operation[s]["floor_MW"]
+    if floor is None:
+        return Constraint.Skip
+    return sum(model.gen[p, t, s] for p in model.P_hydro_operation) >= floor
+
+
+def hydro_reserve_up_rule(model, t, s):
+    if Hydro_operation[s]["reserve_up_MW"] is None:
+        return Constraint.Skip
+    return sum(model.gen[p, t, s] for p in model.P_hydro_operation) <= model.hydro_reserve_up_limit[t, s]
+
+
+def hydro_outage_turbine_rule(model, p, t, s):
+    if (p, t, s) not in Hydro_outage_cap:
+        return Constraint.Skip
+    return model.gen[p, t, s] <= Hydro_outage_cap[(p, t, s)][0]
+
+
+def hydro_outage_pump_rule(model, p, t, s):
+    if (p, t, s) not in Hydro_outage_cap or p not in model.P_pumping:
+        return Constraint.Skip
+    return model.storage_charge[p, t, s] <= Hydro_outage_cap[(p, t, s)][1]
 
 
 def add_backcast_constraint(model, name, constraint):

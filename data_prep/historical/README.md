@@ -48,15 +48,17 @@ python -m data_prep.historical.plot_trade_ntc --start 2025-10-01 --end 2026-09-3
   - `--processed` names the processed folder when it spans more than the plotted days. The script
     raises if that folder lacks any plotted hour.
 
-ENTSO-E day-ahead NTC needs a personal token in the environment variable `ENTSOE_API_KEY`.
-To request one, register on transparency.entsoe.eu, then email transparency@entsoe.eu with the
-subject "Restful API access". With the token set, run:
+ENTSO-E data need a personal token: a file with the token on one line, passed with `--token-file`, or the
+environment variable `ENTSOE_API_KEY`. To request one, register on transparency.entsoe.eu, then email
+transparency@entsoe.eu with the subject "Restful API access". Then run:
 
 ```bash
-python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30 --sources entsoe_ntc
+python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30 --sources entsoe entsoe_ntc --token-file <token file>
 ```
 
-Then rerun `process`. Without the token, that step stops with an error.
+`entsoe` fetches day-ahead prices (A44) and Swiss generation per type (A75), `entsoe_ntc` the day-ahead NTC
+(A61). Then rerun `process`; it needs the ENTSO-E prices (`PRICE_SOURCE` in `config.py`). The token never enters
+a file: the manifest stores each URL with it redacted.
 
 Reservoir inflow comes from Copernicus PECD 4.2, requested by hand on the Copernicus Climate Data Store
 (free account; dataset `sis-energy-pecd`): PECD version 4.2, the ERA5 reanalysis stream, the hydro inflow
@@ -76,7 +78,8 @@ one from `raw/pecd/` and its manifest entry, then register the new one. The requ
 
 | Data | Source | Coverage |
 |---|---|---|
-| Day-ahead prices CH, DE-LU, FR, IT-North, AT | Energy-Charts `/v2/price` (CC BY 4.0, Bundesnetzagentur / SMARD.de) | full period; neighbours quarter-hourly from 2025-10-01, averaged to hours |
+| Day-ahead prices CH, DE-LU, FR, IT-North, AT | **ENTSO-E A44** (used); Energy-Charts `/v2/price` (CC BY 4.0, Bundesnetzagentur / SMARD.de) kept for reference | full period; neighbours quarter-hourly from 2025-10-01, averaged to hours. For DE-LU and AT the API returns two series; sequence 1 equals Energy-Charts in every hour but the Austrian 26 June 2024 (KDI-2) |
+| CH generation by type, hourly | ENTSO-E A75 (Swissgrid): pumped storage, run of river, reservoir, nuclear, solar, wind; no thermal or waste | full period; covers only part of Swiss generation (KDI-3), so the back-cast default takes its hourly profiles at BFE's monthly levels (`ch_generation_entsoe_bfe_hourly.csv`) |
 | CH generation by type, load, net trade | Energy-Charts `/v2/public_power?country=ch` | full period, hourly |
 | CH scheduled exchanges per border | Energy-Charts `/v2/cbet` | full period, quarter-hourly |
 | CH physical flows per border | **Swissgrid metered** (energy overview workbook); Energy-Charts `/v2/cbpf` kept for reference only | Swissgrid: to its latest published month; Energy-Charts: full period |
@@ -84,8 +87,8 @@ one from `raw/pecd/` and its manifest entry, then register the new one. The requ
 | CH consumption, production, metered exchanges per direction | Swissgrid `EnergieUebersichtCH-<year>.xlsx` | full period; the running year lags about one month |
 | Day-ahead NTC, 8 directions | Swissgrid D-2 NTC XML, one file per day | **current year only** (from 2026-01-01) |
 | Intraday NTC, net commercial flows, spot spreads | Swissgrid `Grenzfluesse-<year>.csv` | **current year only** |
-| Day-ahead NTC, 8 directions | ENTSO-E A61 | needs a token; not yet run against the live API |
-| Day-ahead NTC, 8 directions, Oct-Dec 2025 | ENTSO-E Transparency Platform web table (TR 11.1), copied by hand into `raw/entsoe_web/` | 92 days; stopgap until the token arrives |
+| Day-ahead NTC, 8 directions | ENTSO-E A61 | full period, hourly. Equals the web copy in every compared value; differs from Swissgrid D-2 in 334 of 46,648 values in Oct 2025 - Aug 2026 (`validation_report.csv`), where the combined table keeps D-2 |
+| Day-ahead NTC, 8 directions, Oct-Dec 2025 | ENTSO-E Transparency Platform web table (TR 11.1), copied by hand into `raw/entsoe_web/` | 92 days; the stopgap before the token, now behind the API in `NTC_ENTSOE_SOURCE_ORDER` |
 | Storage-lake content, weekly | BFE open data ogd17, from `bfe-ogd.ch`. Until 2026-10-09 the `uvek-gis.admin.ch` mirror was used; it lagged by one weekly reading. | full period, including the first reading after the period end |
 | National electricity balance, monthly (end use, losses, pumping, production by type) | BFE open data ogd35 | to the latest published month; the running year is provisional |
 | CH00 hydro inflow, weekly: reservoir (HRI) and open-loop pumped storage (HOL) | Copernicus PECD 4.2 (`sis-energy-pecd`, ERA5 reanalysis), archive requested by hand and registered | annual files for completed years, interim monthly files for the running year |
@@ -98,7 +101,10 @@ positive for imports into CH. Columns are named after the FEM nodes (`CH00`, `DE
 
 | File | Content |
 |---|---|
-| `prices_day_ahead_hourly.csv` | EUR/MWh per node |
+| `prices_day_ahead_hourly.csv` | EUR/MWh per node, from the source named by `PRICE_SOURCE` (ENTSO-E) |
+| `prices_day_ahead_energy_charts_hourly.csv` | the same from the other source (Energy-Charts), for reference; `validation_report.csv` compares the two |
+| `ch_generation_entsoe_hourly.csv` | ENTSO-E A75 per production type, MW, as published, plus `others`: BFE thermal production spread evenly over each month (ENTSO-E has none for CH) (`generation.py`) |
+| `ch_generation_entsoe_bfe_hourly.csv` | solar, wind, run of river and nuclear with ENTSO-E's hourly profile, each local month scaled to BFE's production of the type, plus the same `others`. Months BFE has not published, or not wholly inside the period, stay NaN |
 | `ch_public_power_hourly.csv` | MW per generation type, plus `load` and `cross_border_electricity_trading` |
 | `ch_exchanges_scheduled_hourly.csv` | Scheduled commercial exchange (Energy-Charts), MW per neighbour, plus `sum` |
 | `ch_exchanges_physical_hourly.csv` | Physical flow, **Swissgrid metered**, MW per neighbour, plus `sum`. Ends with Swissgrid's latest published month.<br>**Why not Energy-Charts:** on the FR border it shows about 15% more flow than Swissgrid, in both directions and in every month since Oct 2023. BFE monthly imports agree with Swissgrid. |

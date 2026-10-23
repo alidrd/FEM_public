@@ -67,8 +67,9 @@ def test_start_stock_lies_before_the_first_hour_and_the_end_target_after_the_las
     start_fill = fill["2025-09-29"] + (fill["2025-10-06"] - fill["2025-09-29"]) * 48 / 168
     for p, storage in OPEN_STORAGE.items():  # equal fill fraction for every open plant
         assert staged["Reservoir_start_stock"][(p, NAME)] == pytest.approx(start_fill * storage, rel=TOLERANCE)
-    assert staged["Reservoir_end_target"] == {NAME: {"mode": "equal", "MWh": pytest.approx(
-        fill["2025-10-06"] * sum(OPEN_STORAGE.values()), rel=TOLERANCE)}}
+    assert staged["Reservoir_end_target"] == {NAME: {"mode": "equal", "MWh": {"TotalCH": pytest.approx(
+        fill["2025-10-06"] * sum(OPEN_STORAGE.values()), rel=TOLERANCE)}}}
+    assert staged["Reservoir_group"] == {p: "TotalCH" for p in OPEN_STORAGE}  # one national group
     assert f"start stock at {hours.iloc[0]} (before the first hour)" in assumptions[1]
     assert f"end target at {hours.iloc[-1] + pd.Timedelta(hours=1)} (after the last hour)" in assumptions[2]
     assert "reading at 2025-10-05 22:00:00+00:00" in assumptions[2]  # an exact reading is used directly
@@ -83,7 +84,8 @@ def test_start_and_end_at_the_same_offset_in_their_weeks_are_interpolated_separa
     end = fill["2025-10-06"] + (fill["2025-10-13"] - fill["2025-10-06"]) * 48 / 168
     assert start != end
     assert staged["Reservoir_start_stock"][("large_psp", NAME)] == pytest.approx(start * 8647500.0, rel=TOLERANCE)
-    assert staged["Reservoir_end_target"][NAME]["MWh"] == pytest.approx(end * sum(OPEN_STORAGE.values()), rel=TOLERANCE)
+    assert staged["Reservoir_end_target"][NAME]["MWh"]["TotalCH"] == pytest.approx(end * sum(OPEN_STORAGE.values()),
+                                                                              rel=TOLERANCE)
 
 
 @pytest.mark.parametrize("change, message", [
@@ -105,8 +107,8 @@ def test_invalid_readings_raise(settings_for, change, message):
 def test_at_least_keeps_the_end_target(settings_for):
     settings = settings_for(historical_hydro_end="at_least")
     staged = hi.read_reservoir_stocks(NAME, settings, fleet(settings))[0]
-    assert staged["Reservoir_end_target"] == {NAME: {"mode": "at_least", "MWh": pytest.approx(
-        readings(settings)["2025-10-06"] * sum(OPEN_STORAGE.values()), rel=TOLERANCE)}}
+    assert staged["Reservoir_end_target"] == {NAME: {"mode": "at_least", "MWh": {"TotalCH": pytest.approx(
+        readings(settings)["2025-10-06"] * sum(OPEN_STORAGE.values()), rel=TOLERANCE)}}}
 
 
 @pytest.mark.parametrize("mode, raises", [("equal", True), ("free", False)])
@@ -128,6 +130,127 @@ def test_unknown_end_mode_raises(settings_for):
         hi.read_reservoir_stocks(NAME, settings, fleet(settings))
 
 
+def test_weekly_path_targets_lie_at_the_readings_inside_the_period(settings_for):
+    period = "2025-10-01/2025-10-19"  # readings inside: Monday 6 and 13 October; the end is the reading of 20 October
+    settings = settings_for(period, historical_hydro_path="bfe_weekly")
+    staged, _, assumptions = hi.read_reservoir_stocks(NAME, settings, fleet(settings))
+    time_map = hi.historical_time_map(period)
+    step_ending = dict(zip(time_map["time_utc"] + pd.Timedelta(hours=1), time_map["t"]))
+    fill, total = readings(settings), sum(OPEN_STORAGE.values())
+    expected = {(step_ending[pd.Timestamp(instant, tz="UTC")], "TotalCH", NAME):
+                pytest.approx(fill[date] * total, rel=TOLERANCE)
+                for date, instant in (("2025-10-06", "2025-10-05 22:00"), ("2025-10-13", "2025-10-12 22:00"))}
+    assert staged["Reservoir_path_target"] == expected
+    assert list(staged["Reservoir_path_target"]) == list(expected)  # in time order
+    assert assumptions[3].startswith("weekly path: stock of each reservoir group equal to 2 BFE readings")
+
+
+def test_no_path_by_default(settings_for):
+    settings = settings_for("2025-10-01/2025-10-19")
+    staged, _, assumptions = hi.read_reservoir_stocks(NAME, settings, fleet(settings))
+    assert staged["Reservoir_path_target"] == {} and len(assumptions) == 3
+
+
+def test_weekly_path_without_a_reading_inside_the_period_raises(settings_for):
+    settings = settings_for(historical_hydro_path="bfe_weekly")  # PERIOD ends at its first reading after the start
+    with pytest.raises(ValueError, match="no BFE reading lies inside"):
+        hi.read_reservoir_stocks(NAME, settings, fleet(settings))
+
+
+@pytest.mark.parametrize("mode", ["weekly", 0, -48, 48.5, True, "48"])
+def test_unknown_path_mode_raises(settings_for, mode):
+    settings = settings_for(historical_hydro_path=mode)
+    with pytest.raises(ValueError, match="historical_hydro_path must be False, 'bfe_weekly' or a positive whole"):
+        hi.read_reservoir_stocks(NAME, settings, fleet(settings))
+
+
+def test_path_every_48_hours_interpolates_between_the_readings(settings_for):
+    period = "2025-10-01/2025-10-07"  # 2025-09-30 22:00 to 2025-10-07 22:00 UTC: targets after 48, 96 and 144 hours
+    settings = settings_for(period, historical_hydro_path=48)
+    staged, _, assumptions = hi.read_reservoir_stocks(NAME, settings, fleet(settings))
+    time_map = hi.historical_time_map(period)
+    step_ending = dict(zip(time_map["time_utc"] + pd.Timedelta(hours=1), time_map["t"]))
+    fill, total = readings(settings), sum(OPEN_STORAGE.values())
+    # readings at 2025-09-28 22:00, 2025-10-05 22:00 and 2025-10-12 22:00 UTC
+    expected_fill = {"2025-10-02 22:00": fill["2025-09-29"] + (fill["2025-10-06"] - fill["2025-09-29"]) * 96 / 168,
+                     "2025-10-04 22:00": fill["2025-09-29"] + (fill["2025-10-06"] - fill["2025-09-29"]) * 144 / 168,
+                     "2025-10-06 22:00": fill["2025-10-06"] + (fill["2025-10-13"] - fill["2025-10-06"]) * 24 / 168}
+    expected = {(step_ending[pd.Timestamp(instant, tz="UTC")], "TotalCH", NAME): pytest.approx(f * total, rel=TOLERANCE)
+                for instant, f in expected_fill.items()}
+    assert staged["Reservoir_path_target"] == expected
+    assert list(staged["Reservoir_path_target"]) == list(expected)
+    assert assumptions[3].startswith("path every 48 hours: stock of each reservoir group at 3 instants")
+
+
+def test_path_every_n_hours_leaves_the_end_to_the_end_target(settings_for):
+    period = "2025-10-01/2025-10-04"  # 96 hours: the instant after 96 hours is the end
+    settings = settings_for(period, historical_hydro_path=48)
+    staged = hi.read_reservoir_stocks(NAME, settings, fleet(settings))[0]
+    time_map = hi.historical_time_map(period)
+    assert list(staged["Reservoir_path_target"]) == [(time_map["t"].iloc[47], "TotalCH", NAME)]
+
+
+def test_path_every_n_hours_without_an_instant_inside_the_period_raises(settings_for):
+    settings = settings_for("2025-10-01/2025-10-01", historical_hydro_path=48)  # a 24-hour period
+    with pytest.raises(ValueError, match="no target instant lies inside"):
+        hi.read_reservoir_stocks(NAME, settings, fleet(settings))
+
+
+REGIONS = ("Wallis", "Graubuenden", "Tessin", "UebrigCH")
+WASTA_REGIONS = {"historical_hydro_fleet": "wasta_individual", "historical_hydro_regions": "bfe_regions"}
+
+
+def test_regions_group_the_open_wasta_plants_by_canton(settings_for):
+    settings = settings_for(**WASTA_REGIONS)
+    groups = hi.read_reservoir_stocks(NAME, settings, fleet(settings))[0]["Reservoir_group"]
+    plants = pd.read_csv(hi.WASTA_PLANTS, encoding="utf-8-sig")
+    open_plants = plants[plants["category"].isin(["dam", "psp_open"])]
+    by_canton = {"VS": "Wallis", "GR": "Graubuenden", "TI": "Tessin"}
+    assert groups == {hi.wasta_plant(c, n): by_canton.get(k, "UebrigCH")
+                      for c, n, k in zip(open_plants["category"], open_plants["name"], open_plants["canton"])}
+    assert groups["dam_Bieudron"] == "Wallis" and set(groups.values()) == set(REGIONS)
+
+
+def test_regional_stocks_follow_each_regions_own_fill(settings_for):
+    period = "2025-10-01/2025-10-19"  # readings inside: 6 and 13 October; the end is the reading of 20 October
+    settings = settings_for(period, historical_hydro_path="bfe_weekly", **WASTA_REGIONS)
+    plants = fleet(settings)
+    staged, _, assumptions = hi.read_reservoir_stocks(NAME, settings, plants)
+    table = pd.read_csv(Path(settings["historical_data_dir"]) / hi.RESERVOIR_TABLE).set_index("date")
+    fill = {r: table[f"{r}_GWh"] / table[f"{r}_max_GWh"] for r in REGIONS}
+    groups = staged["Reservoir_group"]
+    storage = {p: plants["Plant_capacity_strg"][(p, NAME)] for p in groups}
+    for p, r in groups.items():  # 48 hours after the reading of 29 September, in the plant's own region
+        start = fill[r]["2025-09-29"] + (fill[r]["2025-10-06"] - fill[r]["2025-09-29"]) * 48 / 168
+        assert staged["Reservoir_start_stock"][(p, NAME)] == pytest.approx(start * storage[p], rel=TOLERANCE)
+    total = {r: sum(storage[p] for p in groups if groups[p] == r) for r in REGIONS}
+    assert staged["Reservoir_end_target"][NAME]["MWh"] == {
+        r: pytest.approx(fill[r]["2025-10-20"] * total[r], rel=TOLERANCE) for r in REGIONS}
+    time_map = hi.historical_time_map(period)
+    step_ending = dict(zip(time_map["time_utc"] + pd.Timedelta(hours=1), time_map["t"]))
+    expected = {(step_ending[pd.Timestamp(instant, tz="UTC")], r, NAME): pytest.approx(fill[r][date] * total[r],
+                                                                                       rel=TOLERANCE)
+                for date, instant in (("2025-10-06", "2025-10-05 22:00"), ("2025-10-13", "2025-10-12 22:00"))
+                for r in REGIONS}
+    assert staged["Reservoir_path_target"] == expected
+    assert list(staged["Reservoir_path_target"]) == list(expected)  # in time order, then by region
+    assert assumptions[4].startswith("reservoir groups: the BFE regions, by the canton of each power station")
+
+
+def test_regions_need_the_wasta_fleet(settings_for):
+    settings = settings_for(historical_hydro_regions="bfe_regions")
+    with pytest.raises(ValueError, match="historical_hydro_regions = 'bfe_regions' needs historical_hydro_fleet = "
+                                         "'wasta_individual'"):
+        hi.read_reservoir_stocks(NAME, settings, fleet(settings))
+
+
+@pytest.mark.parametrize("mode", ["cantons", True, "bfe_region"])
+def test_unknown_regions_mode_raises(settings_for, mode):
+    settings = settings_for(historical_hydro_regions=mode)
+    with pytest.raises(ValueError, match="historical_hydro_regions must be False or 'bfe_regions'"):
+        hi.read_reservoir_stocks(NAME, settings, fleet(settings))
+
+
 def test_every_input_is_built():
     assert hi.NOT_YET_BUILT == []
 
@@ -143,7 +266,10 @@ def boundaries(monkeypatch):
     def set_targets(mode="equal", target=620.0):
         monkeypatch.setitem(ch.Reservoir_start_stock, ("big", "s"), 400.0)
         monkeypatch.setitem(ch.Reservoir_start_stock, ("small", "s"), 40.0)
-        monkeypatch.setitem(ch.Reservoir_end_target, "s", {"mode": mode, "MWh": None if mode == "free" else target})
+        monkeypatch.setitem(ch.Reservoir_group, "big", "TotalCH")
+        monkeypatch.setitem(ch.Reservoir_group, "small", "TotalCH")
+        monkeypatch.setitem(ch.Reservoir_end_target, "s",
+                            {"mode": mode, "MWh": None if mode == "free" else {"TotalCH": target}})
     return set_targets
 
 
@@ -198,7 +324,7 @@ def test_national_end_target(boundaries, mode, final, accepted):
     m = storage_model()
     ch.add_reservoir_boundaries(m)
     m.soc["big", "t_3", "s"].value, m.soc["small", "t_3", "s"].value = final
-    assert holds(m.reservoir_end_target["s"]) is accepted
+    assert holds(m.reservoir_end_target["TotalCH", "s"]) is accepted
     assert ch.registered_constraints(m) == ["reservoir_first_hour", "reservoir_end_target"]
 
 
@@ -250,7 +376,7 @@ def test_first_hour_and_end_target_duals_are_exported_in_EUR_per_MWh(boundaries,
             m.dual[row] = 2.0 / SF  # the solver dual of a scaled row
     m.dual[m.reservoir_first_hour["big", "s"]] = -55.0
     m.dual[m.reservoir_first_hour["small", "s"]] = -54.0
-    m.dual[m.reservoir_end_target["s"]] = 61.5
+    m.dual[m.reservoir_end_target["TotalCH", "s"]] = 61.5
     monkeypatch.chdir(tmp_path)
     res_export.constraints([m.storage_soc, m.reservoir_first_hour, m.reservoir_end_target], "run", m)
     folder = tmp_path / "output" / "run"
@@ -263,7 +389,11 @@ def test_first_hour_and_end_target_duals_are_exported_in_EUR_per_MWh(boundaries,
 @pytest.mark.parametrize("change, message", [
     (lambda mp: mp.setattr(ch, "Reservoir_start_stock", {}), "no start stock is staged"),
     (lambda mp: mp.setitem(ch.Reservoir_start_stock, ("loop", "s"), 10.0), "loop is no storage plant with inflow"),
-    (lambda mp: mp.setitem(ch.Reservoir_end_target, "s", {"mode": "equals", "MWh": 1.0}), "no valid end target for s"),
+    (lambda mp: mp.setitem(ch.Reservoir_end_target, "s", {"mode": "equals", "MWh": {"TotalCH": 1.0}}),
+     "no valid end target for s"),
+    (lambda mp: mp.delitem(ch.Reservoir_group, "small"), "small has no reservoir group"),
+    (lambda mp: mp.setitem(ch.Reservoir_end_target, "s", {"mode": "equal", "MWh": {"other": 1.0}}),
+     "no end target of group TotalCH in s"),
 ])
 def test_missing_or_invalid_boundaries_raise(boundaries, monkeypatch, change, message):
     boundaries()
@@ -272,10 +402,72 @@ def test_missing_or_invalid_boundaries_raise(boundaries, monkeypatch, change, me
         ch.add_reservoir_boundaries(storage_model())
 
 
+@pytest.mark.parametrize("big, small, loop, accepted", [
+    (450.0, 50.0, 0.0, True),
+    (450.0, 50.0, 30.0, True),  # the closed loop is in no reservoir group
+    (451.0, 50.0, 0.0, False),
+    (450.0, 49.0, 0.0, False),
+])
+def test_weekly_path_target_binds_the_national_stock_after_its_step(boundaries, monkeypatch, big, small, loop, accepted):
+    boundaries()
+    monkeypatch.setitem(ch.Reservoir_path_target, ("t_2", "TotalCH", "s"), 500.0)
+    m = storage_model()
+    ch.add_reservoir_boundaries(m)
+    m.soc["big", "t_2", "s"].value, m.soc["small", "t_2", "s"].value, m.soc["loop", "t_2", "s"].value = big, small, loop
+    assert holds(m.reservoir_path_target["t_2", "TotalCH", "s"]) is accepted
+    assert list(m.reservoir_path_target) == [("t_2", "TotalCH", "s")]
+    assert ch.registered_constraints(m) == ["reservoir_first_hour", "reservoir_end_target", "reservoir_path_target"]
+
+
+def test_weekly_path_duals_are_exported_by_step_in_EUR_per_MWh(boundaries, monkeypatch, tmp_path):
+    boundaries()
+    monkeypatch.setitem(ch.Reservoir_path_target, ("t_1", "TotalCH", "s"), 450.0)
+    monkeypatch.setitem(ch.Reservoir_path_target, ("t_2", "TotalCH", "s"), 500.0)
+    m = storage_model()
+    ch.add_reservoir_boundaries(m)
+    m.dual = pyo.Suffix(direction=pyo.Suffix.IMPORT)
+    m.dual[m.reservoir_path_target["t_1", "TotalCH", "s"]] = 12.5
+    m.dual[m.reservoir_path_target["t_2", "TotalCH", "s"]] = -3.0
+    monkeypatch.chdir(tmp_path)
+    res_export.constraints([m.reservoir_path_target], "run", m)
+    duals = pd.read_csv(tmp_path / "output" / "run" / "reservoir_path_target_dual.csv")
+    assert duals.to_dict("list") == {"T_reservoir_path": ["t_1", "t_2"], "Reservoir_groups": ["TotalCH", "TotalCH"],
+                                     "Scenarios": ["s", "s"], "value": [12.5, -3.0]}
+
+
+def test_weekly_path_target_at_an_unknown_step_raises(boundaries, monkeypatch):
+    boundaries()
+    monkeypatch.setitem(ch.Reservoir_path_target, ("t_9", "TotalCH", "s"), 500.0)
+    with pytest.raises(ValueError, match="path target step t_9 is no model step"):
+        ch.add_reservoir_boundaries(storage_model())
+
+
+@pytest.mark.parametrize("big, small, holds_a, holds_b", [
+    (600.0, 20.0, True, True),
+    (600.0, 21.0, True, False),
+    (599.0, 20.0, False, True),
+])
+def test_each_group_meets_its_own_targets(boundaries, monkeypatch, big, small, holds_a, holds_b):
+    boundaries()
+    monkeypatch.setitem(ch.Reservoir_group, "big", "A")
+    monkeypatch.setitem(ch.Reservoir_group, "small", "B")
+    monkeypatch.setitem(ch.Reservoir_end_target, "s", {"mode": "equal", "MWh": {"A": 600.0, "B": 20.0}})
+    monkeypatch.setitem(ch.Reservoir_path_target, ("t_2", "A", "s"), 600.0)
+    monkeypatch.setitem(ch.Reservoir_path_target, ("t_2", "B", "s"), 20.0)
+    m = storage_model()
+    ch.add_reservoir_boundaries(m)
+    for t in ("t_2", "t_3"):
+        m.soc["big", t, "s"].value, m.soc["small", t, "s"].value = big, small
+    assert holds(m.reservoir_end_target["A", "s"]) is holds_a and holds(m.reservoir_end_target["B", "s"]) is holds_b
+    assert holds(m.reservoir_path_target["t_2", "A", "s"]) is holds_a
+    assert holds(m.reservoir_path_target["t_2", "B", "s"]) is holds_b
+
+
 def test_hook_adds_the_reservoir_boundaries(boundaries, monkeypatch):
     boundaries()
     monkeypatch.setattr(ch, "check_historical_model", lambda model, scenario_name, preset_file: None)
     monkeypatch.setattr(ch, "add_fixed_generation", lambda model: None)
+    monkeypatch.setattr(ch, "add_hydro_operation", lambda model: None)  # tested on its own
     m = storage_model()
     ch.apply_historical_constraints(m, "hist", "unused.csv")
     assert ch.registered_constraints(m) == ["reservoir_first_hour", "reservoir_end_target"]

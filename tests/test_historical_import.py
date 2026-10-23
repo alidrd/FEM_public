@@ -15,7 +15,7 @@ import model.read_settings as read_settings
 from data_prep import historical_import as hi
 from model.reset_items import get_lists_and_dicts
 from model.structural_parameters import Map_tech_startcondition, Map_plant_tech_cost_component, fuel_limited_CH_list
-from tests.backcast_data import write_processed
+from tests.backcast_data import GENERATION_TABLE, write_processed
 
 HYDRO_FLEET = ["CH00_dam", "CH00_psp_close", "large_psp", "medium_reservior", "small_reservior"]
 FLEET = HYDRO_FLEET + ["CH03_nuclear", "CH01_other"]
@@ -115,7 +115,7 @@ def test_complete_inputs_are_written_and_recorded(settings, isolated_globals, mo
     assert len(manifest["code"]["git_commit"]) == 40 and manifest["model_steps"] == [6553, 6600]
     assert all(len(record["sha256"]) == 64 for record in manifest["files"])
     read = [Path(record["path"]).name for record in manifest["files"]]
-    tables = {hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE, hi.POWER_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE,
+    tables = {hi.PRICES_TABLE, hi.NTC_TABLE, hi.DEMAND_TABLE, GENERATION_TABLE, hi.NUCLEAR_TABLE, hi.INSTALLED_TABLE,
               hi.PECD_TABLE, hi.RESERVOIR_TABLE}
     assert tables <= set(read) and len(read) == len(set(read))
     assert any(assumption.startswith("transfer limits") for assumption in manifest["assumptions"])

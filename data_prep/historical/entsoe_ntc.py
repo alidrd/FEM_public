@@ -1,11 +1,9 @@
 """ENTSO-E Transparency Platform: forecasted day-ahead transfer capacity (NTC, document type A61)
 for the eight CH border directions.
 
-Needs a personal API token in the environment variable ENTSOE_API_KEY (request it from
-transparency@entsoe.eu with subject "Restful API access" after registering on the platform).
-Not yet run against the live API: the CH-border coverage of A61 is unconfirmed.
+Needs a personal API token, read as in entsoe.py: from `download.py --token-file`, or else from the
+environment variable ENTSOE_API_KEY.
 """
-import os
 import urllib.parse
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -13,24 +11,12 @@ from pathlib import Path
 import pandas as pd
 
 from data_prep.historical import http_get
-from data_prep.historical.config import (
-    COUNTRY_OF_NODE, DIRECTIONS, ENTSOE_API, ENTSOE_TOKEN_ENV, RAW_DIR, ZONES,
-)
+from data_prep.historical.config import COUNTRY_OF_NODE, DIRECTIONS, ENTSOE_API, RAW_DIR, ZONES
+from data_prep.historical.entsoe import MIN_INTERVAL_S, token
 from data_prep.historical.timeutils import period_bounds_utc
 
 RAW = RAW_DIR / "entsoe" / "ntc_dayahead_A61"
 _EIC = {COUNTRY_OF_NODE[node]: z["entsoe"] for node, z in ZONES.items()}
-
-
-def token() -> str:
-    value = os.environ.get(ENTSOE_TOKEN_ENV, "").strip()
-    if not value:
-        raise RuntimeError(
-            f"ENTSO-E NTC download needs an API token in the environment variable {ENTSOE_TOKEN_ENV}. "
-            "Register on transparency.entsoe.eu and email transparency@entsoe.eu "
-            "(subject 'Restful API access') to get one."
-        )
-    return value
 
 
 def download(direction: str, start_day: str, end_day: str, force: bool) -> Path:
@@ -49,7 +35,7 @@ def download(direction: str, start_day: str, end_day: str, force: bool) -> Path:
     }
     dest = RAW / f"A61_{direction}_{start_day}_{end_day}.xml"
     url = f"{ENTSOE_API}?{urllib.parse.urlencode({**params, 'securityToken': token()})}"
-    return http_get.download(url, dest, force, min_interval_s=1.0, host_key="entsoe")
+    return http_get.download(url, dest, force, min_interval_s=MIN_INTERVAL_S, host_key="entsoe")
 
 
 def _local(tag: str) -> str:
