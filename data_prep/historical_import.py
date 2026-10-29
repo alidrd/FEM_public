@@ -1,5 +1,5 @@
 """Back-casts: CH_only optimisations of a past period, driven by inputs observed or reconstructed for that
-period (glossary: CONTEXT.md; design: CH_ONLY_HISTORICAL_MODEL_PLAN.md; guide: docs/backcast.md).
+period (glossary: CONTEXT.md; guide: docs/backcast.md).
 
 This module holds the back-cast's time base and setting checks, and the historical import that replaces the
 normal data import. It reads processed files only and never imports pipeline code (data_prep/historical).

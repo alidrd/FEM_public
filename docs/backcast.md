@@ -3,9 +3,9 @@
 Checked against: not yet verified on `main`; the docs commit that follows the merge sets this line.
 
 A **back-cast** is a `CH_only` optimisation of a past period, driven by inputs observed or reconstructed
-for that period; its results are compared with observed outcomes. Terms: `CONTEXT.md`. Design and
-decisions: `CH_ONLY_HISTORICAL_MODEL_PLAN.md`. Code: `data_prep/historical_import.py`. The inputs come
-from the processed folder of `data_prep/historical` (see its README).
+for that period; its results are compared with observed outcomes. Terms: `CONTEXT.md`. Code:
+`data_prep/historical_import.py`. The inputs come from the processed folder of `data_prep/historical`
+(see its README).
 
 ## Settings
 
@@ -55,7 +55,9 @@ It then adds the back-cast constraints: `fixed_generation` (section Fixed plants
 `reservoir_first_hour` and `reservoir_end_target` (section Reservoir stocks). Last, it audits the
 objective and prints each group of cost terms with its unit: hydro O&M, lost load and trade in EUR,
 investment in CHF. An investment term with a non-zero coefficient or constant stops the run; terms whose
-variables are all fixed appear as a constant offset.
+variables are all fixed appear as a constant offset. The costs left to set the Swiss price are hydro
+O&M, lost load and trade, all in EUR, so the Swiss energy-balance dual is in EUR/MWh, the unit of the
+observed price.
 
 ## Time steps
 
@@ -341,8 +343,7 @@ poetry run python tools/compare_historical_prices.py output/hist_2526_octaug
     is listed but not compared.
   - `duration_curve.csv`: both prices sorted from highest to lowest.
   - `border_limits.csv`: the hours each border flow is within 1 MW of its limit, modelled (flows against
-    NTC times `NTC_CH_ratio`) and observed (scheduled exchange against NTC), over the run's period. The
-    plan's 69% (FR to CH) and 34% (CH to IT) describe October 2025 to September 2026.
+    NTC times `NTC_CH_ratio`) and observed (scheduled exchange against NTC), over the run's period.
 
 ## Scenario and data tests
 

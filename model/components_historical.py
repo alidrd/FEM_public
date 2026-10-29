@@ -30,7 +30,7 @@ CALENDAR_CONSTRAINTS = ("energy_shift_limit_dsr_daily", "dsr_daily_balance", "ev
                         "ev_consumption_hourly_rate", "building_heat_demand", "building_weekly_average",
                         "max_heating_capacity", "dsrth_thermal_energy_dev_tracking", "dsrTh_dev_limit",
                         "dsrTh_dev_week_start_zero", "dsrTh_dev_week_end_zero", "dsrTh_dev_weekly_average_temp")
-# Objective terms and their currency; plan section 8
+# Objective terms and their currency (docs/backcast.md, section Model checks)
 OBJECTIVE_TERMS = {
     "cost_inv_dict": "CHF",
     "cost_inv_thermal_dict": "CHF",

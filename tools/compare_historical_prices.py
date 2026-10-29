@@ -28,8 +28,8 @@ import pandas as pd
 LOCAL_TZ = "Europe/Zurich"
 NODE = "CH00"
 NEIGHBOURS = ("AT00", "DE00", "FR00", "IT00")
-# A flow is at its limit within this distance (MW), the rule of data_prep/historical/plot_trade_ntc.py whose shares
-# the back-cast plan quotes; the observed data are rounded to 1 MW
+# A flow is at its limit within this distance (MW), as in data_prep/historical/plot_trade_ntc.py; the observed
+# data are rounded to 1 MW
 TOL_MW = 1.0
 
 
