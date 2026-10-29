@@ -60,6 +60,16 @@ python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30 --so
 (A61). Then rerun `process`; it needs the ENTSO-E prices (`PRICE_SOURCE` in `config.py`). The token never enters
 a file: the manifest stores each URL with it redacted.
 
+Generation per unit (A73) takes one request per local day, about 12 s each, so fetch it only for the days a
+back-cast needs:
+
+```bash
+python -m data_prep.historical.download --start 2025-10-01 --end 2026-07-31 --sources entsoe_units --token-file <token file>
+```
+
+A73 answers at most 24 hours per request, so the 25-hour day of the autumn clock change takes two requests.
+`process` builds the per-unit table from whatever days are on disk; the other days stay NaN.
+
 Reservoir inflow comes from Copernicus PECD 4.2, requested by hand on the Copernicus Climate Data Store
 (free account; dataset `sis-energy-pecd`): PECD version 4.2, the ERA5 reanalysis stream, the hydro inflow
 variables HRI and HOL at bidding-zone level, for the years of the period. Completed years come as annual
@@ -80,6 +90,7 @@ one from `raw/pecd/` and its manifest entry, then register the new one. The requ
 |---|---|---|
 | Day-ahead prices CH, DE-LU, FR, IT-North, AT | **ENTSO-E A44** (used); Energy-Charts `/v2/price` (CC BY 4.0, Bundesnetzagentur / SMARD.de) kept for reference | full period; neighbours quarter-hourly from 2025-10-01, averaged to hours. For DE-LU and AT the API returns two series; sequence 1 equals Energy-Charts in every hour but the Austrian 26 June 2024 (KDI-2) |
 | CH generation by type, hourly | ENTSO-E A75 (Swissgrid): pumped storage, run of river, reservoir, nuclear, solar, wind; no thermal or waste | full period; covers only part of Swiss generation (KDI-3), so the back-cast default takes its hourly profiles at BFE's monthly levels (`ch_generation_entsoe_bfe_hourly.csv`) |
+| CH generation per unit, hourly | ENTSO-E A73 (Swissgrid): 42 units, the large storage and pumped-storage plants, four run-of-river plants and the nuclear units; generation only, no pumping | the days downloaded (Oct 2025 - Jul 2026 so far); gaps and zeros in KDI-4 |
 | CH generation by type, load, net trade | Energy-Charts `/v2/public_power?country=ch` | full period, hourly |
 | CH scheduled exchanges per border | Energy-Charts `/v2/cbet` | full period, quarter-hourly |
 | CH physical flows per border | **Swissgrid metered** (energy overview workbook); Energy-Charts `/v2/cbpf` kept for reference only | Swissgrid: to its latest published month; Energy-Charts: full period |
@@ -105,6 +116,8 @@ positive for imports into CH. Columns are named after the FEM nodes (`CH00`, `DE
 | `prices_day_ahead_energy_charts_hourly.csv` | the same from the other source (Energy-Charts), for reference; `validation_report.csv` compares the two |
 | `ch_generation_entsoe_hourly.csv` | ENTSO-E A75 per production type, MW, as published, plus `others`: BFE thermal production spread evenly over each month (ENTSO-E has none for CH) (`generation.py`) |
 | `ch_generation_entsoe_bfe_hourly.csv` | solar, wind, run of river and nuclear with ENTSO-E's hourly profile, each local month scaled to BFE's production of the type, plus the same `others`. Months BFE has not published, or not wholly inside the period, stay NaN |
+| `ch_generation_units_entsoe_hourly.csv` | ENTSO-E A73, MW per generation unit (one column per unit name), hourly means. Days not downloaded and hours ENTSO-E answered without data stay NaN. Written only when A73 days of the period are on disk |
+| `ch_generation_units_entsoe.csv` | the units of that table: index `unit`, its EIC and production type (`psr_type`) |
 | `ch_public_power_hourly.csv` | MW per generation type, plus `load` and `cross_border_electricity_trading` |
 | `ch_exchanges_scheduled_hourly.csv` | Scheduled commercial exchange (Energy-Charts), MW per neighbour, plus `sum` |
 | `ch_exchanges_physical_hourly.csv` | Physical flow, **Swissgrid metered**, MW per neighbour, plus `sum`. Ends with Swissgrid's latest published month.<br>**Why not Energy-Charts:** on the FR border it shows about 15% more flow than Swissgrid, in both directions and in every month since Oct 2023. BFE monthly imports agree with Swissgrid. |

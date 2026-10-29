@@ -1,0 +1,24 @@
+group,entsoe_units,plants,fix,note
+Lac des Dix,Usine de Bieudron;Usine de Nendaz;Usine de Fionnay,dam_Bieudron;dam_Nendaz;dam_Fionnay_GD,yes,one lake in reality and three reservoirs in WASTA: alone Bieudron's observed output needs more water than its WASTA reservoir and inflow hold by mid-February; A73 reports 0 for Nendaz and Fionnay in every hour though both are in service (KDI-4); so the group's output is Bieudron's and may lack unreported output
+Nant de Drance,Usine de Nant de Drance,psp_close_Nant_de_Drance,yes,
+Veytaux,Usine de Veytaux,psp_close_Veytaux,yes,
+La Batiaz,Usine de la Bâtiaz,dam_La_Batiaz,no,its observed output needs 73 MWh more water than its WASTA start stock and inflow hold by 16 Jul 2026 16:00 local (inflow timing of the FOEN gauges; no cascade inflow in WASTA)
+Bitsch,Kraftwerk Bitsch,dam_Bitsch,no,its observed output needs 60 MWh more water than its WASTA start stock and inflow hold by 24 Jun 2026 22:00 local (inflow timing of the FOEN gauges; no cascade inflow in WASTA)
+Limmern,Limmern - Muttsee G1;Limmern - Muttsee G2;Limmern - Muttsee G3;Limmern - Muttsee G4,psp_close_Limmern,yes,A73 unpublished on 13 14 16 17 Oct 2025 (all Axpo units)
+Tierfehd,Tierfehd - Limmern G1;Tierfehd - Limmern G2;Tierfehd - Limmern G3,dam_Tierfehd_Limmern,no,its observed output needs 3 MWh more water than its WASTA start stock and inflow hold by 20 Apr 2026 21:00 local (inflow timing of the FOEN gauges; no cascade inflow in WASTA); A73 unpublished on 13 14 16 17 Oct 2025 (all Axpo units)
+Tierfehd PSW,Tierfehd - Limmern GPSW,psp_close_Tierfehd_Umwalzwerk,yes,A73 unpublished on 13 14 16 17 Oct 2025 (all Axpo units)
+Mapragg,Mapragg - Gigerwald G1;Mapragg - Gigerwald G2;Mapragg - Gigerwald G3,psp_close_Mapragg,no,observed up to 299.6 MW above the WASTA turbine capacity of 279.9 MW
+Biasca,Centrale di Biasca,dam_Biasca,yes,
+Olivone,Centrale di Olivone,dam_Olivone,yes,
+Bavona,Centrale di Bavona,dam_Bavona,yes,
+Cavergno,Centrale di Cavergno,dam_Cavergno,no,its observed output needs 48 MWh more water than its WASTA start stock and inflow hold by 21 Feb 2026 00:00 local (inflow timing of the FOEN gauges; no cascade inflow in WASTA)
+Verbano,Centrale di Verbano,dam_Verbano_1;dam_Verbano_2,no,its observed output needs 15 MWh more water than its WASTA start stock and inflow hold by 20 Apr 2026 09:00 local (inflow timing of the FOEN gauges; no cascade inflow in WASTA); one A73 unit for both WASTA plants
+Robiei,Centrale di Robiei,psp_open_Robiei,yes,
+Chatelard,Châtelard,psp_open_Chatelard_Barberine,no,published Oct - Dec 2025 only (1704 of 7295 hours); mapping to Chatelard-Barberine not verified
+Verzasca,Verzasca,dam_Gordola,yes,Verzasca SA's plant at Gordola
+Etzel,Etzel,psp_close_Etzelwerk_Altendorf,yes,
+Goschenen,Göschenen,dam_Goschenen_Goscheneralp,yes,never above 86 of 165 MW in Oct 2025 - Jul 2026
+Bergell,Bergell Turbinen,dam_Lobbia_Albigna;dam_Castasegna,yes,ewz Bergell: Löbbia and Castasegna
+Waegital,Wägital Turbinen,psp_open_Rempen;dam_Siebnen,yes,AG Kraftwerk Wägital: Rempen and Siebnen
+Mittelbuenden,Mittelbünden Turbinen,dam_Tinizong;dam_Tiefencastel_Ost;dam_Rothenbrunnen_ewz,no,observed up to 199 MW above these three plants' 165.5 MW; ewz Mittelbünden has plants this mapping misses
+KWO,KWO Produktion,dam_Innertkirchen_1_und_1a;dam_Handeck_1;dam_Handeck_2_und_2a;psp_open_Handeck_3;dam_Grimsel_1_Nachschubmaschine;dam_Grimsel_1_Oberaar;psp_close_Grimsel_2;dam_Fuhren_Gental;dam_Innergsteig,no,A73 publishes at most 918 MW and 447 GWh of KWO (model 1193 MW and 1305 GWh); which units it covers is unknown

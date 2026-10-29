@@ -26,6 +26,8 @@ from data_prep.historical.timeutils import hourly_index, period_bounds_utc, to_h
 
 # Energy-Charts cbet/cbpf series id -> FEM node
 EXCHANGE_SERIES = {"germany": "DE00", "france": "FR00", "italy": "IT00", "austria": "AT00", "sum": "sum"}
+UNITS_TABLE = "ch_generation_units_entsoe_hourly.csv"  # ENTSO-E A73, one column per unit
+UNIT_LIST = "ch_generation_units_entsoe.csv"  # its units: EIC and production type
 
 
 def output_dir(start_day: str, end_day: str) -> Path:
@@ -88,6 +90,35 @@ def build_generation_entsoe(start_day, end_day, index) -> tuple[pd.DataFrame, pd
     """Swiss generation per production type from ENTSO-E A75, MW, hourly means."""
     paths = entsoe_paths(entsoe.generation_path, start_day, end_day)
     return assemble_hourly([entsoe.read_generation(p) for p in paths], index, "mean")
+
+
+def build_generation_units(start_day, end_day, index) -> tuple[pd.DataFrame, pd.DataFrame, pd.DatetimeIndex] | None:
+    """Output per Swiss generation unit from ENTSO-E A73 (MW, hourly means, one column per unit name) and one row per
+    unit (EIC, production type), or None when no A73 file of the period was downloaded. Days without a file stay NaN,
+    and so do hours ENTSO-E answered without data. Raises if two units share a name or a unit has a stamp twice."""
+    days = pd.date_range(start_day, end_day, freq="D").strftime("%Y-%m-%d")
+    requested = [dest for day in days for dest, _, _ in entsoe.unit_requests(day)]
+    paths = [path for path in requested if path.exists()]
+    if not paths:
+        return None
+    pieces: dict[tuple, list[pd.Series]] = {}
+    for path in paths:
+        for key, series in entsoe.parse_unit_series(path.read_text(encoding="utf-8")).items():
+            pieces.setdefault(key, []).append(series)
+    units = pd.DataFrame(list(pieces), columns=["unit", "eic", "psr_type"])
+    shared = sorted(set(units.loc[units["unit"].duplicated(), "unit"]))
+    if shared:
+        raise ValueError(f"A73: several units share the names {shared}")
+    columns, irregular = {}, []
+    for (unit, _, _), series in pieces.items():  # one unit at a time: units may publish different resolutions
+        output = pd.concat(series).sort_index()
+        if not output.index.is_unique:
+            raise ValueError(f"A73 {unit}: two values for {output.index[output.index.duplicated()][0]}")
+        hourly, bad = assemble_hourly([output.to_frame(unit)], index, "mean")
+        columns[unit] = hourly[unit]
+        irregular.extend(bad)
+    print(f"ENTSO-E A73: {len(paths)} of {len(requested)} request files of the period, {len(units)} units")
+    return pd.DataFrame(columns, index=index), units.set_index("unit"), pd.DatetimeIndex(sorted(set(irregular)))
 
 
 def build_exchanges(endpoint: str, start_day, end_day, index) -> tuple[pd.DataFrame, pd.DatetimeIndex]:
@@ -372,6 +403,15 @@ def main(argv: list[str] | None = None) -> None:
     profiles, irregular["ch_generation_entsoe"] = build_generation_entsoe(start_day, end_day, index)
     tables["ch_generation_entsoe"], tables["ch_generation_entsoe_bfe"] = generation.build_tables(profiles, balance)
     irregular["ch_generation_entsoe_bfe"] = irregular["ch_generation_entsoe"]
+    print("CH generation per unit, ENTSO-E A73")
+    units = build_generation_units(start_day, end_day, index)
+    if units is None:
+        print("ENTSO-E A73: nothing downloaded for the period (download.py --sources entsoe_units), table skipped")
+        for name in (UNITS_TABLE, UNIT_LIST):  # a table left by an earlier run is not labelled as fresh
+            (out / name).unlink(missing_ok=True)
+    else:
+        tables["ch_generation_units_entsoe"], unit_list, irregular["ch_generation_units_entsoe"] = units
+        unit_list.to_csv(out / UNIT_LIST)
 
     for name, frame in tables.items():
         frame.to_csv(out / f"{name}_hourly.csv", float_format="%.3f")

@@ -16,6 +16,7 @@ from the processed folder of `data_prep/historical` (see its README).
 | `historical_demand` | `"demand_MW"` | Demand column of `ch_demand_option_a_hourly.csv` (section Demand) |
 | `historical_generation_source` | `"entsoe_bfe_months"` | Table of the observed Swiss solar, wind, run-of-river, nuclear and "others" output: `"entsoe_bfe_months"`, `"entsoe"` or `"energy_charts"` (section Renewable infeed) |
 | `historical_hydro_end` | `"equal"` | National reservoir stock at the period end: `"equal"`, `"at_least"` or `"free"` (section Reservoir stocks) |
+| `historical_border_flows` | `"ntc"` | Border flows within the transfer limits (`"ntc"`), or fixed to the observed scheduled exchange (`"scheduled"`, a diagnostic; section Borders) |
 
 Quote the period in the scenario CSV. The reader evaluates cells with `eval`, so an unquoted
 `2025-11-15/2026-12-20` becomes a number and an empty cell becomes `"nan"`; both stop the run.
@@ -110,9 +111,15 @@ read from the processed folder for every hour of the period:
   lower bound is minus `CH_to_X` (`ATC_importlimit`). `NTC_CH_ratio` multiplies both directions once. A
   zero limit is valid.
 - The manifest records both files and counts the direction-hours per NTC source.
+- **Fixed flows** (`historical_border_flows = "scheduled"`, a diagnostic): both bounds of each line are
+  the observed scheduled exchange of `ch_exchanges_scheduled_hourly.csv` (Energy-Charts, + import into CH),
+  so the flow equals it and the transfer limits are not applied. The Swiss price then comes from inside
+  Switzerland alone. The manifest counts, per neighbour, the hours the observed exchange lies outside the
+  transfer limits.
 
 A missing file, column or hour, a duplicate column or hour, a missing or non-finite value, a negative
-limit, or an `NTC_CH_ratio` that is not a finite number of at least 0 stops the run.
+limit, an `NTC_CH_ratio` that is not a finite number of at least 0, or another `historical_border_flows`
+stops the run.
 
 ## Demand
 

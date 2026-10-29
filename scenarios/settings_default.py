@@ -23,6 +23,8 @@ seetings_default_param = {
     "historical_hydro_availability": "workbook",  # back-cast experiment: or "outage_messages" (availability 1, every outage from historical_hydro_outages)
     "historical_hydro_outages": False,  # back-cast experiment: CSV of unit outages and limits (input/historical/hydro_outages_2025_26.csv)
     "historical_hydro_path": False,  # back-cast experiment: "bfe_weekly" = national stock equal to every BFE reading inside the period; N (hours) = every N hours, interpolated between readings
+    "historical_border_flows": "ntc",  # back-cast: "ntc" = border flows within the transfer limits; "scheduled" = fixed to the observed scheduled exchange (diagnostic)
+    "historical_hydro_fixed_units": False,  # back-cast diagnostic: CSV of plant groups and their ENTSO-E A73 units (input/historical/entsoe_unit_groups.csv); groups with fix = yes produce their observed output (WASTA fleet)
     "t_start": 6553,
     "t_end": 6552,
     "consumer_start": 1,

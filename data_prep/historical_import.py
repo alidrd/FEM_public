@@ -66,6 +66,10 @@ RUN_RECORDS = {}  # sub-scenario -> time map and inputs manifest, written by cor
 # Tables of the processed folder of data_prep/historical (historical_data_dir)
 PRICES_TABLE = "prices_day_ahead_hourly.csv"
 NTC_TABLE = "ntc_dayahead_combined_hourly.csv"
+# Setting historical_border_flows: "ntc" = each border line's flow between its transfer limits; "scheduled" = fixed
+# to the observed scheduled exchange of EXCHANGE_TABLE (+ import), a diagnostic
+BORDER_FLOW_MODES = ("ntc", "scheduled")
+EXCHANGE_TABLE = "ch_exchanges_scheduled_hourly.csv"
 DEMAND_TABLE = "ch_demand_option_a_hourly.csv"
 # Demand columns of DEMAND_TABLE (setting historical_demand) and where each places on-site consumption
 DEMAND_PLACEMENT = {
@@ -100,6 +104,11 @@ BFE_REGIONS = {"VS": "Wallis", "GR": "Graubuenden", "TI": "Tessin"}  # canton ->
 OTHER_REGION = "UebrigCH"
 HYDRO_END_MODES = ("equal", "at_least", "free")  # setting historical_hydro_end
 MAX_READING_GAP = pd.Timedelta(days=8)  # longest gap between the two readings an instant is interpolated from
+# Setting historical_hydro_fixed_units: a CSV of plant groups (one or more WASTA plants and the ENTSO-E A73 units
+# that report them, ";"-separated); a group with fix = yes produces its units' observed output (UNITS_TABLE)
+UNITS_TABLE = "ch_generation_units_entsoe_hourly.csv"
+UNIT_GROUP_COLUMNS = ["group", "entsoe_units", "plants", "fix", "note"]
+UNIT_ROUNDING_MW = 1.0  # published unit output may exceed the installed capacity by this much (rounding); more raises
 
 
 def is_backcast(settings):
@@ -226,11 +235,15 @@ def read_historical_inputs(scenario_name, settings):
     stage(staged, inflow)
     stocks, stock_files, stock_assumptions = read_reservoir_stocks(scenario_name, settings, fleet)
     stage(staged, stocks)
-    operation, operation_files, operation_assumptions = read_hydro_operation(scenario_name, settings, fleet)
+    units, unit_files, unit_assumptions = read_fixed_units(scenario_name, settings, fleet, inflow, stocks)
+    stage(staged, units)
+    fixed_plants = [p for plants in units["Hydro_fixed_group"].values() for p in plants]
+    operation, operation_files, operation_assumptions = read_hydro_operation(scenario_name, settings, fleet,
+                                                                             fixed_plants)
     stage(staged, operation)
     files = [*fleet_files(settings), AVAILABILITY_TABLE, COST_WORKBOOK,
              f"input/LostLoadCost/lostLoadCost_{settings['lost_load_cost_mode']}.csv", *market_files, *demand_files,
-             *infeed_files, *fixed_files, *inflow_files, *stock_files, *operation_files]
+             *infeed_files, *fixed_files, *inflow_files, *stock_files, *unit_files, *operation_files]
     files = list(dict.fromkeys(files))  # a table two inputs read is recorded once
     assumptions = [
         f"border lines HVAC_<neighbour>_{NODE} for {', '.join(BORDER_NEIGHBOURS)}, the neighbour as start node",
@@ -242,6 +255,7 @@ def read_historical_inputs(scenario_name, settings):
         *fixed_assumptions,
         *inflow_assumptions,
         *stock_assumptions,
+        *unit_assumptions,
         *operation_assumptions,
     ]
     return staged, files, assumptions
@@ -250,7 +264,8 @@ def read_historical_inputs(scenario_name, settings):
 def read_market(scenario_name, settings):
     """Neighbour prices and day-ahead transfer limits on the four border lines, with the files read and the
     assumptions. For line HVAC_X00_CH00 the upper flow bound (ATC_exportlimit) is X_to_CH and the lower bound
-    is minus CH_to_X (ATC_importlimit); NTC_CH_ratio multiplies both directions once."""
+    is minus CH_to_X (ATC_importlimit); NTC_CH_ratio multiplies both directions once. With historical_border_flows
+    = 'scheduled' both bounds are the observed scheduled exchange, which fixes the flow."""
     ratio = settings["NTC_CH_ratio"]
     if isinstance(ratio, bool) or not isinstance(ratio, (int, float)) or not math.isfinite(ratio) or ratio < 0:
         raise ValueError(f"NTC_CH_ratio must be a finite number of at least 0, got {ratio!r}")
@@ -281,7 +296,23 @@ def read_market(scenario_name, settings):
         f"transfer limits: combined day-ahead NTC (Swissgrid D-2, else ENTSO-E), hourly minimum of the "
         f"quarter-hours, times NTC_CH_ratio = {ratio}; direction-hours per source: {counts}",
     ]
-    return staged, [str(Path(settings["historical_data_dir"]) / PRICES_TABLE), str(ntc_path)], assumptions
+    files = [str(Path(settings["historical_data_dir"]) / PRICES_TABLE), str(ntc_path)]
+    mode = settings["historical_border_flows"]
+    if mode not in BORDER_FLOW_MODES:
+        raise ValueError(f"historical_border_flows must be one of {list(BORDER_FLOW_MODES)}, got {mode!r}")
+    if mode == "scheduled":
+        observed = read_processed_hourly(settings, EXCHANGE_TABLE, list(BORDER_NEIGHBOURS))
+        staged["ATC_exportlimit"] = {(lines[n], t, s): float(observed.at[t, n])
+                                     for n in BORDER_NEIGHBOURS for t in observed.index}
+        staged["ATC_importlimit"] = {(lines[n], t, s): -float(observed.at[t, n])
+                                     for n in BORDER_NEIGHBOURS for t in observed.index}
+        above = {n: int(((observed[n] > ratio * limits[into_ch[n]]) | (-observed[n] > ratio * limits[out_of_ch[n]]))
+                        .sum()) for n in BORDER_NEIGHBOURS}
+        assumptions[1] = (f"border flows fixed to the observed scheduled exchange of {EXCHANGE_TABLE} (+ import into "
+                          f"CH), historical_border_flows = 'scheduled'; the transfer limits above are not applied; "
+                          f"hours the observed exchange lies outside them, per neighbour: {above}")
+        files.append(str(Path(settings["historical_data_dir"]) / EXCHANGE_TABLE))
+    return staged, files, assumptions
 
 
 def read_demand(scenario_name, settings):
@@ -679,10 +710,117 @@ def read_reservoir_stocks(scenario_name, settings, fleet):
     return staged, [str(path)], assumptions
 
 
-def read_hydro_operation(scenario_name, settings, fleet):
+def read_fixed_units(scenario_name, settings, fleet, inflow, stocks):
+    """Plant groups whose storage-hydro output equals the observed output of their ENTSO-E A73 units
+    (historical_hydro_fixed_units, a diagnostic), with the files read and the assumptions. Staged: Hydro_fixed_group
+    (group -> plants) and Hydro_fixed_output ((group, step, scenario) -> MW) in every hour ENTSO-E published each of
+    the group's units; in the other hours the group is free. Raises on a malformed group file, a plant outside the
+    WASTA fleet or in two groups, a unit in two groups or missing from UNITS_TABLE, no group to fix, a group without
+    a published hour, negative output, output above the group's available capacity by more than UNIT_ROUNDING_MW (up
+    to it the output is cut to the capacity), and a group without pumps whose start stock and inflow cannot supply its
+    observed output even with no spill."""
+    path = settings["historical_hydro_fixed_units"]
+    if path is False:
+        return {"Hydro_fixed_group": {}, "Hydro_fixed_output": {}}, [], []
+    if not isinstance(path, str):
+        raise ValueError(f"historical_hydro_fixed_units must be False or the path of a CSV, got {path!r}")
+    if settings["historical_hydro_fleet"] != "wasta_individual":
+        raise ValueError(f"historical_hydro_fixed_units needs historical_hydro_fleet = 'wasta_individual' (plants "
+                         f"ENTSO-E units can report), got {settings['historical_hydro_fleet']!r}")
+    if not Path(path).is_file():
+        raise ValueError(f"historical_hydro_fixed_units: no such file {path}")
+    table = pd.read_csv(path, dtype=str, encoding="utf-8", keep_default_na=False)
+    missing = [c for c in UNIT_GROUP_COLUMNS if c not in table.columns]
+    if missing:
+        raise ValueError(f"{path} lacks the columns {missing}")
+    if table["group"].duplicated().any():
+        raise ValueError(f"{path}: groups named twice: {sorted(set(table.loc[table['group'].duplicated(), 'group']))}")
+    s = scenario_name
+    groups, units_of, group_of_plant, group_of_unit = {}, {}, {}, {}
+    for i, row in table.iterrows():
+        g = row["group"]
+        if row["fix"] not in ("yes", "no"):
+            raise ValueError(f"{path}, row {i + 2}: fix must be yes or no, got {row['fix']!r}")
+        plants, units = (sorted({x.strip() for x in row[c].split(";") if x.strip()}) for c in ("plants", "entsoe_units"))
+        if not plants or not units:
+            raise ValueError(f"{path}, row {i + 2}: group {g} needs at least one plant and one unit")
+        for p in plants:
+            if p not in fleet["Plant_list"] or fleet["Map_plant_tech"][p] not in HYDRO_TECHS:
+                raise ValueError(f"{path}, row {i + 2}: {p} is no storage-hydro plant of the WASTA fleet")
+            if p in group_of_plant:
+                raise ValueError(f"{path}: {p} is in the groups {group_of_plant[p]} and {g}")
+            group_of_plant[p] = g
+        for u in units:
+            if u in group_of_unit:
+                raise ValueError(f"{path}: unit {u} is in the groups {group_of_unit[u]} and {g}")
+            group_of_unit[u] = g
+        if row["fix"] == "yes":
+            groups[g], units_of[g] = plants, units
+    if not groups:
+        raise ValueError(f"{path}: no group with fix = yes, so historical_hydro_fixed_units would fix nothing")
+    columns = sorted({u for units in units_of.values() for u in units})
+    units_path = processed_table(settings, UNITS_TABLE, ["time_utc", *columns])
+    observed = pd.read_csv(units_path, usecols=["time_utc", *columns])
+    observed.index = pd.to_datetime(observed["time_utc"], utc=True)
+    time_map = historical_time_map(settings["historical_period"])
+    absent = time_map.loc[~time_map["time_utc"].isin(observed.index), "time_utc"]
+    if len(absent):
+        raise ValueError(f"{UNITS_TABLE}: {len(absent)} hours of the period are missing, e.g. {absent.iloc[0]}")
+    observed = observed.loc[time_map["time_utc"], columns].apply(pd.to_numeric, errors="coerce")
+    observed.index = time_map["t"].to_numpy()
+    if observed.isin([math.inf, -math.inf]).any().any() or (observed < 0).any().any():
+        raise ValueError(f"{UNITS_TABLE}: non-finite or negative output of {list(observed.columns[(observed < 0).any()])}")
+    staged = {"Hydro_fixed_group": groups, "Hydro_fixed_output": {}}
+    summary, cut = [], {}
+    for g, plants in groups.items():
+        output = observed[units_of[g]].sum(axis=1, min_count=len(units_of[g]))  # NaN where a unit is unpublished
+        published = output.notna()
+        if not published.any():
+            raise ValueError(f"{UNITS_TABLE}: no published hour of the units of group {g} in the period")
+        capacity = sum(pd.Series({t: fleet["Plant_capacity_gen"][(p, s)] * fleet["Avail_plant"][(p, t, s)]
+                                  for t in output.index}) for p in plants)
+        excess = output - capacity
+        if (excess > UNIT_ROUNDING_MW).any():
+            t = excess.idxmax()
+            raise ValueError(f"group {g}: observed output {output[t]:.1f} MW above its available capacity "
+                             f"{capacity[t]:.1f} MW at {t}; set fix = no or check the plants' capacity")
+        if (excess > 0).any():
+            cut[g] = int((excess > 0).sum())
+            output = output.where(~(excess > 0), capacity)
+        if not any(fleet["Plant_capacity_pmp"].get((p, s), 0.0) > 0 for p in plants):
+            check_fixed_water(g, plants, output.fillna(0.0), fleet, inflow, stocks, s)
+        staged["Hydro_fixed_output"].update({(g, t, s): float(output[t]) for t in output.index[published]})
+        summary.append(f"{g} ({', '.join(plants)}; units {', '.join(units_of[g])}): {int(published.sum())} of "
+                       f"{len(output)} hours published, {output.sum() / 1e3:,.0f} GWh")
+    assumptions = [f"fixed plant groups (historical_hydro_fixed_units = {path!r}): output of each group equal to its "
+                   f"ENTSO-E A73 units' observed output ({UNITS_TABLE}); free in the hours a unit is unpublished: "
+                   + "; ".join(summary)]
+    if cut:
+        assumptions.append(f"observed output above the group's available capacity by at most {UNIT_ROUNDING_MW} MW "
+                           f"(rounding) cut to the capacity, hours per group: {cut}")
+    return staged, [path, str(units_path)], assumptions
+
+
+def check_fixed_water(group, plants, output, fleet, inflow, stocks, scenario_name):
+    """Raise unless the group's start stock and inflow can supply its fixed output: the stock, spilling only above
+    the group's storage and drawing output at the best discharge efficiency of its plants, stays at or above 0."""
+    s = scenario_name
+    stock = sum(stocks["Reservoir_start_stock"][(p, s)] for p in plants)
+    storage = sum(fleet["Plant_capacity_strg"][(p, s)] for p in plants)
+    efficiency = max(fleet["Map_eff_out_plant"][p] for p in plants)
+    for t, value in output.items():
+        stock = min(storage, stock + sum(inflow["Inflow_data"][(p, t, s)] for p in plants) - value / efficiency)
+        if stock < 0:
+            raise ValueError(f"group {group}: its observed output needs {-stock:,.0f} MWh more water than its start "
+                             f"stock and inflow hold by {t}; set fix = no or check the plants' inflow")
+
+
+def read_hydro_operation(scenario_name, settings, fleet, fixed_plants=()):
     """The storage-hydro operating constraints of a back-cast (experiments/backcast/SPEC_hydro_operation.md): the
     must-run floor and the upward reserve withheld per scenario, and the outage caps per (plant, step, scenario);
-    with the files read and the assumptions. Everything is off unless its setting is given."""
+    with the files read and the assumptions. Everything is off unless its setting is given. The turbine cap of a
+    plant in fixed_plants (historical_hydro_fixed_units) is its installed capacity: its observed output holds its
+    outages already; its pump cap stays."""
     s = scenario_name
     floor = operation_MW(settings, "historical_hydro_floor_MW")
     reserve = operation_MW(settings, "historical_hydro_reserve_up_MW")
@@ -703,6 +841,15 @@ def read_hydro_operation(scenario_name, settings, fleet):
         files.append(path)
         assumptions.append(f"unit outages and limits from {path} (windows in local wall time or UTC, end "
                            f"exclusive, clipped to the period): " + "; ".join(windows))
+        lifted = {}
+        for (p, t, _), (turbine, pump) in list(staged["Hydro_outage_cap"].items()):
+            if p in fixed_plants:
+                staged["Hydro_outage_cap"][(p, t, s)] = (fleet["Plant_capacity_gen"][(p, s)], pump)
+                lifted[p] = lifted.get(p, 0) + 1
+        if lifted:
+            assumptions.append(f"turbine caps of the fixed plants (historical_hydro_fixed_units) lifted to their "
+                               f"installed capacity, since their observed output holds their outages; pump caps kept; "
+                               f"hours per plant: {lifted}")
     return staged, files, assumptions
 
 

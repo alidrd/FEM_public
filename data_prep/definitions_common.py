@@ -54,6 +54,10 @@ Reservoir_path_target = {}
 Hydro_operation = {}
 # back-cast experiment: outage caps of storage-hydro plants, keyed (plant, step, scenario) -> (turbine MW, pump MW)
 Hydro_outage_cap = {}
+# back-cast diagnostic: plant groups with observed output, group -> plants, and that output in MW, keyed
+# (group, step, scenario); historical_hydro_fixed_units
+Hydro_fixed_group = {}
+Hydro_fixed_output = {}
 
 # Infeed = {} # dictionary of Infeed data for all related plants. e.g., Infeed[node, tech, t] = 123.2 where node is nodes in the model, tech is in tech_infeed_list, t is the time step
 

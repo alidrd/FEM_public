@@ -1,5 +1,6 @@
 """ENTSO-E Transparency Platform, RESTful API: day-ahead prices of CH and its four neighbours (document type
-A44) and actual Swiss generation per production type (A75), one raw XML file per year chunk.
+A44) and actual Swiss generation per production type (A75), one raw XML file per year chunk; actual generation
+per generation unit (A73), one raw XML file per local day.
 
 The API token is read at run time and never stored: from the file passed to `download.py --token-file`, or else
 from the environment variable ENTSOE_API_KEY. Raw files and the download manifest hold the request URL with the
@@ -19,7 +20,12 @@ from data_prep.historical.timeutils import period_bounds_utc
 RAW = RAW_DIR / "entsoe"
 PRICE_DIR = RAW / "prices_A44"
 GENERATION_DIR = RAW / "generation_A75"
+UNITS_DIR = RAW / "generation_units_A73"
 MIN_INTERVAL_S = 2.0  # pause between requests; the API reset a connection at 1 s spacing (2026-10-23)
+UNIT_REQUEST_HOURS = 24  # A73 answers at most one day per request; three days were refused (2026-10-23)
+# The acknowledgement A73 returns for a window without any published value, e.g. the 25th hour of the autumn
+# clock change, which some units publish only inside a longer window
+NO_DATA = "No matching data found"
 
 # Day-ahead price: since 1 Oct 2025 the API returns two A44 series for DE-LU and AT, classificationSequence 1
 # and 2. Sequence 1 equals the price Energy-Charts publishes from SMARD (single day-ahead coupling) in every
@@ -97,6 +103,29 @@ def download_generation(start_day: str, end_day: str, force: bool) -> Path:
     return request(params, generation_path(start_day, end_day), force)
 
 
+def unit_requests(day: str) -> list[tuple[Path, pd.Timestamp, pd.Timestamp]]:
+    """The A73 requests of one local day as (file, start, end), UTC: the whole day, or on the 25-hour day of the
+    autumn clock change its first UNIT_REQUEST_HOURS hours and the rest."""
+    start, end = period_bounds_utc(day, day)
+    split = start + pd.Timedelta(hours=UNIT_REQUEST_HOURS)
+    if end <= split:
+        return [(UNITS_DIR / f"A73_CH00_{day}_{day}.xml", start, end)]
+    return [(UNITS_DIR / f"A73_CH00_{day}_{day}_h01-24.xml", start, split),
+            (UNITS_DIR / f"A73_CH00_{day}_{day}_h25.xml", split, end)]
+
+
+def download_generation_units(start_day: str, end_day: str, force: bool) -> list[Path]:
+    """Actual generation per generation unit in the Swiss control area (realised, A16), local days start_day..end_day,
+    one request per day (two on the autumn clock change)."""
+    paths = []
+    for day in pd.date_range(start_day, end_day, freq="D").strftime("%Y-%m-%d"):
+        for dest, start, end in unit_requests(day):
+            params = {"documentType": "A73", "processType": "A16", "in_Domain": ZONES["CH00"]["entsoe"],
+                      "periodStart": start.strftime("%Y%m%d%H%M"), "periodEnd": end.strftime("%Y%m%d%H%M")}
+            paths.append(request(params, dest, force))
+    return paths
+
+
 def _local(tag: str) -> str:
     return tag.rsplit("}", 1)[-1]
 
@@ -112,41 +141,78 @@ def parse_series(xml_text: str) -> dict[tuple, pd.Series]:
     """
     root = ET.fromstring(xml_text)
     if _local(root.tag) == "Acknowledgement_MarketDocument":
-        reason = " ".join(e.text or "" for e in root.iter() if _local(e.tag) == "text")
-        raise ValueError(f"ENTSO-E returned no data: {reason.strip()}")
+        raise ValueError(f"ENTSO-E returned no data: {_acknowledgement_reason(root)}")
     points: dict[tuple, dict] = {}
     for series_el in (e for e in root.iter() if _local(e.tag) == "TimeSeries"):
         fields = {_local(e.tag): e.text for e in series_el.iter()
                   if _local(e.tag) in ("psrType", "classificationSequence_AttributeInstanceComponent.position",
                                        "outBiddingZone_Domain.mRID", "curveType")}
-        curve = fields.get("curveType", "A01")
-        if curve not in ("A01", "A03"):
-            raise ValueError(f"unsupported curveType {curve}")
         key = (fields.get("psrType"), fields.get("classificationSequence_AttributeInstanceComponent.position"),
                "consumption" if "outBiddingZone_Domain.mRID" in fields else "generation")
-        target = points.setdefault(key, {})
-        for period in (e for e in series_el if _local(e.tag) == "Period"):
-            children = {_local(c.tag): c for c in period}
-            bounds = {_local(c.tag): pd.Timestamp(c.text) for c in children["timeInterval"]}
-            step = pd.Timedelta(children["resolution"].text)
-            n_steps = int((bounds["end"] - bounds["start"]) / step)
-            values = {}
-            for point in (c for c in period if _local(c.tag) == "Point"):
-                point_fields = {_local(c.tag): c.text for c in point}
-                amount = point_fields["quantity"] if "quantity" in point_fields else point_fields["price.amount"]
-                values[int(point_fields["position"])] = float(amount)
-            positions = range(1, n_steps + 1) if curve == "A03" else sorted(values)
-            current = None
-            for pos in positions:
-                current = values.get(pos, current)
-                if current is None:
-                    raise ValueError(f"A03 period starting {bounds['start']} has no value at position 1")
-                stamp = bounds["start"] + (pos - 1) * step
-                if stamp in target:
-                    raise ValueError(f"two values for {stamp} in series {key}")
-                target[stamp] = current
+        _add_points(points.setdefault(key, {}), series_el, fields.get("curveType", "A01"), key)
     if not points:
         raise ValueError("ENTSO-E document has no points")
+    return _as_series(points)
+
+
+def parse_unit_series(xml_text: str) -> dict[tuple[str, str, str], pd.Series]:
+    """Every TimeSeries of an A73 document (generation per unit), at the published resolution, UTC interval start,
+    keyed (unit name, unit EIC, psrType); series of one unit are joined. The acknowledgement NO_DATA gives no series.
+    Raises on any other acknowledgement, a consumption series, an unknown curve type, a stamp given twice for one
+    unit, or a document without points."""
+    root = ET.fromstring(xml_text)
+    if _local(root.tag) == "Acknowledgement_MarketDocument":
+        reason = _acknowledgement_reason(root)
+        if NO_DATA in reason:
+            return {}
+        raise ValueError(f"ENTSO-E returned no data: {reason}")
+    points: dict[tuple, dict] = {}
+    for series_el in (e for e in root.iter() if _local(e.tag) == "TimeSeries"):
+        fields = {_local(e.tag): e.text for e in series_el.iter()
+                  if _local(e.tag) in ("psrType", "outBiddingZone_Domain.mRID", "curveType")}
+        resource = next(e for e in series_el.iter() if _local(e.tag) == "PowerSystemResources")
+        unit = {_local(e.tag): e.text for e in resource}
+        if "outBiddingZone_Domain.mRID" in fields:
+            raise ValueError(f"A73: consumption series of {unit['name']}; this table holds generation only")
+        key = (unit["name"], unit["mRID"], fields["psrType"])
+        _add_points(points.setdefault(key, {}), series_el, fields.get("curveType", "A01"), key)
+    if not points:
+        raise ValueError("ENTSO-E document has no points")
+    return _as_series(points)
+
+
+def _acknowledgement_reason(root) -> str:
+    return " ".join(e.text or "" for e in root.iter() if _local(e.tag) == "text").strip()
+
+
+def _add_points(target: dict, series_el, curve: str, key) -> None:
+    """Add the points of every Period of one TimeSeries to target (stamp -> value). Values are the point's quantity
+    or price.amount. Curve A03 (variable blocks) holds a value until the next listed position."""
+    if curve not in ("A01", "A03"):
+        raise ValueError(f"unsupported curveType {curve}")
+    for period in (e for e in series_el if _local(e.tag) == "Period"):
+        children = {_local(c.tag): c for c in period}
+        bounds = {_local(c.tag): pd.Timestamp(c.text) for c in children["timeInterval"]}
+        step = pd.Timedelta(children["resolution"].text)
+        n_steps = int((bounds["end"] - bounds["start"]) / step)
+        values = {}
+        for point in (c for c in period if _local(c.tag) == "Point"):
+            point_fields = {_local(c.tag): c.text for c in point}
+            amount = point_fields["quantity"] if "quantity" in point_fields else point_fields["price.amount"]
+            values[int(point_fields["position"])] = float(amount)
+        positions = range(1, n_steps + 1) if curve == "A03" else sorted(values)
+        current = None
+        for pos in positions:
+            current = values.get(pos, current)
+            if current is None:
+                raise ValueError(f"A03 period starting {bounds['start']} has no value at position 1")
+            stamp = bounds["start"] + (pos - 1) * step
+            if stamp in target:
+                raise ValueError(f"two values for {stamp} in series {key}")
+            target[stamp] = current
+
+
+def _as_series(points: dict[tuple, dict]) -> dict[tuple, pd.Series]:
     out = {}
     for key, values in points.items():
         series = pd.Series(values).sort_index()

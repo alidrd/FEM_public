@@ -7,9 +7,9 @@ adds go through add_backcast_constraint, which registers them for the default du
 from pyomo.environ import Constraint, Param, Set, value
 from pyomo.repn import generate_standard_repn
 
-from data_prep.definitions_common import (Hydro_operation, Hydro_outage_cap, Map_plant_node, Map_plant_tech,
-                                          Reservoir_end_target, Reservoir_group, Reservoir_path_target,
-                                          Reservoir_start_stock)
+from data_prep.definitions_common import (Hydro_fixed_group, Hydro_fixed_output, Hydro_operation, Hydro_outage_cap,
+                                          Map_plant_node, Map_plant_tech, Reservoir_end_target, Reservoir_group,
+                                          Reservoir_path_target, Reservoir_start_stock)
 from data_prep.historical_import import FIXED_PLANT_TECH, HYDRO_END_MODES, HYDRO_TECHS
 from model.components_common import storage_balance_terms
 from model.variable_presets import read_variable_presets
@@ -50,6 +50,7 @@ def apply_historical_constraints(model, scenario_name, preset_file):
     add_fixed_generation(model)
     add_reservoir_boundaries(model)
     add_hydro_operation(model)
+    add_fixed_hydro_output(model)
     for line in audit_objective(model):
         print("objective audit:", line)
 
@@ -70,6 +71,32 @@ def add_fixed_generation(model):
 
 def fixed_generation_rule(model, p, t, s):
     return model.gen[p, t, s] == model.gen_max[p, s] * model.avail_plant[p, t, s]
+
+
+def add_fixed_hydro_output(model):
+    """Output of each plant group of Hydro_fixed_output equals its observed output in the hours it is published
+    (historical_hydro_fixed_units, a diagnostic); unscaled, so the dual is in EUR/MWh. Raises if a group's plant is no
+    storage-hydro plant of the model or a step is no model step."""
+    if not Hydro_fixed_output:
+        return
+    hydro = [p for p in model.P_gen if Map_plant_tech[p] in HYDRO_TECHS]
+    problems = [f"group {g}: {p} is no storage-hydro plant of the model" for g, plants in Hydro_fixed_group.items()
+                for p in plants if p not in hydro]
+    problems += [f"fixed output of {g} for unknown group" for g in {g for g, _, _ in Hydro_fixed_output}
+                 if g not in Hydro_fixed_group]
+    problems += [f"fixed output step {t} is no model step" for t in {t for _, t, _ in Hydro_fixed_output}
+                 if t not in model.T]
+    if problems:
+        raise ValueError("fixed hydro output: " + "; ".join(problems))
+    model.G_hydro_fixed = Set(initialize=sorted(Hydro_fixed_group), doc="plant groups with observed output")
+    add_backcast_constraint(model, "hydro_fixed_output", Constraint(
+        model.G_hydro_fixed, model.T, model.Scenarios, rule=hydro_fixed_output_rule))
+
+
+def hydro_fixed_output_rule(model, g, t, s):
+    if (g, t, s) not in Hydro_fixed_output:
+        return Constraint.Skip
+    return sum(model.gen[p, t, s] for p in Hydro_fixed_group[g]) == Hydro_fixed_output[(g, t, s)]
 
 
 def add_reservoir_boundaries(model):

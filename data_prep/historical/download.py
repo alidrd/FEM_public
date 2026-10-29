@@ -3,6 +3,10 @@
 Usage (from the repo root):
     python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30
     python -m data_prep.historical.download --start 2023-10-01 --end 2026-09-30 --sources entsoe entsoe_ntc         --token-file <path of the ENTSO-E token file>
+    python -m data_prep.historical.download --start 2025-10-01 --end 2026-07-31 --sources entsoe_units         --token-file <path of the ENTSO-E token file>
+
+entsoe_units (generation per unit, A73) takes one request per day, about 12 s each, so fetch it for the days
+a back-cast needs rather than the whole processed period.
 
 Days are local (Europe/Zurich) and inclusive. Files already on disk are kept; pass --force to
 fetch them again (needed for files of the running year, which the publishers keep extending).
@@ -16,7 +20,7 @@ from data_prep.historical.config import DIRECTIONS, ZONES
 from data_prep.historical.timeutils import year_chunks
 
 PUBLIC_SOURCES = ["energy_charts", "swissgrid", "bfe"]
-ALL_SOURCES = PUBLIC_SOURCES + ["entsoe", "entsoe_ntc"]
+ALL_SOURCES = PUBLIC_SOURCES + ["entsoe", "entsoe_ntc", "entsoe_units"]
 
 
 def download_energy_charts(start_day: str, end_day: str, force: bool) -> None:
@@ -57,12 +61,18 @@ def download_entsoe(start_day: str, end_day: str, force: bool) -> None:
         entsoe.download_generation(first, last, force)
 
 
+def download_entsoe_units(start_day: str, end_day: str, force: bool) -> None:
+    print("ENTSO-E actual generation per unit (A73), one request per day")
+    entsoe.token()  # fail before any request if the token is missing
+    entsoe.download_generation_units(start_day, end_day, force)
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--start", required=True, help="first local day, YYYY-MM-DD")
     parser.add_argument("--end", required=True, help="last local day (inclusive), YYYY-MM-DD")
     parser.add_argument("--sources", nargs="+", choices=ALL_SOURCES, default=PUBLIC_SOURCES,
-                        help=f"default: {' '.join(PUBLIC_SOURCES)} (entsoe and entsoe_ntc need a token)")
+                        help=f"default: {' '.join(PUBLIC_SOURCES)} (the entsoe sources need a token)")
     parser.add_argument("--token-file", help="file holding the ENTSO-E API token (one line); else the environment "
                                              "variable ENTSOE_API_KEY is used")
     parser.add_argument("--force", action="store_true", help="re-download files already on disk")
@@ -76,6 +86,7 @@ def main(argv: list[str] | None = None) -> None:
         "bfe": lambda s, e, f: bfe.download(f),
         "entsoe": download_entsoe,
         "entsoe_ntc": download_entsoe_ntc,
+        "entsoe_units": download_entsoe_units,
     }
     for source in args.sources:
         steps[source](args.start, args.end, args.force)

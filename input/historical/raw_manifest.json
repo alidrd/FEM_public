@@ -224,6 +224,3056 @@
   "last_modified": null,
   "etag": null
  },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-01_2025-10-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202509302200&periodEnd=202510012200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:46:48+00:00",
+  "bytes": 127580,
+  "sha256": "ff2cd3c207e5cfc68ffe925960af76076c6ffcb852d0f5f4286b8bf697ad19b7",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-02_2025-10-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510012200&periodEnd=202510022200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:47:02+00:00",
+  "bytes": 123417,
+  "sha256": "ddc08e2dfcc798500ecf12e5586b6694eee5e191322e04886a6893a99aa08955",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-03_2025-10-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510022200&periodEnd=202510032200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:47:11+00:00",
+  "bytes": 135120,
+  "sha256": "821ad606d890601151841a27b5b008fd0bfc80e3dd57510be82a11aeb76995db",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-04_2025-10-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510032200&periodEnd=202510042200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:47:27+00:00",
+  "bytes": 124687,
+  "sha256": "957941beed6af2288e3b000560cd1cfa261edfe7435d8632787f925649c58004",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-05_2025-10-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510042200&periodEnd=202510052200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:47:38+00:00",
+  "bytes": 111362,
+  "sha256": "d15c6f60f24b001ac3d76f61791961ac248015cbece8c581a629cd1e7eb04762",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-06_2025-10-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510052200&periodEnd=202510062200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:01+00:00",
+  "bytes": 134860,
+  "sha256": "0c13be9cb873235b189b1cc714d81ae740d96c5b76361c345358fe184964c123",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-07_2025-10-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510062200&periodEnd=202510072200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:18+00:00",
+  "bytes": 139084,
+  "sha256": "b235bbeaa613406d180ead69af3924a4e6fc4a2061f4eb26afca7e21e61033b5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-08_2025-10-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510072200&periodEnd=202510082200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:27+00:00",
+  "bytes": 139958,
+  "sha256": "2784bbbbd30346842a34e06fa4cfa38f7c234d88198e797893badcd06cfafd57",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-09_2025-10-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510082200&periodEnd=202510092200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:39+00:00",
+  "bytes": 146257,
+  "sha256": "808774cf39cce98a5b015db3e32aea6bc7b123ec37c6fdca25cbc1615cd2282e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-10_2025-10-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510092200&periodEnd=202510102200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:47+00:00",
+  "bytes": 139644,
+  "sha256": "83ee9ee127661bf610d9cbfcd09cebfb6aa3edb2c4fa700fc007850ca138aff1",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-11_2025-10-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510102200&periodEnd=202510112200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:06+00:00",
+  "bytes": 120644,
+  "sha256": "662cad7c6a6f77350520a07c602771e6d206b47d581f27c8c950be09fa76d720",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-12_2025-10-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510112200&periodEnd=202510122200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:13+00:00",
+  "bytes": 113584,
+  "sha256": "278c4e2e82261ffa6b753aea277feac8c87b7420ad9839d376bab1ca78aec149",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-13_2025-10-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510122200&periodEnd=202510132200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:26+00:00",
+  "bytes": 103974,
+  "sha256": "27c64f13d81691da563b5cd1b4caedb3b933b1fdaaf1552eb262a8168921ce16",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-14_2025-10-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510132200&periodEnd=202510142200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:32+00:00",
+  "bytes": 101520,
+  "sha256": "5ec3f2bfd1d2671c79b285052416e420cc82716a609e6d6063fd126b0aeb0b28",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-15_2025-10-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510142200&periodEnd=202510152200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:50:47+00:00",
+  "bytes": 145517,
+  "sha256": "ac75c9eb622c3805a47b84ba5127ed7e84f89af3102d52590d9d1a7755572cb3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-16_2025-10-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510152200&periodEnd=202510162200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:03+00:00",
+  "bytes": 110583,
+  "sha256": "a84e9695640d19283cf2bf715c88bb77083e32eed97a820f19ffefe5e0377dbf",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-17_2025-10-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510162200&periodEnd=202510172200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:10+00:00",
+  "bytes": 107683,
+  "sha256": "77099156ad7c84fc019dbb03369a31597af23cd8b16acae5233a2065693c1e9e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-18_2025-10-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510172200&periodEnd=202510182200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:26+00:00",
+  "bytes": 127605,
+  "sha256": "b4af33b4a3d9bb0404ab0d281bf8ee51e8320567b2b7fea55f1220fc915cfd2a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-19_2025-10-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510182200&periodEnd=202510192200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:42+00:00",
+  "bytes": 116156,
+  "sha256": "15dde2b38a0dded444e58a66bd8d4150eb4008d54cc2c75d09a728a495f1d879",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-20_2025-10-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510192200&periodEnd=202510202200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:47+00:00",
+  "bytes": 141089,
+  "sha256": "f07d927ae543d43df2beb02d9b9dcdcf7c0b72d58cbe37ced2f620e874ee5fe3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-21_2025-10-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510202200&periodEnd=202510212200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:02+00:00",
+  "bytes": 137206,
+  "sha256": "5d6b24958f270631dbba06cad7eb08563436ba496e5fbf7f0cee25315a0d815d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-22_2025-10-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510212200&periodEnd=202510222200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:07+00:00",
+  "bytes": 143703,
+  "sha256": "75db96fddee977145428c0695a9a07cb5d01118c10afd422d13cb67bbeac5088",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-23_2025-10-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510222200&periodEnd=202510232200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:21+00:00",
+  "bytes": 140274,
+  "sha256": "8adc11e50be2b3d0847027d82b074c9309e4cb9f4a04ec64cbfc40cb6d624610",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-24_2025-10-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510232200&periodEnd=202510242200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:35+00:00",
+  "bytes": 135412,
+  "sha256": "03355a9633e14e4f4f9bf74dc2ee486aeeee14efbbbd7832fd3f78f6420270e3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-25_2025-10-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510242200&periodEnd=202510252200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:51+00:00",
+  "bytes": 120785,
+  "sha256": "ac1277151919ea0bbe45747f55f50774c2e50de33df860895ed00bccaf10ffea",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-26_2025-10-26_h01-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510252200&periodEnd=202510262200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:13:52+00:00",
+  "bytes": 113181,
+  "sha256": "57f347423385751410ad34eb4e0582eed037593afb500250419c8377698d0685",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-26_2025-10-26_h25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510262200&periodEnd=202510262300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:14:10+00:00",
+  "bytes": 968,
+  "sha256": "8eebab496d8a9a769bb27d75f71e83f45646f026e6c3efa21e994e69f784c309",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-27_2025-10-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510262300&periodEnd=202510272300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:55+00:00",
+  "bytes": 143769,
+  "sha256": "164ed112f9e8f72ed24a204145f28974304c1209d0222e9eaaa3cc2d20d368b6",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-28_2025-10-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510272300&periodEnd=202510282300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:11+00:00",
+  "bytes": 135791,
+  "sha256": "6426b86f345cc3583e2334495730691793323efc01b19c26bfbb4c529136addd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-29_2025-10-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510282300&periodEnd=202510292300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:28+00:00",
+  "bytes": 137880,
+  "sha256": "10778c4cb797c34cfe41574be35ea8f0a1c080412741d621aef551bf74abe8ed",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-30_2025-10-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510292300&periodEnd=202510302300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:43+00:00",
+  "bytes": 142740,
+  "sha256": "7140736df76d0ffd7aa14622ea9bd8c9eb5064c72991a8fe120aec0b1171d88d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-10-31_2025-10-31.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510302300&periodEnd=202510312300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:55+00:00",
+  "bytes": 153050,
+  "sha256": "49dec812965525e3c74e59a6c2e56eb632cee8284b18b5d134acad074a1ff28c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-01_2025-11-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202510312300&periodEnd=202511012300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:57+00:00",
+  "bytes": 109370,
+  "sha256": "d78f8b7ecf79a21f2013864cbf6b7ebbb0aa7204ca617604feee928124cc4ed1",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-02_2025-11-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511012300&periodEnd=202511022300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:10+00:00",
+  "bytes": 128004,
+  "sha256": "ca518ac9f01fdfd5667be8d423c07a777947d03e3e9d64e2575d164e629e55f9",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-03_2025-11-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511022300&periodEnd=202511032300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:12+00:00",
+  "bytes": 136870,
+  "sha256": "54737011418aa595a0bc865bbae85c5cf72d7e9d90e161b3a298fee3d6e71355",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-04_2025-11-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511032300&periodEnd=202511042300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:27+00:00",
+  "bytes": 145042,
+  "sha256": "441c1b2e0d375e3b7b558d22908067a96de69f5edd6ee6e862d8ec47cc691a44",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-05_2025-11-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511042300&periodEnd=202511052300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:30+00:00",
+  "bytes": 141907,
+  "sha256": "7f5b42892474b3ccabf30362699af326521e6f49381eb3d1f9ee472dba1ac348",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-06_2025-11-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511052300&periodEnd=202511062300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:32+00:00",
+  "bytes": 146181,
+  "sha256": "f4491f6525305a6e4c5b76f0bc779830df309179c1b76479baf556c655cbf353",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-07_2025-11-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511062300&periodEnd=202511072300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:48+00:00",
+  "bytes": 135819,
+  "sha256": "f1f525ee6275e8428fbed2e47dc7eed9d19a851e5e89067746ee9f033ca44ac8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-08_2025-11-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511072300&periodEnd=202511082300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:05+00:00",
+  "bytes": 128053,
+  "sha256": "9bb019d6516b8c94b3ee810d17d9ddffb4bd3e5dccc3bb29abdce9f8e629fdf7",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-09_2025-11-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511082300&periodEnd=202511092300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:24+00:00",
+  "bytes": 109234,
+  "sha256": "6a15f986bfcc68a8325819c40f54adf223e737e05346696d55f6221b80907be8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-10_2025-11-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511092300&periodEnd=202511102300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:40+00:00",
+  "bytes": 141387,
+  "sha256": "8d22266e0ef890f6a49c7f4d6c21625c2427d80d088bea43ea0a5df100edbcb4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-11_2025-11-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511102300&periodEnd=202511112300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:58+00:00",
+  "bytes": 134005,
+  "sha256": "e56e5da5b4cdb4d572674b87b3973b629c7db393363de575f174ae12c7107aff",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-12_2025-11-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511112300&periodEnd=202511122300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:04+00:00",
+  "bytes": 141611,
+  "sha256": "18a023da9e0e1b66dbbb52171966a6303bc5940bcb824e2a30461c26ae9650fd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-13_2025-11-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511122300&periodEnd=202511132300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:20+00:00",
+  "bytes": 142538,
+  "sha256": "c67686959e121e469e35a26c60658aa043e356a42c5431aa5dd4a532543aff48",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-14_2025-11-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511132300&periodEnd=202511142300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:24+00:00",
+  "bytes": 146714,
+  "sha256": "53131e156c3be8f2056d577e73cdebf6f5fb4592a0ee14eea8d7414ec7d23c71",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-15_2025-11-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511142300&periodEnd=202511152300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:40+00:00",
+  "bytes": 120362,
+  "sha256": "3577d3da9fb811bce56842076a60f6e04ec7fcc0abd8536c2cd09c96de1eddac",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-16_2025-11-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511152300&periodEnd=202511162300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:51+00:00",
+  "bytes": 111512,
+  "sha256": "304ca5208d05c21383d194f56418cdece9547dc6ce0b4324fe2a6ba2b0f1d034",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-17_2025-11-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511162300&periodEnd=202511172300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:57+00:00",
+  "bytes": 135430,
+  "sha256": "49d352d3a9ca741a12bd3d2fbf74d4d092e24a8460faded0177c8c6327d12854",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-18_2025-11-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511172300&periodEnd=202511182300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:02+00:00",
+  "bytes": 142512,
+  "sha256": "7c37fb45a54107d2ffae2c95215d427bb480153a96141f522b76a08696b2ab4e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-19_2025-11-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511182300&periodEnd=202511192300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:10+00:00",
+  "bytes": 148998,
+  "sha256": "b02bc19d06f059feec35f474b086ecd21469bc0c7aa45817b7304668d08bf60f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-20_2025-11-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511192300&periodEnd=202511202300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:16+00:00",
+  "bytes": 149065,
+  "sha256": "45c4b71a5f74d1eb746b42b363210fcbd38433febe89139a7ac1d99f92131fe4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-21_2025-11-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511202300&periodEnd=202511212300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:24+00:00",
+  "bytes": 158682,
+  "sha256": "6b44a2760d268c77bb455ebc91e834fc0f28c5d948fe859607c53618aeca0856",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-22_2025-11-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511212300&periodEnd=202511222300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:28+00:00",
+  "bytes": 129713,
+  "sha256": "cd2916b94d5d65ce9fa883bfe37da4097ccfb429017db13a8b9bfc985f4b2308",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-23_2025-11-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511222300&periodEnd=202511232300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:35+00:00",
+  "bytes": 123819,
+  "sha256": "dc3511f43ca4cdf3435b18ae9bdb3c1750f6d82abb6bf7f84891a82508595ca5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-24_2025-11-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511232300&periodEnd=202511242300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:40+00:00",
+  "bytes": 148268,
+  "sha256": "79516b56cec634860c6ed8cb7a199f1d9db5f297dfd77f20131282bda3d09a24",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-25_2025-11-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511242300&periodEnd=202511252300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:45+00:00",
+  "bytes": 152061,
+  "sha256": "ad41dfe161c1be4d6d6db2777738a7f5e3564ee9fdc36f37a2c2a4c1f2186f0b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-26_2025-11-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511252300&periodEnd=202511262300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:52+00:00",
+  "bytes": 142641,
+  "sha256": "9169caad28dc0c58f9097122cccbbd43fccdf200814e96471e5b12b2389db378",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-27_2025-11-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511262300&periodEnd=202511272300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:59+00:00",
+  "bytes": 141525,
+  "sha256": "9cc41eeeac51c6e409ea0c1378a557574c3aaacd346967181b0ae45bbced7ee5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-28_2025-11-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511272300&periodEnd=202511282300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:06+00:00",
+  "bytes": 148525,
+  "sha256": "9907dd3683fe1b3867369ebb4f84b2b9d4789bfe04f34a6f71629dde3a492a11",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-29_2025-11-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511282300&periodEnd=202511292300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:14+00:00",
+  "bytes": 127073,
+  "sha256": "69065cd44a8106f428617258dd604231e69edc3c24e674ce58f91657a948ef63",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-11-30_2025-11-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511292300&periodEnd=202511302300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:22+00:00",
+  "bytes": 117017,
+  "sha256": "fc711ac9f679d8cfcabeb99f7a6d74316bb8eb34595bbffdc388da4d6cf410d7",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-01_2025-12-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202511302300&periodEnd=202512012300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:31+00:00",
+  "bytes": 143556,
+  "sha256": "f358b067cbc01ef9f74c8758f4d1e83e2f840e76acad8b7366d1d91cbb6c6123",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-02_2025-12-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512012300&periodEnd=202512022300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:38+00:00",
+  "bytes": 147168,
+  "sha256": "c8ff84090006bd2ca1c88f4974600943bbc1c827eac3495f8694d64eab7abf45",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-03_2025-12-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512022300&periodEnd=202512032300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:48+00:00",
+  "bytes": 157506,
+  "sha256": "4b1384fe6bc36cfc1c6e33786c1564db5a0794a285ec83216511f5f82781f564",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-04_2025-12-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512032300&periodEnd=202512042300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:57+00:00",
+  "bytes": 138894,
+  "sha256": "2b7fdb6f5d84eb22dc3c395a55ac8918b1ac963d834fc50fbac62028b53a3777",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-05_2025-12-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512042300&periodEnd=202512052300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:03+00:00",
+  "bytes": 142327,
+  "sha256": "154e985df9d85e956e8a209b49a852ca560588fb70effb0da06a8d0e28ea66a3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-06_2025-12-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512052300&periodEnd=202512062300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:10+00:00",
+  "bytes": 123049,
+  "sha256": "66a3dd2dd7d0dfa1522cdfa6d03c2de0ef99ba9991b8d84a30d82d954e2b921b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-07_2025-12-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512062300&periodEnd=202512072300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:19+00:00",
+  "bytes": 114584,
+  "sha256": "7247ca1e290a5081b5b07ed8f3135e7122bfe2ff3e34ecd31a9a37940dfbedc0",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-08_2025-12-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512072300&periodEnd=202512082300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:29+00:00",
+  "bytes": 128105,
+  "sha256": "3f20d744637d8d9e6edabb2d9d59d979490cc2732c7ee44a7430064dc2a0a021",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-09_2025-12-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512082300&periodEnd=202512092300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:38+00:00",
+  "bytes": 147355,
+  "sha256": "f694aa48ab01bcc362037ff98b95b3051131f489759d91d62b23eebb5d16d884",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-10_2025-12-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512092300&periodEnd=202512102300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:47+00:00",
+  "bytes": 146921,
+  "sha256": "6465ef1a3a11b80b3af5ec803eb769dce30bae50277608a86669e5faf9f62f23",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-11_2025-12-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512102300&periodEnd=202512112300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:55+00:00",
+  "bytes": 139298,
+  "sha256": "10f9b1b5f267dbfb2dc9abeaeb27a8515fe01d6eb01fecd2e1664b0da0849ebc",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-12_2025-12-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512112300&periodEnd=202512122300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:04+00:00",
+  "bytes": 142993,
+  "sha256": "12be0fa2a1a7b8c9a08de8babf0ed9007e583d68822e6cb49b5a504973babb09",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-13_2025-12-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512122300&periodEnd=202512132300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:25+00:00",
+  "bytes": 119976,
+  "sha256": "2b7f98433d0497e97b16aa44ad7cefb2978512a9febe7ea3794824833ed203de",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-14_2025-12-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512132300&periodEnd=202512142300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:49+00:00",
+  "bytes": 117902,
+  "sha256": "6c822e9c9023fa599f862b5bc89a3f11b05fe32d23ae848f09f06638533031d2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-15_2025-12-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512142300&periodEnd=202512152300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:01:17+00:00",
+  "bytes": 135864,
+  "sha256": "c5014f299e639ddde72f2422850cc65729f5d15125f1a42aea90f3c8ba9f6ffc",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-16_2025-12-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512152300&periodEnd=202512162300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:01:39+00:00",
+  "bytes": 138969,
+  "sha256": "9fe98b30c39884c773f063ead5b8fe154b757fc1548fa9cef10d4daa1c10c0b5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-17_2025-12-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512162300&periodEnd=202512172300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:02:05+00:00",
+  "bytes": 133654,
+  "sha256": "f2344477aae4b28c6e300b60a13b292dc0901d537fc75d0a030c3174c66ce2d2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-18_2025-12-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512172300&periodEnd=202512182300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:02:25+00:00",
+  "bytes": 135580,
+  "sha256": "1bf8d4ee7df2edaa0ac190fe393dc96b6f011e584f84cfb1d9adf34f87a6a75d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-19_2025-12-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512182300&periodEnd=202512192300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:02:59+00:00",
+  "bytes": 137641,
+  "sha256": "3a84f79720a92925ed9abebf03fa12a21a40dcf59359633c1da16f6a12667b84",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-20_2025-12-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512192300&periodEnd=202512202300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:03:26+00:00",
+  "bytes": 126109,
+  "sha256": "3ab2af4f7fa6e0f2af79a23536ac853cadbe1fd66a09872abfcca93df9288e92",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-21_2025-12-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512202300&periodEnd=202512212300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:04:27+00:00",
+  "bytes": 110130,
+  "sha256": "b7417d82f5d1a3167d47ab6f76a8f72fb27dc356618b7ea6ef3ed159c3892060",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-22_2025-12-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512212300&periodEnd=202512222300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:04:45+00:00",
+  "bytes": 129325,
+  "sha256": "d07e98033b86c2449b72f076b127564fb06b533b9f2b356473521e0dcd8efe08",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-23_2025-12-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512222300&periodEnd=202512232300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:05:00+00:00",
+  "bytes": 129987,
+  "sha256": "848425ace4994c46e61dad3b1cb3ce1307294ffc4df55b14b375839750c64d05",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-24_2025-12-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512232300&periodEnd=202512242300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:05:20+00:00",
+  "bytes": 113448,
+  "sha256": "f101cb5381373b558d36cdc1ed3edaf150e37ed8ac5336b28c0491067c3d6a3e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-25_2025-12-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512242300&periodEnd=202512252300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:05:40+00:00",
+  "bytes": 103492,
+  "sha256": "a71e649ca463e86d4c3eebb82603820a5220424ef57572b8cfcf3093c5c43e4c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-26_2025-12-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512252300&periodEnd=202512262300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:02+00:00",
+  "bytes": 106597,
+  "sha256": "c063ab6f9e43be89f69d2c2bf63ae8f2545d79651ca33a68e3346d1bcd035140",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-27_2025-12-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512262300&periodEnd=202512272300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:23+00:00",
+  "bytes": 105921,
+  "sha256": "9a2136ae10d6647c57a8efd932a6d3e5611912bb8c56b00ec223f08e018515d7",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-28_2025-12-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512272300&periodEnd=202512282300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:44+00:00",
+  "bytes": 111379,
+  "sha256": "ab7d10a9ec6dd693da02f89f4735314c7a4dff64f4b2cb77a297aba71f167cf7",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-29_2025-12-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512282300&periodEnd=202512292300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:03+00:00",
+  "bytes": 120023,
+  "sha256": "a501b90a2771ee8ae8d4a4c6c094d354ccdecc12185e5246f0c352ac19569f2a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-30_2025-12-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512292300&periodEnd=202512302300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:21+00:00",
+  "bytes": 125252,
+  "sha256": "c5e13243ef69ee5a579a36b451357ce053567a83209c55f70918d0b4fc56324d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2025-12-31_2025-12-31.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512302300&periodEnd=202512312300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:44+00:00",
+  "bytes": 123464,
+  "sha256": "b8dbb6b992deddb36ae43e1397b379b3e5f516de37e69552baf15fe719b98ac6",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-01_2026-01-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202512312300&periodEnd=202601012300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:05+00:00",
+  "bytes": 107602,
+  "sha256": "1a97b55b9f159612b0be2459f5af4d46e709b35cc0c331e48d35b8d979c39924",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-02_2026-01-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601012300&periodEnd=202601022300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:32+00:00",
+  "bytes": 110900,
+  "sha256": "a384e9160ee535f9d839f5d3261cc7f0d34ce8e5de3e35c5492cb1abed6734bc",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-03_2026-01-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601022300&periodEnd=202601032300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:50+00:00",
+  "bytes": 108578,
+  "sha256": "06ae44547302c8f3134a1cd7f710d65d82e95f87213b99189d95c3d667ec09cf",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-04_2026-01-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601032300&periodEnd=202601042300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:23+00:00",
+  "bytes": 105392,
+  "sha256": "dc4c2bf1321c62916748ff2e5888807ec1bb2c254a4082b021cfac64976c7d34",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-05_2026-01-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601042300&periodEnd=202601052300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:53+00:00",
+  "bytes": 153495,
+  "sha256": "e0e538a99be46bd7df9491c82fcfab41986a801b88b5249a99e6da4cbaac947b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-06_2026-01-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601052300&periodEnd=202601062300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:10:05+00:00",
+  "bytes": 154448,
+  "sha256": "804b7145d4674b350ba60b5b974b34005c72cf36606336c0fcbaf12418646684",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-07_2026-01-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601062300&periodEnd=202601072300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:21+00:00",
+  "bytes": 132662,
+  "sha256": "1f935ff88ef436b6b2ca9fd47121c213b983b12a25b6190f094bec932ebfce18",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-08_2026-01-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601072300&periodEnd=202601082300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:45+00:00",
+  "bytes": 145077,
+  "sha256": "bea0561bfa9d63e871b2ae81784b13976b63a9a9af5478a55f4082c58b294ded",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-09_2026-01-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601082300&periodEnd=202601092300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:12:07+00:00",
+  "bytes": 126386,
+  "sha256": "74c1d5b4e93d40b9a3387730623c57cef07b22a8d13da1e1dfc198c71623f447",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-10_2026-01-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601092300&periodEnd=202601102300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:41+00:00",
+  "bytes": 118450,
+  "sha256": "80433e744f3b2eb501e1240c5796acf60dcf3033534ee25eb812d0ca743951a4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-11_2026-01-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601102300&periodEnd=202601112300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:55+00:00",
+  "bytes": 108035,
+  "sha256": "9bb2c3e5216f37456b4b702e56dac8aa31b959ce15381d0f22609859aed70af8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-12_2026-01-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601112300&periodEnd=202601122300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:14+00:00",
+  "bytes": 137242,
+  "sha256": "fa56bff5ad5247e0961e93925e05c1045e8a1a859c74a8bd18f8764a4eeaa62f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-13_2026-01-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601122300&periodEnd=202601132300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:27+00:00",
+  "bytes": 136668,
+  "sha256": "ef7c495464d3794daa1746135925fa675bad297cf4f69838cc82e4a0413bf2ea",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-14_2026-01-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601132300&periodEnd=202601142300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:14:28+00:00",
+  "bytes": 136971,
+  "sha256": "d0d76cd4fe1516086917e4c00e1d81a664af5db0c5ca63ee6959c590eee0f632",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-15_2026-01-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601142300&periodEnd=202601152300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:50:54+00:00",
+  "bytes": 133981,
+  "sha256": "0d9d9e5a8e80a2d7a3fa8b0f342f9b78c175b888c5973fcb6bdf573ea2ba9053",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-16_2026-01-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601152300&periodEnd=202601162300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:08+00:00",
+  "bytes": 138342,
+  "sha256": "067d37e5463fe2ce677f1056fcb11e675931d3701578c0ed88ea90fbd3d20b4e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-17_2026-01-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601162300&periodEnd=202601172300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:24+00:00",
+  "bytes": 112516,
+  "sha256": "f68eb9f94c2175ec4e819864a92aaa6ea33b1d1e5959213c47438dabceccf687",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-18_2026-01-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601172300&periodEnd=202601182300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:30+00:00",
+  "bytes": 100982,
+  "sha256": "0d828d4ba64e6f147035086ce091fd09c88c545eabd01125b659041a84a9b484",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-19_2026-01-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601182300&periodEnd=202601192300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:36+00:00",
+  "bytes": 129455,
+  "sha256": "6e39131dca2b769e3b2c9017a20adaa5e5f3dfa58ff3e15c7bf68600ed68ffe5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-20_2026-01-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601192300&periodEnd=202601202300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:51+00:00",
+  "bytes": 138601,
+  "sha256": "bf68b36577caa6e9020e2c8369d859150defdbab4da37731800158c4fc23d2dd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-21_2026-01-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601202300&periodEnd=202601212300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:55+00:00",
+  "bytes": 140960,
+  "sha256": "45db2b3e1a1287f14a7f99239bb0f8f7911f257159bddf66ded7585729d7529c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-22_2026-01-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601212300&periodEnd=202601222300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:58+00:00",
+  "bytes": 138905,
+  "sha256": "4b199319cee06a28717b12b0d1f30cd20119d075b982f188870f20225802ecff",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-23_2026-01-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601222300&periodEnd=202601232300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:13+00:00",
+  "bytes": 135583,
+  "sha256": "1cd614c1ad688142978f83a50d67127dbecc9a3c1fca71ca8f9ad6d277b8d40e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-24_2026-01-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601232300&periodEnd=202601242300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:16+00:00",
+  "bytes": 117543,
+  "sha256": "d2c46ad161f8a82a7b5ed9e5888412a4217e563ddb71cb405fc09ffdbaa4ed86",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-25_2026-01-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601242300&periodEnd=202601252300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:18+00:00",
+  "bytes": 113085,
+  "sha256": "6387fcd9afd2f79ca5feed0d761874c3fc7a62c6effaedbca9ee77e4956182e3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-26_2026-01-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601252300&periodEnd=202601262300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:19+00:00",
+  "bytes": 129974,
+  "sha256": "79497cd6832ca06576f74ab9b7438d8e8a19d6540dc7379a25dca7a208884c2e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-27_2026-01-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601262300&periodEnd=202601272300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:33+00:00",
+  "bytes": 132047,
+  "sha256": "1da39656ddf0c287026eaf11803191f24811136ceea9bbbfd7908ad9068af198",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-28_2026-01-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601272300&periodEnd=202601282300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:49+00:00",
+  "bytes": 130196,
+  "sha256": "33a77e22620efcf19e237f04104593370851520f1bdc95199876cc20cb8cf1b3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-29_2026-01-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601282300&periodEnd=202601292300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:06+00:00",
+  "bytes": 145536,
+  "sha256": "efe42d27c15bcc5cadcbb9024d0b9fe3d96c5b66cac3e422ee87f4b1cb41bbc1",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-30_2026-01-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601292300&periodEnd=202601302300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:08+00:00",
+  "bytes": 124890,
+  "sha256": "fdf4cf5aadf14f8fb33f949153f77c4b8cb620352fd0a21bfbe2704b3cbe1805",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-01-31_2026-01-31.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601302300&periodEnd=202601312300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:10+00:00",
+  "bytes": 108059,
+  "sha256": "2c8912419172de7dc39ca81b872fc290807bf297a66ca4da72c2cc1a4296a123",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-01_2026-02-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202601312300&periodEnd=202602012300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:12+00:00",
+  "bytes": 104807,
+  "sha256": "25dc0554fb160326dbb3ddc3cb0d4547e669264a31cc00789ac510532bfaa8c3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-02_2026-02-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602012300&periodEnd=202602022300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:29+00:00",
+  "bytes": 129232,
+  "sha256": "7e898ff1e132d6416d86deb05b47bbc0c59fa5a7851608d1ef32c0cf185b1218",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-03_2026-02-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602022300&periodEnd=202602032300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:33+00:00",
+  "bytes": 130838,
+  "sha256": "e9e2dcc4d8b91af7932684f01dffc5caf7ab8da8f04d835656caf903ca773a3a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-04_2026-02-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602032300&periodEnd=202602042300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:48+00:00",
+  "bytes": 130368,
+  "sha256": "cb4a65a81d5118f290efc5e750d90f47a16d510eb5790f9611062a3f7533841d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-05_2026-02-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602042300&periodEnd=202602052300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:50+00:00",
+  "bytes": 137239,
+  "sha256": "c1fa3bcd309410c1e8a508625d9e9029389027553996e5a420d7573572228642",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-06_2026-02-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602052300&periodEnd=202602062300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:02+00:00",
+  "bytes": 139200,
+  "sha256": "fd6d15560cde0d5beeddc129791d572995579761a9cf3139bbde57f48bd8606a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-07_2026-02-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602062300&periodEnd=202602072300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:05+00:00",
+  "bytes": 111885,
+  "sha256": "d2fd9a1d135e8962b7c74397d02193002fc87deef3c5c97027d111915f5b5d2d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-08_2026-02-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602072300&periodEnd=202602082300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:19+00:00",
+  "bytes": 104927,
+  "sha256": "19de788f6cab817ec6a7f70bbe60fd6fd12d135471bda50b5fd1788cf93c5ff0",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-09_2026-02-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602082300&periodEnd=202602092300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:34+00:00",
+  "bytes": 147245,
+  "sha256": "c069d16de70eaf058c45d7f877dba84e8807bdd6b0c7f2d7c5a62d7e6aa6c91e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-10_2026-02-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602092300&periodEnd=202602102300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:50+00:00",
+  "bytes": 137620,
+  "sha256": "dcb26373d1142a8b659594adfea5d9dfcf220749dfa0d80e298ccec61218da42",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-11_2026-02-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602102300&periodEnd=202602112300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:07+00:00",
+  "bytes": 133096,
+  "sha256": "c04ef8dffd8a9417d788c7921e3ae0ca299327b8df95727d03b7c814619bea33",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-12_2026-02-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602112300&periodEnd=202602122300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:25+00:00",
+  "bytes": 128534,
+  "sha256": "d5132795de3a5635870d4a7db9c0b6bf0246763a3beb6b7db613b454b88d753d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-13_2026-02-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602122300&periodEnd=202602132300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:41+00:00",
+  "bytes": 136738,
+  "sha256": "2bef15b8c0dc0a2d06b0f270ad8ad1f244b533b4a25beb4a2ca26cbe8c4613cf",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-14_2026-02-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602132300&periodEnd=202602142300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:58+00:00",
+  "bytes": 121499,
+  "sha256": "15100a564dde747329fc9b5232a92028197080f7ac78c8116ffa5aad33c95a26",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-15_2026-02-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602142300&periodEnd=202602152300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:14+00:00",
+  "bytes": 111892,
+  "sha256": "59413c642c0f1e147874f927d5e51d500b129f887f2a9e7a4de6f9ebe5e2a3d3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-16_2026-02-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602152300&periodEnd=202602162300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:29+00:00",
+  "bytes": 136222,
+  "sha256": "90eb87d9dbec596a1d5680722f696d22cb49b729fe4d4bd1d648feb753d7229d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-17_2026-02-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602162300&periodEnd=202602172300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:36+00:00",
+  "bytes": 143348,
+  "sha256": "79b7a46a080b381feaf11de826a76b855cd417c94f883f05d45e4a471bbb36c2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-18_2026-02-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602172300&periodEnd=202602182300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:39+00:00",
+  "bytes": 145130,
+  "sha256": "7bc85e75bbaff91bc8282adb09d12b3c16a85bbd82e1e2959b75f1822e23972a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-19_2026-02-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602182300&periodEnd=202602192300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:51+00:00",
+  "bytes": 140492,
+  "sha256": "ceb94bd8271f10949266ebe4e325178716419b8786fbfee752ab50efd219efc1",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-20_2026-02-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602192300&periodEnd=202602202300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:57+00:00",
+  "bytes": 136084,
+  "sha256": "f77135d90258d01c615b867584964987d2c0af40efb8b7aa67e382de16d4275f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-21_2026-02-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602202300&periodEnd=202602212300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:03+00:00",
+  "bytes": 119515,
+  "sha256": "f36ada1ccf29bb90df6d2d1b9200ab461f26a0f4e85b58620e6687dfca2d9db3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-22_2026-02-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602212300&periodEnd=202602222300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:10+00:00",
+  "bytes": 103250,
+  "sha256": "339da3fb60aa311c48866760f4dde0220b93aeea308045cde30c08fa2f7afd53",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-23_2026-02-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602222300&periodEnd=202602232300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:16+00:00",
+  "bytes": 135521,
+  "sha256": "39d4f1d093c300b05f0b6c06fa015c6767c80009cc0e6e34a56964c4047942e8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-24_2026-02-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602232300&periodEnd=202602242300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:24+00:00",
+  "bytes": 140413,
+  "sha256": "badf6c53bc3fe0e1d7388ab2db5b6f560e88e20fc613369cb364b536f1d618f5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-25_2026-02-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602242300&periodEnd=202602252300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:31+00:00",
+  "bytes": 143003,
+  "sha256": "c083434184de2a2295b85a7c5742c3028c657f9a1463eb4598bea28d22cc9283",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-26_2026-02-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602252300&periodEnd=202602262300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:36+00:00",
+  "bytes": 137250,
+  "sha256": "817ca26ad2b04926419aa347e33a2028ecc26ea01d9fc2e1028143f761747a25",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-27_2026-02-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602262300&periodEnd=202602272300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:41+00:00",
+  "bytes": 140434,
+  "sha256": "3f178fea0bcf685a2bf4454bc59ab70f6e0befba02d266e97d08c35daf4c6dce",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-02-28_2026-02-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602272300&periodEnd=202602282300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:49+00:00",
+  "bytes": 125639,
+  "sha256": "89145077891633723fabf7c7028dedab485616855a2e70d0ccd9eb3ec2de5600",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-01_2026-03-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202602282300&periodEnd=202603012300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:55+00:00",
+  "bytes": 114877,
+  "sha256": "02ffbfaafd62d1008bbb04b2453eaa054a2567a4cda5ae54c385ca1840f48be2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-02_2026-03-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603012300&periodEnd=202603022300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:03+00:00",
+  "bytes": 143344,
+  "sha256": "347622b9c61f0f87f710b7e46998ae7fbffbec327964b73e5b547fd9ca14fcb1",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-03_2026-03-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603022300&periodEnd=202603032300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:08+00:00",
+  "bytes": 147737,
+  "sha256": "d127496ba5ace03bcead11e48196072b16b9e8c49a66f9de496c5e7cc09426bd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-04_2026-03-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603032300&periodEnd=202603042300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:12+00:00",
+  "bytes": 144764,
+  "sha256": "50b0190417f5b070b48d33f78708cf5387e4274c23738afd5f113b5e1e19413f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-05_2026-03-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603042300&periodEnd=202603052300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:19+00:00",
+  "bytes": 141941,
+  "sha256": "13b21b6ef766e11d57898dfcd23483a85afb4741fb00797afb2dbe1877a9371f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-06_2026-03-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603052300&periodEnd=202603062300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:31+00:00",
+  "bytes": 147550,
+  "sha256": "d7f8ed5569228984b434152f7a91489dbcba5117b141b87d1d5d9026fd17e06c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-07_2026-03-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603062300&periodEnd=202603072300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:41+00:00",
+  "bytes": 131437,
+  "sha256": "8f60345f1a6bd6d69500902fdb7a134224ef6c680694e6739d850c9458f2dc45",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-08_2026-03-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603072300&periodEnd=202603082300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:51+00:00",
+  "bytes": 122482,
+  "sha256": "7a5ab16a7355cb4fa92092a0bae0a203e6fa196a644545f888e87bfc7955b078",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-09_2026-03-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603082300&periodEnd=202603092300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:57+00:00",
+  "bytes": 144461,
+  "sha256": "c30451a50c0112a373a769de6e18572e13fa9b36255e609b3625116cace2abb4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-10_2026-03-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603092300&periodEnd=202603102300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:06+00:00",
+  "bytes": 143358,
+  "sha256": "e496d607246c41ea68285db3382a617190adde9663fc1151319d892767a49830",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-11_2026-03-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603102300&periodEnd=202603112300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:16+00:00",
+  "bytes": 134473,
+  "sha256": "138f4c5c381e115bba8da3b3d1f59baa2a9079e6bddd487160698d9bf89022f3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-12_2026-03-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603112300&periodEnd=202603122300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:26+00:00",
+  "bytes": 147906,
+  "sha256": "7dc4ba3fb7773ff5bc7ff65ddd29c94e47f18c2ad37d6091b2f4543a6c53d15a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-13_2026-03-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603122300&periodEnd=202603132300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:35+00:00",
+  "bytes": 146188,
+  "sha256": "73f5429fa6af6599004702ccadd53694ecb79f54b3846f9684422b31cbd51532",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-14_2026-03-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603132300&periodEnd=202603142300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:44+00:00",
+  "bytes": 132048,
+  "sha256": "dd55f9df39a8b288ea0d8963eece14cb4e71c0993834a3e01e5650aa40193ef1",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-15_2026-03-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603142300&periodEnd=202603152300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:52+00:00",
+  "bytes": 120643,
+  "sha256": "a0fee373d0a4d1e960de3a0ba2d46fe4e0dcae3bcc4d1f3b1deae244554d1e05",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-16_2026-03-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603152300&periodEnd=202603162300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:00+00:00",
+  "bytes": 142565,
+  "sha256": "8084437c58a6c73075d105fb4ac9ec28af17e9dee4009c4b970c92a3e92a9418",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-17_2026-03-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603162300&periodEnd=202603172300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:15+00:00",
+  "bytes": 139001,
+  "sha256": "fc2c2ec0132990ec3f5ad295b4778605b597901da0a860a486995cb631171560",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-18_2026-03-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603172300&periodEnd=202603182300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:35+00:00",
+  "bytes": 137277,
+  "sha256": "27094c7eaaaae3d7ad750a00c66f18f21d10328d684f0f7c2f885bd286cdb12a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-19_2026-03-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603182300&periodEnd=202603192300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:01:02+00:00",
+  "bytes": 139554,
+  "sha256": "e415ac3881144b8c3b3bb9807ecf55cfbb03a2bf976b2a207ae6baf10edf0209",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-20_2026-03-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603192300&periodEnd=202603202300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:01:25+00:00",
+  "bytes": 137242,
+  "sha256": "3317cb39b62030e8bfed702da6c7a28b80fe5627dc63c4efcbfc978ea79932ab",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-21_2026-03-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603202300&periodEnd=202603212300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:01:52+00:00",
+  "bytes": 112606,
+  "sha256": "7d83e6d375a236eb3b6cf93107195504d594d341adc15a24e9f7a5cd73fee806",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-22_2026-03-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603212300&periodEnd=202603222300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:02:16+00:00",
+  "bytes": 109642,
+  "sha256": "e9da7753a2100896b6f5b01b6e0130e9de172f1ee5c8e5884964d1dc27e82ed9",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-23_2026-03-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603222300&periodEnd=202603232300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:02:48+00:00",
+  "bytes": 148954,
+  "sha256": "61d1d74a2d6f80d64359e2f00d81887340c673c87f14a5ae42b1220389da84d0",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-24_2026-03-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603232300&periodEnd=202603242300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:03:17+00:00",
+  "bytes": 131857,
+  "sha256": "0daebd98ef355bf92152f024740aaa923335cab241a3b8b0d460c9191e7eeea6",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-25_2026-03-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603242300&periodEnd=202603252300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:03:39+00:00",
+  "bytes": 143159,
+  "sha256": "89efa29d45abe067d01c67ae4cf08d4d863a338c4382954ccf871e047cc79ec9",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-26_2026-03-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603252300&periodEnd=202603262300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:05:49+00:00",
+  "bytes": 145425,
+  "sha256": "3abf098b638d0f78052987a8f5999b3833d895a0cb6947f9de019c4a544ae296",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-27_2026-03-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603262300&periodEnd=202603272300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:06+00:00",
+  "bytes": 139789,
+  "sha256": "0a523039173a33d13d2a6db0dcd4995e2e6c98b724709271df89edc3f9b597f7",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-28_2026-03-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603272300&periodEnd=202603282300&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:21+00:00",
+  "bytes": 122660,
+  "sha256": "4a1e48fcad217a1ca6d82f9c746a7d49c10ea9a37618d1abe6c63562aa52da1e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-29_2026-03-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603282300&periodEnd=202603292200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:43+00:00",
+  "bytes": 113324,
+  "sha256": "607ad686cf726e47a6d56fd2e60d777c8bac1d44f7c6bd5e079d92578983dda2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-30_2026-03-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603292200&periodEnd=202603302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:02+00:00",
+  "bytes": 139804,
+  "sha256": "5f9a5e4c8d9810396d0bf509162c4a96b25167ce31f524e082a7c0a97686d542",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-03-31_2026-03-31.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603302200&periodEnd=202603312200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:23+00:00",
+  "bytes": 142845,
+  "sha256": "e55be2be642c16e4e57753e6a6f237c5ee3983e40d1bd96df36d9160e183b28f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-01_2026-04-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202603312200&periodEnd=202604012200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:44+00:00",
+  "bytes": 142751,
+  "sha256": "823377d42d59c4afc3e978b6297b4dfed0769327704dc61e5a3e52fc7bf64e98",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-02_2026-04-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604012200&periodEnd=202604022200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:05+00:00",
+  "bytes": 137920,
+  "sha256": "e5b9eb3a2e4f3b5c7e74e05714b7ea4f4846858761e015c2a937f5a2fafed1b3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-03_2026-04-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604022200&periodEnd=202604032200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:26+00:00",
+  "bytes": 120399,
+  "sha256": "bdc493bff446177e2e36ecb1c26069b96597c36b47e42dc4dd15bf731d7a4ebf",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-04_2026-04-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604032200&periodEnd=202604042200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:47+00:00",
+  "bytes": 114892,
+  "sha256": "76514eec7e20f8d62bd3bbd88b3a4bc78c407d361653d693861913ee51b4c235",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-05_2026-04-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604042200&periodEnd=202604052200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:58+00:00",
+  "bytes": 115566,
+  "sha256": "471eaf7ad8f4ff39a99d7bd25f1ad2fba781af6f203475e5c12942f2f1ab98c5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-06_2026-04-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604052200&periodEnd=202604062200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:08+00:00",
+  "bytes": 115595,
+  "sha256": "0ee1df73475be2c051640aea8df9d976c4c0d5b02975480352f28fc9f6fa708e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-07_2026-04-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604062200&periodEnd=202604072200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:41+00:00",
+  "bytes": 141827,
+  "sha256": "5773ffa1ba623a704abb60a645a80db69054f7879149386630a09d76994acbe8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-08_2026-04-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604072200&periodEnd=202604082200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:10:09+00:00",
+  "bytes": 146438,
+  "sha256": "86b774b9cdbc874ac81938933a2f5487be2a12edab64df1c56c32aa61cc2124a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-09_2026-04-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604082200&periodEnd=202604092200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:10:22+00:00",
+  "bytes": 140085,
+  "sha256": "6a57b558bb92200dc1633aacddcceceb25125ca86b270912ed9219b19a40506d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-10_2026-04-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604092200&periodEnd=202604102200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:10:48+00:00",
+  "bytes": 142428,
+  "sha256": "702e7ce9d44ca0f3b1eab57fbf2608fe81e3f806f78718f6217f724a3763512c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-11_2026-04-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604102200&periodEnd=202604112200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:01+00:00",
+  "bytes": 119011,
+  "sha256": "683942537ec7ebca86a6a4e47337cfd7b5d15434be7bf225f244dc90eaa4cc0a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-12_2026-04-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604112200&periodEnd=202604122200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:13+00:00",
+  "bytes": 123994,
+  "sha256": "edc3aa4a2eeb39355e95c54f829174ca55355be0abe0fe76405843f5efe85224",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-13_2026-04-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604122200&periodEnd=202604132200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:23+00:00",
+  "bytes": 155497,
+  "sha256": "25f6c9843cc3a14247ad827cd1a1ddf79422b87bf20a9ce099b3145fefddcbdb",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-14_2026-04-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604132200&periodEnd=202604142200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:48+00:00",
+  "bytes": 147434,
+  "sha256": "5d1a1c0344be2ce79454d4b44a879b272ba8882b5129fefff35dfdb73b9ec687",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-15_2026-04-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604142200&periodEnd=202604152200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:57+00:00",
+  "bytes": 144976,
+  "sha256": "8546d3cdec4d9e40a93be0e2948c557ed5152c7973c80c7783c0746983f7d71b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-16_2026-04-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604152200&periodEnd=202604162200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:12:05+00:00",
+  "bytes": 144240,
+  "sha256": "cdb17fcfc9a62e27c916a77a04924d5cdb5e9b0253a477778e732b93ec686368",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-17_2026-04-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604162200&periodEnd=202604172200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:12:29+00:00",
+  "bytes": 139696,
+  "sha256": "74117044947f84ce91d529c0b487b50fd5a7c9c2560f3a65651fb69f5687d4a4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-18_2026-04-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604172200&periodEnd=202604182200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:12:40+00:00",
+  "bytes": 125119,
+  "sha256": "ee84e2486867287a180bdf975c44d3eeec96f974c8edaaf1e67add9f3e2b905a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-19_2026-04-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604182200&periodEnd=202604192200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:12:59+00:00",
+  "bytes": 114038,
+  "sha256": "add0ecf2c322eb574685a1836d6a4c2c4d68099353343b5e7716f7e9e06d6ac0",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-20_2026-04-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604192200&periodEnd=202604202200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:41+00:00",
+  "bytes": 140086,
+  "sha256": "6d993aeac4d5c2d45cc5840e50c01f7741b8295d2d2df1f811360545231dd2a9",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-21_2026-04-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604202200&periodEnd=202604212200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:48:54+00:00",
+  "bytes": 141295,
+  "sha256": "a7fb34aca0be02415d27671429637ef42c176e5413e4b1465585928d6dd6b3be",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-22_2026-04-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604212200&periodEnd=202604222200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:17+00:00",
+  "bytes": 137239,
+  "sha256": "37b109cb5d26f1222b29193f8695435123e189be332f26187a35b5835c76da5b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-23_2026-04-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604222200&periodEnd=202604232200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:22+00:00",
+  "bytes": 140377,
+  "sha256": "f4d401372cb7c9d20e9b72ddee22c9e7ec46537bd43dc053c0c21fca2201dc2f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-24_2026-04-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604232200&periodEnd=202604242200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:27+00:00",
+  "bytes": 134977,
+  "sha256": "54de0311c3d7daf2869e78b08f15923f5195974c321ff1767815cb8bf89f3ea2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-25_2026-04-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604242200&periodEnd=202604252200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:49:32+00:00",
+  "bytes": 104374,
+  "sha256": "c523b85c67acee981a723823f91ea0bd951f9e7827176661d9bb889d56a4272d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-26_2026-04-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604252200&periodEnd=202604262200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:50:47+00:00",
+  "bytes": 113644,
+  "sha256": "040c5f80d662e7903717055143b4cb39ff90300861c7358d3df558ed02ac4516",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-27_2026-04-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604262200&periodEnd=202604272200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:50:54+00:00",
+  "bytes": 139149,
+  "sha256": "b9f3ac9199c8a37cb47b2aae3e62c30d5a96749f375b8ac535295dd0920f0644",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-28_2026-04-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604272200&periodEnd=202604282200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:09+00:00",
+  "bytes": 131799,
+  "sha256": "b4d1c94a812cd7e73a531a0544ae322a74d41c01aa6ffbd6e713c63aa3836d8a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-29_2026-04-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604282200&periodEnd=202604292200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:24+00:00",
+  "bytes": 140050,
+  "sha256": "69a39d04d69df8d27b57fdc85f5081166969a8359ba39819817b16439fb355f8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-04-30_2026-04-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604292200&periodEnd=202604302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:41+00:00",
+  "bytes": 137083,
+  "sha256": "81c0866acb3529982b79975cb8f87246bf03bea9ddc214e765b235fd248926bf",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-01_2026-05-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202604302200&periodEnd=202605012200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:46+00:00",
+  "bytes": 117996,
+  "sha256": "f8e5e9872de1f4770d449acc55d08396deadc20467bff6c9dd70f5392311b264",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-02_2026-05-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605012200&periodEnd=202605022200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:51:51+00:00",
+  "bytes": 113810,
+  "sha256": "f3e50e1d7bf25b538b49797fadc2390e80e1a46a9355f93122453af0d7ec4f77",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-03_2026-05-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605022200&periodEnd=202605032200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:06+00:00",
+  "bytes": 121213,
+  "sha256": "737ea772fd65cf3dd290cdded7ccb105e852b78a1cc935593ad590db6df572df",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-04_2026-05-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605032200&periodEnd=202605042200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:09+00:00",
+  "bytes": 144657,
+  "sha256": "31584ff518a5a49f23247e63af1ebf69c36e8e6a068f8dfe6162653d2e40d42f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-05_2026-05-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605042200&periodEnd=202605052200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:24+00:00",
+  "bytes": 146785,
+  "sha256": "eafb69fa9667e628db3a057699935e7d02090e16d56cf1d6011c99cba66ca54d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-06_2026-05-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605052200&periodEnd=202605062200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:37+00:00",
+  "bytes": 138081,
+  "sha256": "025be9167f62cff41a660db2911507673c194f96d93be01b2166096426206698",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-07_2026-05-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605062200&periodEnd=202605072200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:52:55+00:00",
+  "bytes": 135146,
+  "sha256": "c5b054c9182f7ef9f861e5b22d38eddd5fa247f3ac0153ca7ebe61bd20efb272",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-08_2026-05-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605072200&periodEnd=202605082200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:11+00:00",
+  "bytes": 132424,
+  "sha256": "5f2804ed8098f6c1c029e624b17ab297e36638f2c3216be0de8b236ec15f5362",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-09_2026-05-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605082200&periodEnd=202605092200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:28+00:00",
+  "bytes": 113517,
+  "sha256": "13cfc24fbb8367aef7001e8b7a7c067884a9c363053e53f4fc9a9fe8e0363a4a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-10_2026-05-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605092200&periodEnd=202605102200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:32+00:00",
+  "bytes": 107534,
+  "sha256": "c0e1d41c1da14f635e6e068572b76461ab99b69531640fd6d84cbc3fd1445525",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-11_2026-05-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605102200&periodEnd=202605112200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:38+00:00",
+  "bytes": 132207,
+  "sha256": "743b27f38d0034138909b2712ec6ab2cfaf89126e119be348e2887101b0ad9f0",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-12_2026-05-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605112200&periodEnd=202605122200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:42+00:00",
+  "bytes": 120005,
+  "sha256": "5624ed6233002340b1b13c84e5765793c9556c66c1da28745f62fd403bbd7753",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-13_2026-05-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605122200&periodEnd=202605132200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:44+00:00",
+  "bytes": 129075,
+  "sha256": "694224bad0e3d4980eb634aca0b81b7cbf430c29a4f17297999d07e644512265",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-14_2026-05-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605132200&periodEnd=202605142200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:53:56+00:00",
+  "bytes": 119802,
+  "sha256": "262e73049df9f6bea4e197237918c3fc96703a8f54c518f357fee6f6cf8c9931",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-15_2026-05-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605142200&periodEnd=202605152200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:09+00:00",
+  "bytes": 118643,
+  "sha256": "bd8a6c3b396544108f4691f94b08b1acb06a482dcfa8bb18fd63f5eb10f69a59",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-16_2026-05-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605152200&periodEnd=202605162200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:24+00:00",
+  "bytes": 108824,
+  "sha256": "2b4f53792586d73693f7f9f33f1eeda42b36d5a965c422cd298b50ea61cb02b1",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-17_2026-05-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605162200&periodEnd=202605172200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:26+00:00",
+  "bytes": 111268,
+  "sha256": "143a5dc0ed0411e7489f82f0856415d4e9bd6b85796ef3ee886e77eae166a0d6",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-18_2026-05-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605172200&periodEnd=202605182200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:29+00:00",
+  "bytes": 128552,
+  "sha256": "590fde341af9049360443b8e13ea30204ecace8a58ba862208809a25d96833bc",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-19_2026-05-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605182200&periodEnd=202605192200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:45+00:00",
+  "bytes": 130092,
+  "sha256": "960715d4e8e3bb086c06a0d92051069a4f2c3f3421cd31170547c7ef5f0e8fb3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-20_2026-05-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605192200&periodEnd=202605202200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:54:46+00:00",
+  "bytes": 135324,
+  "sha256": "0af6a918414680edaf6b432d67a15c0f7d3136ec1190be7d4bec1da7fc06ca4c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-21_2026-05-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605202200&periodEnd=202605212200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:04+00:00",
+  "bytes": 133177,
+  "sha256": "61f59221fc65097b931b5ae454725f1a1e772ecf0629bb528933e4f741691281",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-22_2026-05-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605212200&periodEnd=202605222200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:08+00:00",
+  "bytes": 130953,
+  "sha256": "59a8d8fca629a33fb35ae247f59bbfc2be3721e3e2fdb669ceaa6da8e3f0c5b9",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-23_2026-05-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605222200&periodEnd=202605232200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:12+00:00",
+  "bytes": 124603,
+  "sha256": "df7fbc130645de547bfaec0d527faf6147d4aea7ea19be6e1ae20b0de125c401",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-24_2026-05-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605232200&periodEnd=202605242200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:16+00:00",
+  "bytes": 122816,
+  "sha256": "95b4c83ab76c9f3f58e964b7350b9437c9e87437d36e8fd9cd658675dd55fe26",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-25_2026-05-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605242200&periodEnd=202605252200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:34+00:00",
+  "bytes": 123715,
+  "sha256": "e014f2b4d1214b55185037cbcf00ed4946ad435981c177b7899b34a550caeaec",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-26_2026-05-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605252200&periodEnd=202605262200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:38+00:00",
+  "bytes": 133751,
+  "sha256": "379c35660f7ffae7bd67be6448a36afabad26fe42e5012b05e2ff73b5811bc4e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-27_2026-05-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605262200&periodEnd=202605272200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:42+00:00",
+  "bytes": 120232,
+  "sha256": "f31102ff5dcb38fdd54e4547806a236bcd175925e4d9a7a47dffefa39c9b4f13",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-28_2026-05-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605272200&periodEnd=202605282200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:55:59+00:00",
+  "bytes": 120786,
+  "sha256": "9e9ee848b282d0fc6a8f61a2df2686d3760093b45bb2832f7dd0a959252ddd09",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-29_2026-05-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605282200&periodEnd=202605292200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:04+00:00",
+  "bytes": 120608,
+  "sha256": "0529b91db72b1695496d8a11813375154fca3798db2aa1b5483b8d7ca9722e4b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-30_2026-05-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605292200&periodEnd=202605302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:10+00:00",
+  "bytes": 110818,
+  "sha256": "c98eeb720d8d91cccc70244dad3f5ff06a120ffe9dc2e40df6ad15c9bd9c5d7c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-05-31_2026-05-31.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605302200&periodEnd=202605312200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:26+00:00",
+  "bytes": 110999,
+  "sha256": "140af8edecf4970e3e72b1feecd442d31a33927529511ba7047d16fde30e1295",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-01_2026-06-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202605312200&periodEnd=202606012200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:30+00:00",
+  "bytes": 128403,
+  "sha256": "8cdd427a1c03ce2b4c90e96afaa047bc033241de312c628022f8046c002014af",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-02_2026-06-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606012200&periodEnd=202606022200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:46+00:00",
+  "bytes": 134145,
+  "sha256": "cc34ac61ff6becb81d221edb27092e1880a569118d78ce73cc7a52b68c68affd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-03_2026-06-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606022200&periodEnd=202606032200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:56:55+00:00",
+  "bytes": 136244,
+  "sha256": "91ac19fcf769b2ebc2f33f5f4fce0883954eb60162dd6e3498afe9183028f6b9",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-04_2026-06-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606032200&periodEnd=202606042200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:03+00:00",
+  "bytes": 112943,
+  "sha256": "b746ceb59e55e12a26b9b8264a5e27fbc3943eb5e0bb5424d195bec7d6a7ee72",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-05_2026-06-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606042200&periodEnd=202606052200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:11+00:00",
+  "bytes": 128001,
+  "sha256": "479ce5866ec4ccb474ee783ba2f3318f953d788948ef4c76a2c54db80d370d68",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-06_2026-06-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606052200&periodEnd=202606062200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:19+00:00",
+  "bytes": 121987,
+  "sha256": "e0154ec6134979db6376f38f671b6c64c83f9abacfa81a877c82d0bb703ecb3d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-07_2026-06-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606062200&periodEnd=202606072200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:27+00:00",
+  "bytes": 110043,
+  "sha256": "ee5bd572f05901d55d51fe383e59f29f0b2dc27084dbe441115d2ef452911a24",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-08_2026-06-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606072200&periodEnd=202606082200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:33+00:00",
+  "bytes": 132454,
+  "sha256": "5169c866bf7a13c595009eb2741dff5c4379f014c413452c2cb4807e27ec9a9a",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-09_2026-06-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606082200&periodEnd=202606092200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:42+00:00",
+  "bytes": 130941,
+  "sha256": "7aa28269718e8288b3b0b704c13250df66fe4eaff382414c2dd697b7fe436d50",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-10_2026-06-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606092200&periodEnd=202606102200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:49+00:00",
+  "bytes": 142756,
+  "sha256": "4662bfc248b9a2a5902136d0c1290230f5b55a09ae059327b169b35b9c354329",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-11_2026-06-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606102200&periodEnd=202606112200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:53+00:00",
+  "bytes": 130812,
+  "sha256": "a006e59db0c270f11ebcc34d9830f353e9daef5666bed209e900e688a1e2db92",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-12_2026-06-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606112200&periodEnd=202606122200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:57:57+00:00",
+  "bytes": 131528,
+  "sha256": "9e3198c4d76e9bc2e870101ecf41b61a8f50c0deab70a737904391632404cc36",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-13_2026-06-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606122200&periodEnd=202606132200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:05+00:00",
+  "bytes": 107994,
+  "sha256": "ce6949204c4ed2c3f49d41ffc6d4616b0b2aa2e728d143cb051b5f8db214ce83",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-14_2026-06-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606132200&periodEnd=202606142200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:13+00:00",
+  "bytes": 104351,
+  "sha256": "74e92f5c6909c7e33fdd3076da81eacfb1e17a7067b629bc64996305b7c87f08",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-15_2026-06-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606142200&periodEnd=202606152200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:16+00:00",
+  "bytes": 124746,
+  "sha256": "4f50ebd89fb0b02dba6ae097204c4b0e05171ce9ca7cbbf0e7d8d1a186a14d60",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-16_2026-06-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606152200&periodEnd=202606162200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:31+00:00",
+  "bytes": 131702,
+  "sha256": "8a11737fb9aea668d12063d3a1dffc1dc8b983e2644ef9ed64f1a032398c7a3c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-17_2026-06-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606162200&periodEnd=202606172200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:41+00:00",
+  "bytes": 124456,
+  "sha256": "b78e8706f47f39cb6ed2565c4dd948346716e23c403f5c55e488fbeac5ee2ab0",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-18_2026-06-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606172200&periodEnd=202606182200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:58:51+00:00",
+  "bytes": 129643,
+  "sha256": "0c61ec64c60c382478cbbc2c759514e7a823062b5f7ae0b4d28a5a921dfc60d1",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-19_2026-06-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606182200&periodEnd=202606192200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:00+00:00",
+  "bytes": 125508,
+  "sha256": "ce3b91c3f57b33451177162f1f6c5a6e3ddfb67239bdbb3e7318358b23ecb06d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-20_2026-06-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606192200&periodEnd=202606202200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:07+00:00",
+  "bytes": 110290,
+  "sha256": "9b6be0a7b20d9c0d529f0ea920f7c5d1b27766c1f6d309334af0eaab88f8be86",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-21_2026-06-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606202200&periodEnd=202606212200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:17+00:00",
+  "bytes": 112944,
+  "sha256": "44d51f84fd1e8811688ab1184da9973430ef9020d2cd4b539ea6abd2bf2acb94",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-22_2026-06-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606212200&periodEnd=202606222200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:27+00:00",
+  "bytes": 124170,
+  "sha256": "547e05739cb8c6124f0240da4c43c1d1dea6d43072f7a2a2ca784aacb58bcea6",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-23_2026-06-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606222200&periodEnd=202606232200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:38+00:00",
+  "bytes": 137615,
+  "sha256": "4eab3a3c54f77eafc03dcafe589a99816321aed4646deb156ea378f5cd6a732b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-24_2026-06-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606232200&periodEnd=202606242200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:15:08+00:00",
+  "bytes": 140324,
+  "sha256": "06399d03bbbfebead098771dd588b1c2ac87e8f8cee5cd2989a31083f045dae3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-25_2026-06-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606242200&periodEnd=202606252200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T08:59:56+00:00",
+  "bytes": 135619,
+  "sha256": "0357f9e242a49f6595b0457d7dfac9d6b00645851d0b4e13097e223215d630fb",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-26_2026-06-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606252200&periodEnd=202606262200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:05+00:00",
+  "bytes": 125358,
+  "sha256": "f36dfbdb3739713082cf4687828f07402bf00a1bfa811bc5b36e93e888c62913",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-27_2026-06-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606262200&periodEnd=202606272200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:22+00:00",
+  "bytes": 111377,
+  "sha256": "908413bef538138df26bbfcd7d40d8d0acebff0cc0c5aed0881406ae71fda470",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-28_2026-06-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606272200&periodEnd=202606282200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:00:41+00:00",
+  "bytes": 107766,
+  "sha256": "b51df4c4d26791b87a9bdafcb2e935134c5628e1d1046bb1ce8b92a5380642c8",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-29_2026-06-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606282200&periodEnd=202606292200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:01:11+00:00",
+  "bytes": 132611,
+  "sha256": "2bc642b3b482eec214e1c8fb6aa3af1783690ed0c15ca96335093cd3b2897e17",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-06-30_2026-06-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606292200&periodEnd=202606302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:01:41+00:00",
+  "bytes": 134340,
+  "sha256": "fc30b57196b7af58223df6e64a528528ea799cb2fd24cd59709df9e0e108dab3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-01_2026-07-01.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202606302200&periodEnd=202607012200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:02:08+00:00",
+  "bytes": 132891,
+  "sha256": "6f2fd156c415182405878478ade147872f83ff5995040de910beeca84d0c2f3c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-02_2026-07-02.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607012200&periodEnd=202607022200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:02:29+00:00",
+  "bytes": 116774,
+  "sha256": "5b27585d8ab820a535de4446d75133b940206ece411c9be48b1db3a808b616ca",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-03_2026-07-03.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607022200&periodEnd=202607032200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:03:02+00:00",
+  "bytes": 118239,
+  "sha256": "3bf3502b5db9d97a806b0aa4c251cd0094ca82606a494627f311b8ffbff7ff6b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-04_2026-07-04.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607032200&periodEnd=202607042200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:03:23+00:00",
+  "bytes": 111215,
+  "sha256": "a5c6ca031fcab62e81b63d5c8a0aca46156f00ee2af5f35bf452e7d356ded201",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-05_2026-07-05.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607042200&periodEnd=202607052200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:03:42+00:00",
+  "bytes": 110928,
+  "sha256": "34a7f09f46628c7f9ff81a6994563a51bb2433526dfce833a25b6a3754d87ff5",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-06_2026-07-06.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607052200&periodEnd=202607062200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:04:29+00:00",
+  "bytes": 113642,
+  "sha256": "ad338c4cd4eb4bd1715b53317b944faccf0df1a6d256d39c5250b998cddbd1a2",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-07_2026-07-07.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607062200&periodEnd=202607072200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:04:47+00:00",
+  "bytes": 118380,
+  "sha256": "1fbac908cdd0c71f9b4084daef67cdac8aa234617d7bbfa93d2ef139f8b22322",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-08_2026-07-08.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607072200&periodEnd=202607082200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:05:04+00:00",
+  "bytes": 135335,
+  "sha256": "e79a4c38c1729484bfb9b9a5424f7f70410febf2974c6557aa2cc9f861082a50",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-09_2026-07-09.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607082200&periodEnd=202607092200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:05:26+00:00",
+  "bytes": 131352,
+  "sha256": "d3f1c4a924215e2bfb623137b7e0a344bc5d3f182c94c784d8c413af0da1144f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-10_2026-07-10.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607092200&periodEnd=202607102200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:05:44+00:00",
+  "bytes": 130795,
+  "sha256": "f1f7c37d469e0f58e34e0024a8b8e7188ee0b3f4a4c4806b9e22aa2db55dc8d3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-11_2026-07-11.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607102200&periodEnd=202607112200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:05+00:00",
+  "bytes": 117244,
+  "sha256": "8e4bda65eaa1412625e0424569437647a30116234fedafa70c5e6567e659f9c4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-12_2026-07-12.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607112200&periodEnd=202607122200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:26+00:00",
+  "bytes": 105460,
+  "sha256": "239dff1e82d00bc0f31f16fe2ce2d4a9ba60694fed0e2a97d52224d80a79464c",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-13_2026-07-13.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607122200&periodEnd=202607132200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:06:48+00:00",
+  "bytes": 125264,
+  "sha256": "f097becc8a2da694c2eeca36d69feb906a1529cda40b857ce1e825e28aff671d",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-14_2026-07-14.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607132200&periodEnd=202607142200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:02+00:00",
+  "bytes": 125978,
+  "sha256": "c085c62be0dbfb1b2665544c884cf70a3555c8d301d5f294ddd4918dfad3f317",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-15_2026-07-15.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607142200&periodEnd=202607152200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:20+00:00",
+  "bytes": 130558,
+  "sha256": "3de57bfc5a95c3133136d0815b810b374558d19f67f89c171d011b0314d01d31",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-16_2026-07-16.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607152200&periodEnd=202607162200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:07:41+00:00",
+  "bytes": 133002,
+  "sha256": "f0c5cf389bf9b6314ac89ae059a104764a568f52d04b5063a728d24aceffa7fc",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-17_2026-07-17.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607162200&periodEnd=202607172200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:05+00:00",
+  "bytes": 117007,
+  "sha256": "2f5cb6e2faaaa7f5efddf4a571a154111fc3f27527e369ff699fc62dde8c2723",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-18_2026-07-18.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607172200&periodEnd=202607182200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:31+00:00",
+  "bytes": 111666,
+  "sha256": "c738466e4a816aef16d73e43601fe16df459ba9502e3b81752d60c1e1b472f4e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-19_2026-07-19.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607182200&periodEnd=202607192200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:08:50+00:00",
+  "bytes": 108869,
+  "sha256": "bf0d84cd4434d9c84b1b124ec1997af45ced68ec0979dc683e4f1f57803b14cd",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-20_2026-07-20.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607192200&periodEnd=202607202200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:22+00:00",
+  "bytes": 119435,
+  "sha256": "7c35c524d890106ec06aea407f51fa1b10b01a604944ab102911e0f3b3c78027",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-21_2026-07-21.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607202200&periodEnd=202607212200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:29+00:00",
+  "bytes": 123187,
+  "sha256": "d035a814bf92d4e765efb47bac62d4deb52284ac729fe5e21bee6fe0994f4fdf",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-22_2026-07-22.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607212200&periodEnd=202607222200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:35+00:00",
+  "bytes": 119898,
+  "sha256": "9e997a167ebb185bdc4c075629549ab8cbe1238e37bbe32414ccbff17dccf17b",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-23_2026-07-23.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607222200&periodEnd=202607232200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:42+00:00",
+  "bytes": 118502,
+  "sha256": "7411e4eb423208347c56c723b8f288eb2586aa88f6b17555a7e417873c79193f",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-24_2026-07-24.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607232200&periodEnd=202607242200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:49+00:00",
+  "bytes": 119786,
+  "sha256": "e5d49c96d7f463a0ea45ac655fe9ba28a48db8ad72ed1ad78495d08d6748d571",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-25_2026-07-25.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607242200&periodEnd=202607252200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:09:56+00:00",
+  "bytes": 116840,
+  "sha256": "4162091879dfc1219cae55c517649d6e54fb21512833915cdee33bee277bd08e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-26_2026-07-26.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607252200&periodEnd=202607262200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:10:25+00:00",
+  "bytes": 109917,
+  "sha256": "ddd78100af589a566895b9399a4378fb169329f4cc8d885a6b417718ffa487e7",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-27_2026-07-27.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607262200&periodEnd=202607272200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:10:53+00:00",
+  "bytes": 116503,
+  "sha256": "c3d770c3f7555e79ebd667b8bd580a8777e5b873fa17fd4221f5a79ce64ec141",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-28_2026-07-28.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607272200&periodEnd=202607282200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:16+00:00",
+  "bytes": 132349,
+  "sha256": "2b93ffb85de374f930ee0e71f7edd9c413e8b8239b24bf89a6d2021d0d7311e3",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-29_2026-07-29.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607282200&periodEnd=202607292200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:11:41+00:00",
+  "bytes": 133902,
+  "sha256": "b7a354d52ca3b16b976f2c06425687ee56f354d6b6344436d080b5b2f15566f4",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-30_2026-07-30.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607292200&periodEnd=202607302200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:12:03+00:00",
+  "bytes": 130956,
+  "sha256": "fbea380d0b61919436f7f68ef9955725201386f8a7a61668dc11319b05a374f9",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
+ "entsoe/generation_units_A73/A73_CH00_2026-07-31_2026-07-31.xml": {
+  "url": "https://web-api.tp.entsoe.eu/api?documentType=A73&processType=A16&in_Domain=10YCH-SWISSGRIDZ&periodStart=202607302200&periodEnd=202607312200&securityToken=REDACTED",
+  "retrieved_at_utc": "2026-10-23T09:12:14+00:00",
+  "bytes": 128876,
+  "sha256": "a9371811ce01e0c3ad5d66f743efdb050beb73cd90c396436cd20177791b014e",
+  "http_status": 200,
+  "content_type": "text/xml",
+  "last_modified": null,
+  "etag": null
+ },
  "entsoe/ntc_dayahead_A61/A61_AT_to_CH_2023-10-01_2024-09-30.xml": {
   "url": "https://web-api.tp.entsoe.eu/api?documentType=A61&contract_MarketAgreement.Type=A01&out_Domain=10YAT-APG------L&in_Domain=10YCH-SWISSGRIDZ&periodStart=202309302200&periodEnd=202409302200&securityToken=REDACTED",
   "retrieved_at_utc": "2026-10-23T06:44:38+00:00",

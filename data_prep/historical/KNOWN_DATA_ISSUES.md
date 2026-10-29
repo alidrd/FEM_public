@@ -9,6 +9,7 @@ condition, stop and decide explicitly how to handle the issue before building mo
 | KDI-1 | Any run whose period includes **December 2023 - February 2024** (e.g. hydrological year 2023/24, calendar year 2024) **and** uses PECD v4.2 as Swiss reservoir inflow | Copernicus PECD v4.2, CH00, HRI | Open; logged 2026-10-09 |
 | KDI-2 | Any run whose period includes **26 June 2024** and reads the Austrian day-ahead price | ENTSO-E A44 and Energy-Charts (SMARD), AT | Open; logged 2026-10-23 |
 | KDI-3 | Any run with `historical_generation_source = "entsoe"` | ENTSO-E A75, CH | Known limitation; logged 2026-10-23 |
+| KDI-4 | Any use of ENTSO-E generation per unit (`ch_generation_units_entsoe_hourly.csv`, e.g. `historical_hydro_fixed_units`) | ENTSO-E A73, CH | Open; logged 2026-10-23 |
 
 ## KDI-1: PECD v4.2 Swiss reservoir inflow is near zero in January 2024
 
@@ -75,3 +76,23 @@ and nothing for thermal and waste plants. Energy-Charts matches BFE within 1 % f
 **Consequence.** Used as published, the series remove several TWh a year of Swiss supply from a back-cast whose
 demand equals BFE's national consumption. `"entsoe_bfe_months"` keeps ENTSO-E's hourly profiles and BFE's
 monthly levels instead (`generation.py`).
+
+## KDI-4: ENTSO-E generation per unit has gaps, zeros and partial units
+
+**Applies to** any use of `ch_generation_units_entsoe_hourly.csv` (ENTSO-E A73), checked over Oct 2025 - Jul 2026.
+
+**Symptoms:**
+- **Zeros for plants in service.** Usine de Nendaz and Usine de Fionnay are 0 in every hour, though Grande Dixence
+  finished renovating both in 2023 and had them back in full operation by the end of winter 2023/24. Their
+  output is most likely unreported, not absent.
+- **Days missing.** All Axpo units (Limmern, Tierfehd, Mapragg) and Beznau and Leibstadt have no data on 13, 14,
+  16 and 17 October 2025.
+- **The 25th hour.** On 26 October 2025 the hour 22:00-23:00 UTC is missing for every unit: a request for that
+  hour alone returns "No matching data found", while some units publish it inside a longer window.
+- **Partial units.** "KWO Produktion" reaches at most 918 MW and 447 GWh over the ten months, a part of KWO's
+  plants. "Châtelard" is published from October to December 2025 only.
+- **Above WASTA capacity.** Mapragg reaches 299.6 MW against 279.9 MW in WASTA; "Mittelbünden Turbinen" 199 MW
+  against the 165.5 MW of the three WASTA plants mapped to it.
+
+**What to decide before such a run:** which units to trust. `input/historical/entsoe_unit_groups.csv` records the
+choice per plant group (`fix` and `note`); a missing hour is never filled.
