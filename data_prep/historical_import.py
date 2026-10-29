@@ -52,8 +52,7 @@ HYDRO_OUTAGES = "input/historical/hydro_outages_2025_26.csv"  # setting historic
 OUTAGE_COLUMNS = ["plant", "turbine_MW", "pump_MW", "source"]  # and one pair of OUTAGE_TIME_COLUMNS
 OUTAGE_TIME_COLUMNS = {"local": ("start_local", "end_local"), "utc": ("start_utc", "end_utc")}
 OUTAGE_TIME_FORMAT = "%Y-%m-%d %H:%M"
-# FOEN daily discharge at donor gauges (experiments/backcast/foen_annual_tables.py, foen_donors.py), downloaded
-# 2026-10-12; setting historical_inflow_split
+# FOEN daily discharge at donor gauges, downloaded 2026-10-12; setting historical_inflow_split
 FOEN_DAILY = "input/hydro_FOEN/foen_daily_discharge.csv"
 FOEN_DONORS = "input/hydro_FOEN/plant_donors.csv"
 GAUGE_MIN_DAYS = 5  # days of discharge a donor gauge needs in every PECD week of the period
@@ -816,7 +815,7 @@ def check_fixed_water(group, plants, output, fleet, inflow, stocks, scenario_nam
 
 
 def read_hydro_operation(scenario_name, settings, fleet, fixed_plants=()):
-    """The storage-hydro operating constraints of a back-cast (experiments/backcast/SPEC_hydro_operation.md): the
+    """The storage-hydro operating constraints of a back-cast (docs/backcast.md, section Storage-hydro operation): the
     must-run floor and the upward reserve withheld per scenario, and the outage caps per (plant, step, scenario);
     with the files read and the assumptions. Everything is off unless its setting is given. The turbine cap of a
     plant in fixed_plants (historical_hydro_fixed_units) is its installed capacity: its observed output holds its

@@ -167,7 +167,7 @@ def reservoir_end_rule(model, g, s):
 
 
 def add_hydro_operation(model):
-    """Storage-hydro operating constraints (experiments/backcast/SPEC_hydro_operation.md), each only if staged: a
+    """Storage-hydro operating constraints (docs/backcast.md, section Storage-hydro operation), each only if staged: a
     must-run floor on total storage-hydro output, an upward reserve withheld from the available turbine capacity
     C(t) (gen_max x avail_plant, capped by outages), and per-plant outage caps on generation and pumping. Raises
     before solving if the floor exceeds C(t) or C(t) minus the reserve. All rows unscaled: duals in EUR/MWh."""

@@ -178,11 +178,8 @@ input/historical/snapshots/
 input/historical/analysis/
 input/historical_comparison/
 
-# Back-cast experiments: pages, caches and per-hour tables built from runs in output/
-experiments/**/*.html
-experiments/**/report_cache/
-experiments/**/tmp/
-experiments/backcast/floor_choice_*.csv
-# Raw downloads read only by analysis scripts (experiments/backcast/reserve_variation.py, foen_annual_tables.py)
+# Experiments are kept outside this repository; a local copy stays out of git
+experiments/
+# Raw downloads read only by analysis scripts outside this repository
 input/swissgrid_reserves/
 input/hydro_FOEN/annual_tables/

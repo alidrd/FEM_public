@@ -1,4 +1,4 @@
-"""Unit tests for the hydro operating constraints of a back-cast (experiments/backcast/SPEC_hydro_operation.md):
+"""Unit tests for the hydro operating constraints of a back-cast (docs/backcast.md, section Storage-hydro operation):
 read_hydro_operation and read_outages in data_prep/historical_import.py, and add_hydro_operation in
 model/components_historical.py. The model tests use small Pyomo models and the production dual exporter (no solver).
 """

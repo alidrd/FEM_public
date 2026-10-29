@@ -17,6 +17,10 @@ from the processed folder of `data_prep/historical` (see its README).
 | `historical_generation_source` | `"entsoe_bfe_months"` | Table of the observed Swiss solar, wind, run-of-river, nuclear and "others" output: `"entsoe_bfe_months"`, `"entsoe"` or `"energy_charts"` (section Renewable infeed) |
 | `historical_hydro_end` | `"equal"` | National reservoir stock at the period end: `"equal"`, `"at_least"` or `"free"` (section Reservoir stocks) |
 | `historical_border_flows` | `"ntc"` | Border flows within the transfer limits (`"ntc"`), or fixed to the observed scheduled exchange (`"scheduled"`, a diagnostic; section Borders) |
+| `historical_hydro_floor_MW` | `False` | Total storage-hydro output at least this many MW every hour (section Storage-hydro operation) |
+| `historical_hydro_reserve_up_MW` | `False` | Total storage-hydro output at most the available turbine capacity minus this many MW (section Storage-hydro operation) |
+| `historical_hydro_outages` | `False` | CSV of unit outages and limits (section Storage-hydro operation) |
+| `historical_hydro_availability` | `"workbook"` | Availability factor of the cost workbook, or `"outage_messages"`: 1, with every outage from `historical_hydro_outages` (section Storage-hydro operation) |
 
 Quote the period in the scenario CSV. The reader evaluates cells with `eval`, so an unquoted
 `2025-11-15/2026-12-20` becomes a number and an empty cell becomes `"nan"`; both stop the run.
@@ -153,9 +157,8 @@ setting `historical_generation_source` picks the table:
 The ENTSO-E tables take `others` from BFE, since ENTSO-E publishes none for Switzerland
 (`data_prep/historical/generation.py`). The default holds values only in the local months BFE has
 published and the table covers completely, so a period reaching into another month stops the run
-with missing values. It is the default because it lowered the censored price MAE of all 16 back-cast
-experiments against Energy-Charts, by 0.14 to 0.67 EUR/MWh (`experiments/backcast/LOG.md`). In all
-three the columns are:
+with missing values. It is the default because, in every back-cast experiment run with both, it gave
+a lower price error than `"energy_charts"`. In all three the columns are:
 
 | Model technology | Column |
 |---|---|
@@ -254,6 +257,60 @@ unchanged. Both new constraints are unscaled, so their exported duals are in EUR
 `reservoir_end_target_dual.csv` is the cost of one more MWh required in storage at the period end, the
 value of stored energy; `reservoir_first_hour_dual.csv` is minus the value of one more MWh of start
 stock. The dual export leaves out the deactivated rows (`docs/duals.md`).
+
+## Storage-hydro operation
+
+Left alone, the model runs storage hydro far more flexibly than the real fleet. Four settings restrict
+it (table Settings); each is off by default, so a run without them is unchanged. They act on the
+storage-hydro plants of the fleet: technology `dam`, `psp_open` or `psp_close`.
+
+- **Available turbine capacity C(t):** the sum over these plants of `gen_max × avail_plant`, each capped
+  by its outage in that hour (outage file below).
+- **Must-run floor** (`historical_hydro_floor_MW`): total storage-hydro output is at least the floor in
+  every hour, for the units that hold downward control reserve and must keep producing.
+- **Upward reserve withheld** (`historical_hydro_reserve_up_MW`): total storage-hydro output is at most
+  C(t) minus the reserve, which stays off the market.
+- **Outages and limits** (`historical_hydro_outages`): per plant and hour, generation at most `turbine_MW`
+  and pumping at most `pump_MW` of the outage file.
+- **Availability** (`historical_hydro_availability`): `"workbook"` keeps the availability factor of the
+  cost workbook; `"outage_messages"` sets it to 1, so that every outage comes from the outage file, and
+  needs `historical_hydro_outages`.
+- **Fixed units:** a plant fixed to its observed output (`historical_hydro_fixed_units`) keeps its pump
+  cap, but its turbine cap is lifted to its installed capacity, since the observed output holds the
+  outage already.
+
+**Model side.** The constraints are `hydro_reserve_floor`, `hydro_reserve_up` (right-hand side: the Param
+`hydro_reserve_up_limit`), `hydro_outage_turbine` and, for plants with pumps, `hydro_outage_pump`, in
+`add_hydro_operation` of `model/components_historical.py`. All are unscaled, so their duals are in
+EUR/MWh. Before solving, the run stops if the floor exceeds C(t), or C(t) minus the reserve is below
+the floor, in any hour; the message names the hour. A floor or reserve that is neither `False` nor a
+positive finite number of MW also stops it.
+
+**Simplifications**, recorded in the run's assumptions: nothing prevents pumping and turbining in the
+same hour, so the floor can be met by both at once; variable-speed pumps that hold reserve while
+pumping are not modelled.
+
+**Values for 2025/26**, from public sources:
+- floor 375 MW: the Swiss FCR demand for 2026, 80 MW (FCR Cooperation announcement of 1 December 2025,
+  p. 1), plus aFRR down at the end of 2025, about 295 MW (ElCom, Regelleistung und Regelenergie 2025,
+  Abb. 12, p. 21, read from the chart);
+- upward reserve 922 MW: FCR 67, aFRR up 362 and mFRR up 493 MW, means of 2025 (ElCom, Regelleistung
+  und Regelenergie 2025, Tab. 5, p. 18). Swissgrid's adequacy model deducts reserve from storage
+  turbine capacity in the same way (System Adequacy 2028, §3.4, p. 28).
+
+**Outage file.** Columns `plant`, `turbine_MW`, `pump_MW` and `source`, and either `start_local` and
+`end_local` (Europe/Zurich wall time) or `start_utc` and `end_utc`, as `YYYY-MM-DD HH:MM` with the end
+excluded. A window caps its plant in every model hour that starts inside it, so windows are clipped to
+the period. The run's assumptions list per plant the windows, their hours inside the period, the caps
+and the sources. The run stops on a missing file or column, a plant outside the hydro fleet of the run,
+an unparsable, ambiguous or non-existent time, a window that ends before it starts or lies entirely
+outside the period, overlapping windows of one plant, a negative cap, or a cap above the plant's
+installed turbine or pump capacity. Two files come with the repository:
+- `input/historical/hydro_outages_2025_26.csv`: three published outages and limits, in local time:
+  Nant de Drance out in October and November 2025, one Bieudron unit out from February 2026 (start date
+  inferred, not published), Veytaux limited to 420 MW;
+- `input/historical/hydro_outages_umm_2025-10-01_2026-07-31.csv`: 3,509 windows of 55 plants from EEX
+  outage messages (UMM), in UTC.
 
 ## Run records
 
