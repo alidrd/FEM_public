@@ -4,6 +4,7 @@ from model.read_settings import read_scenario_settings
 import numpy as np
 from model.structural_parameters import Map_plant_tech_cost_component, fuel_limited_CH_list
 import input.cost_operation_invest_data as cost_params
+from utils.annuity import DISCOUNT_RATE, annuitise
 
 
 def get_cost_component(tech, year, cost_type, scenario_name):
@@ -15,15 +16,12 @@ def get_cost_component(tech, year, cost_type, scenario_name):
     """
     #NOTE: the function can be improved
     
-    discount_rate = 0.05   # 5% discount rate
+    discount_rate = DISCOUNT_RATE
 
     if cost_type == "investment_fuel_energy_cost_chfMWh": 
         amortization_years = cost_params.amortization_years_all[tech + "_fuel_storage"] # years
         investment_fuel_energy_cost = cost_component["investment_fuel_energy_cost_chfMWh"].get(tech, {}).get(year)
-        if amortization_years > 0 and investment_fuel_energy_cost:
-            investment_fuel_energy_cost_discounted = investment_fuel_energy_cost * (discount_rate / (1 - (1 + discount_rate) ** (-amortization_years)))
-        else:
-            investment_fuel_energy_cost_discounted = investment_fuel_energy_cost if investment_fuel_energy_cost else 0
+        investment_fuel_energy_cost_discounted = annuitise(investment_fuel_energy_cost, amortization_years, discount_rate)
         if tech=="oil":
             return investment_fuel_energy_cost
         else:
@@ -38,10 +36,7 @@ def get_cost_component(tech, year, cost_type, scenario_name):
             investment_cost *= battery_cost_factor
 
         # write this equation : Yearly Cost = inv_cost * ( Social Interest Rate / (1 - (1 + Social Interest Rate)^(-Amortization Period) ) )
-        if amortization_years > 0 and investment_cost:
-            investment_cost_discounted = investment_cost * (discount_rate / (1 - (1 + discount_rate) ** (-amortization_years)))
-        else:
-            investment_cost_discounted = investment_cost if investment_cost else 0
+        investment_cost_discounted = annuitise(investment_cost, amortization_years, discount_rate)
 
         fixed_op_cost = cost_component["fixed_op_cost_chfMW"].get(tech, {}).get(year)
         om_cost = cost_component["om_cost_eurMWH"].get(tech, {}).get(year, 0)
