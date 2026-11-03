@@ -210,7 +210,8 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     else:
         print("  OK: No unusually large objective coefficients found.")
     
-    solver_parameters = "threads=8 method=2 crossover=0"
+    # Gurobi options from the scenario settings (scenarios/settings_default.py), one string per meta-scenario
+    solver_parameters = settings_scen["solver_parameters"]
 
     result = opt.solve(
         model,

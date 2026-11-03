@@ -25,3 +25,4 @@ minimum_RES_target_CH,False,45000000,False,45000000,False,45000000
 high_resolution_PV,True,True,True,True,True,True
 high_resolution_PV_dataset,pv_cy09,pv_cy09,pv09_ewopt,pv09_ewopt,pv09_ewopt,pv09_ewopt
 pv_roof_cost_mode,average,average,by_class,by_class,average,average
+solver_parameters,threads=8 method=2 crossover=0 BarConvTol=1e-6,threads=8 method=2 crossover=0 BarConvTol=1e-6,threads=16 method=2 crossover=0 BarConvTol=1e-6,threads=16 method=2 crossover=0 BarConvTol=1e-6,threads=16 method=2 crossover=0 BarConvTol=1e-6,threads=16 method=2 crossover=0 BarConvTol=1e-6

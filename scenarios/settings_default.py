@@ -1,5 +1,6 @@
 seetings_default_param = {
     "DUALS_EXPORT_ALL": False,
+    "solver_parameters": "threads=8 method=2 crossover=0",   # Gurobi options string passed to the solve (e.g. add BarConvTol=1e-6 to loosen the barrier convergence); every sub-scenario of a meta-scenario must give the same string
     "consumer_based_on_tariff": False,
     "consumer_connection_limit": False,
     "solver_name": "gurobi",

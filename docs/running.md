@@ -125,7 +125,7 @@ The Euler setup is in the main README. Facts the script does not make obvious:
   Roughly: data import under a minute (two with three years), objective 4 (13) minutes,
   constraints 12 (40) minutes, solve 21 to 30 (95) minutes, of which Gurobi's barrier is 7 to 15
   (50) minutes and the rest is Pyomo writing the LP file and reading the solution back, export 5
-  to 7 (19) minutes. `method=2` (barrier only) in `solver_parameters` in `model/core.py` lowers
+  to 7 (19) minutes. `method=2` (barrier only) in the setting `solver_parameters` (`scenarios/settings_default.py`) lowers
   solver memory. It can return a different one of several optimal dual
   solutions than the default method (`docs/duals.md`).
 - Euler scratch is purged after 15 days without access (per the README); copy results off it.
