@@ -631,15 +631,19 @@ def cross_match_plant_list(Plant_capacity_gen_list, Plant_non_hydro_list, Plant_
         )
 
 
-def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only=False, weather_year=None, run_year=None, high_resolution_PV=False, high_resolution_PV_dataset=None, pv_roof_cost_mode="tech"):
+def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only=False, weather_year=None, run_year=None, high_resolution_PV=False, high_resolution_PV_dataset=None, pv_roof_cost_mode="tech", investment_markets=False):
     """
     Read plant data from plants_non_hydro.csv file and store data in:
     Plant_non_hydro_list: list of plants
     Map_plant_node: dictionary with the values in the index as keys and the values in the column "node" as values
     Map_plant_tech: dictionary with the values in the index as keys and the values in the column "plant_type" as values
     CH_only: boolean, if True, filter out investment candidates from non-CH countries
+    investment_markets: False (every candidate) or the market codes whose candidates are kept, see model/investment_candidates.py
     """
     from model.mappings import Map_planttech_SM_ours
+    from model.investment_candidates import parse_market_list, keep_candidates_in_markets, check_battery_nodes_in_markets
+
+    markets_kept = parse_market_list(investment_markets)
 
     Plant_non_hydro_data_EU = pd.read_csv(
         r"input/plants_non_hydro.csv", header=0, index_col=0
@@ -700,6 +704,14 @@ def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investmen
                     f"[pv_roof_costs] mode {pv_roof_cost_mode}: {len(Map_plant_cost_class_instance)} "
                     f"candidates priced by class {sorted(set(Map_plant_cost_class_instance.values()))}"
                 )
+
+        # investment_markets: keep only the candidates of the listed markets (the neighbours then keep their exogenous capacities)
+        if markets_kept is not None:
+            Plant_res_ch_data = keep_candidates_in_markets(Plant_res_ch_data, markets_kept)
+            Map_plant_cost_class_instance = {
+                plant: cls for plant, cls in Map_plant_cost_class_instance.items() if plant in Plant_res_ch_data.index
+            }
+            print(f"[investment_markets] {len(Plant_res_ch_data)} candidates kept in markets {markets_kept}")
 
         # create the list P_list_fuelswitching_plants, which is the list of plants in which column fuel_switching in Plant_res_ch_data has value of TRUE
         P_list_fuelswitching_plants = Plant_res_ch_data[
@@ -770,6 +782,7 @@ def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investmen
             additional_battery_nodes = []
         else:
             additional_battery_nodes = [item.strip() for item in nodes_raw.split(',') if item.strip()]
+    check_battery_nodes_in_markets(additional_battery_nodes, markets_kept)
 
     if additional_battery_nodes and allow_res_investment:
         from model.structural_parameters import add_additional_batteries

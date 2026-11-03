@@ -162,6 +162,7 @@ def data_import_TYNDP_fcn(scenario_name):
     heat_flexibility_Kelvin = settings_scen["heat_flexibility_Kelvin"]
     storage_to_charge_ratio_days = [settings_scen["storage_to_charge_ratio_days"]]
     battery_investment_nodes_in_addition_to_CH = settings_scen["battery_investment_nodes_in_addition_to_CH"]
+    investment_markets = settings_scen["investment_markets"]
     reduce_BE_FR_day_nine_and_ten_demand_to_percent = settings_scen["reduce_BE_FR_day_nine_and_ten_demand_to_percent"]
     lost_load_cost_mode = settings_scen["lost_load_cost_mode"]
     share_of_available_charging_capacity_for_V2G = settings_scen["share_of_available_charging_capacity_for_V2G"]
@@ -361,7 +362,7 @@ def data_import_TYNDP_fcn(scenario_name):
         Map_consumer_plant_nonhydro,
         P_list_fuelswitching_plants_instance,
         Map_plant_cost_class_instance,
-    ) = read_plant_non_hydro_data(allow_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only, weather_year=weather_year, run_year=run_year, high_resolution_PV=high_resolution_PV, high_resolution_PV_dataset=high_resolution_PV_dataset, pv_roof_cost_mode=pv_roof_cost_mode)
+    ) = read_plant_non_hydro_data(allow_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only, weather_year=weather_year, run_year=run_year, high_resolution_PV=high_resolution_PV, high_resolution_PV_dataset=high_resolution_PV_dataset, pv_roof_cost_mode=pv_roof_cost_mode, investment_markets=investment_markets)
 
     dle.extend_list_with_new_elements(Plant_investment_RES_CH_list_instance, Plant_investment_RES_CH_list)
     dle.extend_list_with_new_elements(Plant_investment_non_RES_CH_list_instance, Plant_investment_non_RES_CH_list)
