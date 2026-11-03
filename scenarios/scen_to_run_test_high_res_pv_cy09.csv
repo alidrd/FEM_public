@@ -26,3 +26,6 @@ lost_load_cost_mode,multi_step_v1
 high_resolution_PV,True
 high_resolution_PV_dataset,pv_cy09
 pv_roof_cost_mode,average
+investment_markets,CH00
+PVRF_CH_coefficient,0
+Windon_CH_coefficient,0

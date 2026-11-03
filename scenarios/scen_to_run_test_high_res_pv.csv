@@ -25,3 +25,6 @@ source_for_CH_NTC,TYNDP22
 lost_load_cost_mode,multi_step_v1
 high_resolution_PV,True
 high_resolution_PV_dataset,pv09_ewopt
+investment_markets,CH00
+PVRF_CH_coefficient,0
+Windon_CH_coefficient,0
