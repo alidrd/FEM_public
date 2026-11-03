@@ -28,6 +28,8 @@ Tech_list = []
 
 # dictionary of plant technologies (e.g. {'hp_ID300': 'hp', 'ev_ID300': 'ev'})
 Map_plant_tech = {}
+# plant -> cost class, only for per-plant rooftop PV priced by class (model/pv_roof_costs.py)
+Map_plant_cost_class = {}
 
 # dictionary of technologies and their plants (e.g. {'hp': ['hp_ID300'], 'ev': ['ev_ID300'], 'pv': ['pv_ID300']})
 Map_tech_plant = {}
@@ -208,6 +210,10 @@ cost_data_inv_gen_int = {}
 # dictionary that include the slope value of investment cost (EU/MW),  for each technology, e.g., 
 # cost_data_inv_gen_slp = {"pv": 15,    "gas": 10, "limited_energy": 100000000, "battery": 10,
 cost_data_inv_gen_slp = {}
+
+# slope of investment cost (CHF/MW/yr) of the plants priced by cost class, keyed (plant, scenario);
+# the model takes it over the technology slope wherever a plant appears here (model/pv_roof_costs.py)
+cost_data_inv_gen_slp_plant = {}
 
 # cost of investing in energy capacity (EU/MWh) for each technology that has a energy storage capacity
 cost_data_inv_e_slp = {}

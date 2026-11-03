@@ -29,11 +29,13 @@ from data_prep.definitions_common import (
     LineATC_list,
     Demand_data,
     Map_plant_tech,
+    Map_plant_cost_class,
     Map_plant_node,
     Plant_inflow_list,
     Plant_outflow_list,
     cost_data_opr_slp,
     cost_data_inv_gen_slp,
+    cost_data_inv_gen_slp_plant,
     cost_data_inv_e_slp,
     op_cost_n_tech_calibration,
     gen_max_RES_pre_existing_no_NETFLEX,
@@ -931,6 +933,22 @@ def define_params_op(model, resistive_heater_investment_cap_MW_total):
         within=pyo.Any,
     )
 
+    # per-plant rooftop PV priced by cost class (model/pv_roof_costs.py), only when
+    # pv_roof_cost_mode is by_class or average: exported as Map_plant_cost_class.csv, which
+    # aggregation merges like every Map_* file (an empty Map file would break that merge).
+    plants_with_cost_class = [p for p in model.P if p in Map_plant_cost_class]
+    if plants_with_cost_class:
+        model.P_cost_class = Set(
+            initialize=plants_with_cost_class,
+            doc="plants whose investment cost comes from a rooftop-PV cost class",
+        )
+        model.Map_plant_cost_class = Param(
+            model.P_cost_class,
+            initialize={p: Map_plant_cost_class[p] for p in model.P_cost_class},
+            doc="cost class of each per-plant rooftop-PV candidate",
+            within=pyo.Any,
+        )
+
     model.P_fuellimCH_plus_P_fuellimCH_DH = Set(
         initialize=[p for p in model.P_fuellimCH | model.P_fuellimCH_DH],
         doc="set of plants with limited fuel availability in CH",
@@ -1213,7 +1231,15 @@ def define_params_inv(model, weight_in_objective_fcn, resistive_heater_investmen
     model.investment_genmax_slp = Param(
         model.P, # NOTE add  | model.PDH if district heating plants are included
         model.Scenarios,
-        initialize={(p,scen): cost_data_inv_gen_slp[Map_plant_tech[p], scen] for p in model.P for scen in model.Scenarios},
+        initialize={
+            (p, scen): (
+                cost_data_inv_gen_slp_plant[p, scen]
+                if (p, scen) in cost_data_inv_gen_slp_plant
+                else cost_data_inv_gen_slp[Map_plant_tech[p], scen]
+            )
+            for p in model.P for scen in model.Scenarios
+        },
+        doc="investment cost slope (CHF/MW/yr): the plant's cost-class annuity where it has one, else its technology's",
     )
 
     model.investment_emax_slp = Param(

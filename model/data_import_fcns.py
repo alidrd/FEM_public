@@ -631,7 +631,7 @@ def cross_match_plant_list(Plant_capacity_gen_list, Plant_non_hydro_list, Plant_
         )
 
 
-def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only=False, weather_year=None, run_year=None, high_resolution_PV=False, high_resolution_PV_dataset=None):
+def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only=False, weather_year=None, run_year=None, high_resolution_PV=False, high_resolution_PV_dataset=None, pv_roof_cost_mode="tech"):
     """
     Read plant data from plants_non_hydro.csv file and store data in:
     Plant_non_hydro_list: list of plants
@@ -675,25 +675,31 @@ def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investmen
             ]
             print(f"CH_only mode: filtered investment candidates to only CH markets")
 
+        Map_plant_cost_class_instance = {}
         if high_resolution_PV:
-            from model.high_res_PV import load_high_res_PV
+            from model.high_res_PV import load_high_res_PV, load_cost_classes, replace_aggregated_pv_candidates
+            from model.pv_roof_costs import plant_cost_classes
             hires_plants, _ = load_high_res_PV(high_resolution_PV_dataset, weather_year, run_year)
 
-            # drop the 7 aggregated CHxx_pvrf rows
-            idx_match = pd.Series(
-                Plant_res_ch_data.index.str.match(r"^CH0[1-7]_pvrf$"),
-                index=Plant_res_ch_data.index,
-            )
-            mask_old_pvrf = Plant_res_ch_data["tech"].eq("pvrf") & idx_match
-            n_removed = int(mask_old_pvrf.sum())
-            Plant_res_ch_data = Plant_res_ch_data[~mask_old_pvrf]
-
-            # append per-plant candidates
-            Plant_res_ch_data = pd.concat([Plant_res_ch_data, hires_plants])
+            # the 7 aggregated CHxx_pvrf candidates leave the investment set; the per-plant ones come in
+            Plant_res_ch_data, n_removed = replace_aggregated_pv_candidates(Plant_res_ch_data, hires_plants)
             print(
                 f"[high_res_PV] removed {n_removed} aggregated CHxx_pvrf candidates, "
                 f"added {len(hires_plants)} per-plant candidates"
             )
+
+            # cost class per candidate (only the units that got a profile are candidates)
+            if pv_roof_cost_mode != "tech":
+                unit_classes = load_cost_classes(high_resolution_PV_dataset, weather_year)
+                Map_plant_cost_class_instance = {
+                    plant: cls
+                    for plant, cls in plant_cost_classes(pv_roof_cost_mode, unit_classes).items()
+                    if plant in hires_plants.index
+                }
+                print(
+                    f"[pv_roof_costs] mode {pv_roof_cost_mode}: {len(Map_plant_cost_class_instance)} "
+                    f"candidates priced by class {sorted(set(Map_plant_cost_class_instance.values()))}"
+                )
 
         # create the list P_list_fuelswitching_plants, which is the list of plants in which column fuel_switching in Plant_res_ch_data has value of TRUE
         P_list_fuelswitching_plants = Plant_res_ch_data[
@@ -714,6 +720,7 @@ def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investmen
         Plant_investment_RES_CH_list = []
         Plant_investment_non_RES_CH_list = []
         P_list_fuelswitching_plants = []
+        Map_plant_cost_class_instance = {}
     # Plant_hydro_EU = pd.read_csv(r'input/plants_hydro_EU.csv', header=0, index_col=0)  # NOTE: hydro data are being imported from PECD database for 2030 (no extra expansion was observed in TYNDP dataset anyways)
     # Plant_hydro_CH = pd.read_csv(r'input/plants_hydro_CH.csv', header=0, index_col=0)  # NOTE: hydro data are being imported from PECD database for 2030 (no extra expansion is currently modelled in CH)
     # Plant_all_data = pd.concat([Plant_non_hydro_data, Plant_hydro_EU, Plant_hydro_CH])
@@ -787,7 +794,8 @@ def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investmen
         Map_plant_node,
         Map_plant_tech,
         Map_consumer_plant,
-        P_list_fuelswitching_plants
+        P_list_fuelswitching_plants,
+        Map_plant_cost_class_instance,
     )
 
 

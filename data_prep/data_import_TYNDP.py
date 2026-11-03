@@ -1,4 +1,5 @@
 import utils.dic_list_expansion as dle
+from model.pv_roof_costs import validate_cost_mode, plant_investment_slopes
 from data_prep.definitions_TYNDP import *
 from data_prep.definitions_common import (
     Consumer_list,
@@ -7,6 +8,7 @@ from data_prep.definitions_common import (
     Plant_list,
     Map_consumer_plant,
     Map_plant_tech,
+    Map_plant_cost_class,
     Map_plant_node,
     Plant_capacity_gen,
     Plant_capacity_pmp,
@@ -18,6 +20,7 @@ from data_prep.definitions_common import (
     Plant_investment_RES_CH_list,
     cost_data_inv_gen_int,
     cost_data_inv_gen_slp,
+    cost_data_inv_gen_slp_plant,
     cost_data_opr_int,
     cost_data_opr_slp,
     op_cost_n_tech_calibration,
@@ -166,6 +169,7 @@ def data_import_TYNDP_fcn(scenario_name):
     neighbor_price_scenario_for_CH_only_mode = settings_scen["neighbor_price_scenario_for_CH_only_mode"]
     high_resolution_PV = settings_scen["high_resolution_PV"]
     high_resolution_PV_dataset = settings_scen["high_resolution_PV_dataset"]
+    pv_roof_cost_mode = validate_cost_mode(settings_scen["pv_roof_cost_mode"], high_resolution_PV)
 
     # --- Read multi-step lost load cost data ---
     lost_load_cost_filename = f"lostLoadCost_{lost_load_cost_mode}.csv"
@@ -356,7 +360,8 @@ def data_import_TYNDP_fcn(scenario_name):
         Map_plant_tech_nonhydro,
         Map_consumer_plant_nonhydro,
         P_list_fuelswitching_plants_instance,
-    ) = read_plant_non_hydro_data(allow_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only, weather_year=weather_year, run_year=run_year, high_resolution_PV=high_resolution_PV, high_resolution_PV_dataset=high_resolution_PV_dataset)
+        Map_plant_cost_class_instance,
+    ) = read_plant_non_hydro_data(allow_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only, weather_year=weather_year, run_year=run_year, high_resolution_PV=high_resolution_PV, high_resolution_PV_dataset=high_resolution_PV_dataset, pv_roof_cost_mode=pv_roof_cost_mode)
 
     dle.extend_list_with_new_elements(Plant_investment_RES_CH_list_instance, Plant_investment_RES_CH_list)
     dle.extend_list_with_new_elements(Plant_investment_non_RES_CH_list_instance, Plant_investment_non_RES_CH_list)
@@ -376,6 +381,11 @@ def data_import_TYNDP_fcn(scenario_name):
     Map_plant_node.update(Map_plant_node_nonhydro)
     Map_plant_tech.update(Map_plant_tech_nonhydro)
     Map_consumer_plant.update(Map_consumer_plant_nonhydro)
+    # per-plant rooftop PV priced by cost class: its investment slope replaces the pvrf technology slope
+    Map_plant_cost_class.update(Map_plant_cost_class_instance)
+    dle.update_dict_with_add_dim(
+        plant_investment_slopes(Map_plant_cost_class_instance, run_year), cost_data_inv_gen_slp_plant, scenario_name
+    )
 
     # electrolyzer data
     print("Reading electrolyzer data...")

@@ -1,0 +1,11 @@
+cost_class,year,investment_cost_chfMW,source
+1-10kW,2035,1974000,"SWEET CROSS (crossdat) via Nexus-E update_inv_costs investment_costs.csv, PV-roof Reference, CHF2020/kW x 0.981 (CHF2020->CHF2017, cost_assumptions.xlsx 02_Parameters); 2035 = mean of the 2030 and 2040 values"
+10-30kW,2035,1459000,"SWEET CROSS (crossdat) via Nexus-E update_inv_costs investment_costs.csv, PV-roof Reference, CHF2020/kW x 0.981 (CHF2020->CHF2017, cost_assumptions.xlsx 02_Parameters); 2035 = mean of the 2030 and 2040 values"
+30-100kW,2035,1020000,"SWEET CROSS (crossdat) via Nexus-E update_inv_costs investment_costs.csv, PV-roof Reference, CHF2020/kW x 0.981 (CHF2020->CHF2017, cost_assumptions.xlsx 02_Parameters); 2035 = mean of the 2030 and 2040 values"
+100-1000kW,2035,711000,"SWEET CROSS (crossdat) via Nexus-E update_inv_costs investment_costs.csv, PV-roof Reference, CHF2020/kW x 0.981 (CHF2020->CHF2017, cost_assumptions.xlsx 02_Parameters); 2035 = mean of the 2030 and 2040 values"
+all,2035,1423000,"potential-weighted mean of the four classes, weights = sum Pmax per class in pv09_ewopt/2009 units.csv (26,268 / 36,125 / 20,053 / 10,857 MW)"
+1-10kW,2050,1452000,"SWEET CROSS (crossdat) via Nexus-E update_inv_costs investment_costs.csv, PV-roof Reference, CHF2020/kW x 0.981 (CHF2020->CHF2017, cost_assumptions.xlsx 02_Parameters)"
+10-30kW,2050,987000,"SWEET CROSS (crossdat) via Nexus-E update_inv_costs investment_costs.csv, PV-roof Reference, CHF2020/kW x 0.981 (CHF2020->CHF2017, cost_assumptions.xlsx 02_Parameters)"
+30-100kW,2050,763000,"SWEET CROSS (crossdat) via Nexus-E update_inv_costs investment_costs.csv, PV-roof Reference, CHF2020/kW x 0.981 (CHF2020->CHF2017, cost_assumptions.xlsx 02_Parameters)"
+100-1000kW,2050,598000,"SWEET CROSS (crossdat) via Nexus-E update_inv_costs investment_costs.csv, PV-roof Reference, CHF2020/kW x 0.981 (CHF2020->CHF2017, cost_assumptions.xlsx 02_Parameters)"
+all,2050,1025000,"potential-weighted mean of the four classes, weights = sum Pmax per class in pv09_ewopt/2009 units.csv (26,268 / 36,125 / 20,053 / 10,857 MW)"

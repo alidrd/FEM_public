@@ -9,6 +9,8 @@ Covers the loader's contract (docs/high_res_pv.md):
   6. Caching of repeated calls.
   7. Schema compatibility — returned DataFrame columns match
      input/plants_invest_candidates_res_CH.csv so the rows concatenate cleanly.
+  8. Cost classes — `load_cost_classes` reads the optional `cost_class` column.
+  9. `replace_aggregated_pv_candidates` drops exactly the seven regional rows.
 
 These tests construct small synthetic input files in a `tmp_path`
 fixture (layout `<dataset>/<weather_year>/`) and monkeypatch ``model.high_res_PV.PV_DIR`` to point at the
@@ -57,10 +59,12 @@ def _profile_row(name: str, year: int, value: float) -> dict:
 
 @pytest.fixture(autouse=True)
 def _clear_loader_cache():
-    """Clear loader cache before and after each test for isolation."""
+    """Clear the loader caches before and after each test for isolation."""
     hires.load_high_res_PV.cache_clear()
+    hires.load_cost_classes.cache_clear()
     yield
     hires.load_high_res_PV.cache_clear()
+    hires.load_cost_classes.cache_clear()
 
 
 @pytest.fixture
@@ -363,3 +367,58 @@ def test_missing_units_csv_raises(patched_pv_dir):
         hires.load_high_res_PV(DATASET, 2009, 2050)
 
     assert "units.csv" in str(exc_info.value)
+
+
+# --- cost classes -----------------------------------------------------------------
+
+def test_load_cost_classes_reads_the_column_of_the_pv_roof_units_only(patched_pv_dir):
+    units = [
+        {"GenName": "alpha", "Pmax": 4.0, "Technology": "PV-roof", "cost_class": "1-10kW"},
+        {"GenName": "big-one", "Pmax": 9.0, "Technology": "PV-roof", "cost_class": " all "},
+        {"GenName": "zero", "Pmax": 0.0, "Technology": "PV-roof", "cost_class": "all"},   # Pmax 0: no candidate
+        {"GenName": "windy", "Pmax": 5.0, "Technology": "Wind", "cost_class": ""},        # not PV-roof
+    ]
+    _write_fixture(patched_pv_dir, units, [_profile_row("alpha", 2050, 1.0)])
+
+    assert hires.load_cost_classes(DATASET, 2009) == {"CH00_alpha_pvrf": "1-10kW", "CH00_big_one_pvrf": "all"}
+
+
+def test_load_cost_classes_is_none_when_units_csv_has_no_column(patched_pv_dir):
+    _write_fixture(patched_pv_dir, [{"GenName": "alpha", "Pmax": 4.0, "Technology": "PV-roof"}],
+                   [_profile_row("alpha", 2050, 1.0)])
+    assert hires.load_cost_classes(DATASET, 2009) is None
+
+
+def test_load_cost_classes_rejects_a_blank_class(patched_pv_dir):
+    units = [
+        {"GenName": "alpha", "Pmax": 4.0, "Technology": "PV-roof", "cost_class": "1-10kW"},
+        {"GenName": "beta", "Pmax": 2.0, "Technology": "PV-roof", "cost_class": ""},
+        {"GenName": "gamma", "Pmax": 2.0, "Technology": "PV-roof", "cost_class": None},
+    ]
+    _write_fixture(patched_pv_dir, units, [_profile_row("alpha", 2050, 1.0)])
+    with pytest.raises(ValueError, match=r"2 PV-roof unit\(s\) of dataset 'ds' have an empty cost_class.*beta"):
+        hires.load_cost_classes(DATASET, 2009)
+
+
+def test_load_cost_classes_is_cached(patched_pv_dir):
+    _write_fixture(patched_pv_dir, [{"GenName": "alpha", "Pmax": 4.0, "Technology": "PV-roof", "cost_class": "all"}],
+                   [_profile_row("alpha", 2050, 1.0)])
+    hires.load_cost_classes(DATASET, 2009)
+    hires.load_cost_classes(DATASET, 2009)
+    assert hires.load_cost_classes.cache_info().hits == 1
+
+
+# --- replace_aggregated_pv_candidates ---------------------------------------------
+
+def test_replace_aggregated_pv_candidates_drops_only_the_regional_pvrf_rows():
+    candidates = pd.DataFrame(
+        {"tech": ["pvrf", "windon", "pvrf", "pvrf", "pvrf"], "gen_max_limit": [1e4, 600.0, 1e4, 2e4, 1e4]},
+        index=["CH01_pvrf", "CH01_windon", "CH07_pvrf", "DE01_pvrf", "CH01_pvrf"],   # the duplicate row the CSV has
+    )
+    per_plant = pd.DataFrame({"tech": ["pvrf"], "gen_max_limit": [3.0]}, index=["CH00_unit_pvrf"])
+
+    out, n_removed = hires.replace_aggregated_pv_candidates(candidates, per_plant)
+
+    assert n_removed == 3
+    assert list(out.index) == ["CH01_windon", "DE01_pvrf", "CH00_unit_pvrf"]
+    assert list(out.columns) == ["tech", "gen_max_limit"]

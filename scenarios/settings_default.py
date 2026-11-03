@@ -53,6 +53,7 @@ seetings_default_param = {
     "run_year": 2050,
     "high_resolution_PV": False,   # if True, replace 7 CHxx_pvrf investment candidates with per-plant Nexus-E rooftop PV from input/RES_nexuse/PV/<high_resolution_PV_dataset>/<weather_year>/. EMHIRES pvrf still loaded for preexisting (EP2050+) capacity.
     "high_resolution_PV_dataset": None,   # folder name under input/RES_nexuse/PV/ (e.g. "pv09_ewopt", "pv_old"); required when high_resolution_PV is True, see docs/high_res_pv.md
+    "pv_roof_cost_mode": "tech",   # investment cost of the per-plant rooftop-PV candidates: "tech" (the pvrf cost of cost_assumptions.xlsx), "by_class" (each unit's cost_class from units.csv, priced by input/cost_pv_roof_cost_classes.csv) or "average" (the "all" row of that table for every unit); by_class and average need high_resolution_PV True, see docs/high_res_pv.md
     "eu_policy": "GA",
     "ch_policy": "ZBA",
     "Node_list_setting": [

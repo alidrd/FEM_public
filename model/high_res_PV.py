@@ -8,7 +8,8 @@ PV read sites.
 Layout, one folder per dataset and weather year:
 
     input/RES_nexuse/PV/<dataset>/<weather_year>/
-        units.csv                         GenName, Pmax (MW, installable potential), Technology
+        units.csv                         GenName, Pmax (MW, installable potential), Technology,
+                                          cost_class (optional, see model/pv_roof_costs.py)
         NexusInput_profiles_newPV_mv.csv  Name, year, '1'..'8760' (MWh per hour at Pmax)
 
 `data_prep/export_nexuse_pv.py` writes both files from a Nexus-E scenario
@@ -23,6 +24,9 @@ PV_DIR = os.path.join("input", "RES_nexuse", "PV")
 UNITS_FILE = "units.csv"
 PROFILES_FILE = "NexusInput_profiles_newPV_mv.csv"
 UNIT_COLUMNS = ("GenName", "Pmax", "Technology")
+COST_CLASS_COLUMN = "cost_class"
+PV_ROOF_TECHNOLOGY = "PV-roof"
+AGGREGATED_PV_PATTERN = r"^CH0[1-7]_pvrf$"   # the seven regional candidates the per-plant ones replace
 
 # Hourly columns of the Nexus-E profile CSV and the FEM time labels they map to.
 HOUR_COLS = [str(h) for h in range(1, 8761)]
@@ -83,6 +87,45 @@ def _read_units(folder):
     return units
 
 
+def _pv_roof_units(folder):
+    """The rows of units.csv that become candidates: technology PV-roof with a positive Pmax."""
+    units = _read_units(folder)
+    return units[(units["Technology"] == PV_ROOF_TECHNOLOGY) & (units["Pmax"] > 0)].copy()
+
+
+@functools.lru_cache(maxsize=8)
+def load_cost_classes(dataset, weather_year):
+    """{plant_id: cost class} of the PV-roof units, or None when units.csv has no `cost_class` column.
+
+    A PV-roof unit with an empty class is an error: the column must then be
+    rewritten with data_prep/export_nexuse_pv.py --units-only --cost-class ...
+    """
+    folder = _resolve_data_folder(dataset, weather_year)
+    units = _pv_roof_units(folder)
+    if COST_CLASS_COLUMN not in units.columns:
+        return None
+    classes = units[COST_CLASS_COLUMN].astype("string").str.strip()
+    blank = units.loc[classes.isna() | (classes == ""), "GenName"].tolist()
+    if blank:
+        raise ValueError(
+            f"[high_res_PV] {len(blank)} PV-roof unit(s) of dataset {dataset!r} have an empty "
+            f"{COST_CLASS_COLUMN} in {UNITS_FILE} (e.g. {blank[:3]})."
+        )
+    return {plant_id(name): str(cls) for name, cls in zip(units["GenName"], classes)}
+
+
+def replace_aggregated_pv_candidates(candidates, per_plant_candidates):
+    """Drop the aggregated rows `CH01_pvrf`..`CH07_pvrf` from `candidates`, append the per-plant ones.
+
+    Returns the new frame and the number of rows dropped. With the flag on the
+    aggregated candidates must leave the investment set: the pre-existing
+    capacity they stood for stays in the model as fixed infeed.
+    """
+    aggregated = pd.Series(candidates.index.str.match(AGGREGATED_PV_PATTERN), index=candidates.index)
+    mask = candidates["tech"].eq("pvrf") & aggregated
+    return pd.concat([candidates[~mask], per_plant_candidates]), int(mask.sum())
+
+
 def _resolve_run_year(profiles: pd.DataFrame, run_year):
     """Return the closest available profile-year to `run_year`.
 
@@ -118,9 +161,7 @@ def load_high_res_PV(dataset, weather_year, run_year):
     folder = _resolve_data_folder(dataset, weather_year)
 
     # --- units --------------------------------------------------------------
-    units = _read_units(folder)
-    units = units[units["Technology"] == "PV-roof"].copy()
-    units = units[units["Pmax"] > 0][["GenName", "Pmax"]]
+    units = _pv_roof_units(folder)[["GenName", "Pmax"]]
     units["plant_id"] = units["GenName"].map(plant_id)
 
     # --- profiles -----------------------------------------------------------
