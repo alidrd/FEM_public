@@ -41,8 +41,8 @@ The CSV named on the `target_csv =` line of `scenarios/scenarios.py` defines wha
 
 `scenarios/scen_to_run_STORSUPPORT.csv` is the default and a full example of a three-weather-year
 setup; `scenarios/scen_to_run_dh_ab.csv` is a one-week A/B example for the DH demand overlay;
-`scenarios/scen_to_run_high_res_pv.csv` compares aggregated with per-plant Swiss rooftop PV
-(`docs/high_res_pv.md`).
+`scenarios/scen_to_run_high_res_pv.csv` is six full-year runs on per-node and per-unit Nexus-E
+rooftop PV with different investment-cost rules (`docs/high_res_pv.md`).
 
 ## Test run
 
@@ -68,14 +68,13 @@ the run with an error before results are exported (Gurobi's log is
 plant sets (investment on, investment off, weather year 2009); pointing `target_csv` at it checks
 that `run_scenarios.py` runs several meta-scenarios one after the other, in a minute or two.
 
-`scenarios/scen_to_run_test_high_res_pv.csv` and `scenarios/scen_to_run_test_high_res_pv_old.csv`
-are the same 25 hours with `high_resolution_PV` on, one per Nexus-E dataset (`2050_st_pv09` and
-`2050_st_pvold`, both on weather year 2009); they need the exported dataset folders
-(`docs/high_res_pv.md`) and write to `output/2050_st_pv09/` and `output/2050_st_pvold/`. They are
-separate files because one `run_scenarios.py` process cannot run two meta-scenarios whose Swiss
-investment candidates differ: the candidate list only grows between meta-scenarios, and the second
-one fails in `define_params_op` with a `KeyError` on a plant of the first. Run such sets one
-meta-scenario per process, as the Euler array script does.
+`scenarios/scen_to_run_test_high_res_pv.csv`, `scenarios/scen_to_run_test_high_res_pv_cls.csv`
+and `scenarios/scen_to_run_test_high_res_pv_cy09.csv` are the same 25 hours with
+`high_resolution_PV` on, on weather year 2009: the 8,556-unit Nexus-E dataset at the technology
+cost (`2050_st_pv09`) and priced by size class (`2050_st_pv09cls`), and the 125-unit per-node
+dataset at the average class cost (`2050_st_pvcy09`). They need the exported dataset folders
+(`docs/high_res_pv.md`) and write to `output/<meta-scenario>/`. One file per check, so each runs
+alone in a minute or two.
 
 The test scenario has a single sub-scenario and does not use the DH demand overlay, so it does
 not exercise multi-weather-year logic. To check such a change, put a temporary copy of the test

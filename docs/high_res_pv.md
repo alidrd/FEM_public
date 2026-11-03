@@ -4,9 +4,11 @@ Checked against: `main` @ a90496c (2026-10-16).
 
 The setting `high_resolution_PV` (default `False` in `scenarios/settings_default.py`) replaces the
 seven aggregated Swiss rooftop-PV investment candidates with one candidate per rooftop-PV unit of
-the Nexus-E model; `high_resolution_PV_dataset` names which Nexus-E dataset to read. This guide
-covers what the flag changes, the dataset folders and their format, how to export a dataset from
-a Nexus-E database, how to run and check it, and the datasets at hand.
+the Nexus-E model; `high_resolution_PV_dataset` names which Nexus-E dataset to read, and
+`pv_roof_cost_mode` whether those candidates pay the `pvrf` technology cost or a cost by size
+class. This guide covers what the flag changes, the dataset folders and their format, how to
+export a dataset from a Nexus-E database, the cost classes, how to run and check it, and the
+datasets at hand.
 
 ## What the flag changes
 
@@ -57,9 +59,11 @@ holds two files with fixed names, written by the export tool below.
 | `GenName` | Unit name: unique, characters `A-Z a-z 0-9 _ -`, at most 49 characters. The join key to the profile file. |
 | `Pmax` | Installable capacity (roof potential) of the unit in MW. It becomes the candidate's investment cap and the divisor that turns the profile into an availability factor, so it must be the capacity the profile was computed for. Rows with `Pmax <= 0` are dropped. |
 | `Technology` | Only rows equal to `PV-roof` are used. |
+| `cost_class` | Optional. The class the unit is priced at when `pv_roof_cost_mode` is `by_class` (section "Investment cost by size class"). A plain string that must match a `cost_class` of `input/cost_pv_roof_cost_classes.csv`; the loader never derives it from the name. In the other modes the column is ignored. |
 
-The export adds `BusName` (the Nexus-E grid node) and `idProfile` for traceability; the loader
-ignores them.
+The export adds `BusName` (the Nexus-E grid node), `idProfile`, and the database's own
+annualised costs `nexuse_InvCost_EURperMWyr` and `nexuse_FOM_EURperMWyr` (EUR per MW and
+year) for traceability; the loader ignores them.
 
 **`NexusInput_profiles_newPV_mv.csv`**, the Nexus-E profile table, one row per unit and profile
 year. Columns the loader uses:
@@ -82,8 +86,16 @@ such database and writes a dataset folder:
 ```bash
 poetry install --with nexuse        # once: the optional MySQL client (pymysql)
 set NEXUSE_DB_PASSWORD=<password>   # export NEXUSE_DB_PASSWORD=... on Linux
-poetry run python data_prep/export_nexuse_pv.py --db <database> --dataset <folder name> --weather-year <year> --run-year 2050 --host <server> --user <user>
+poetry run python data_prep/export_nexuse_pv.py --db <database> --dataset <folder name> --weather-year <year> --run-year 2050 --host <server> --user <user> --cost-class name-suffix
 ```
+
+`--cost-class` is required and says how `units.csv` gets its `cost_class` column:
+`name-suffix` takes the last `_`-separated token of the unit name, which must be one of
+`1-10kW`, `10-30kW`, `30-100kW`, `100-1000kW` (the export stops on any other name, so a
+dataset without size classes cannot be classed by accident); `all` labels every unit `all`.
+`SOURCE.md` records the option and the count per class. `--units-only` rewrites `units.csv`
+and appends to `SOURCE.md` of a folder exported earlier, from the database, without touching
+the profile file; it refuses if the unit names differ from the profiles already there.
 
 It takes the generator configuration of `--run-year` (table `genconfiginfo`), joins
 `genconfiguration` (with `Pmax`, bus and profile id), `gendata` (technology) and `profiledata`
@@ -105,29 +117,80 @@ is read from the environment only, never from the command line or a file in the 
 lists the capacities Nexus-E chose to build, filtered to the units it built; an earlier FEM
 version used it as the capacity cap and so clipped the profiles of 290 units to full availability.
 
-## Datasets at hand (October 2026)
+## Investment cost by size class
 
-Both databases live on the Nexus-E input server and hold the same five run years; only 2050 has
-rooftop-PV candidates.
+Nexus-E prices rooftop PV by the size of the installation; FEM prices every `pvrf` plant at one
+technology cost (`input/cost_assumptions.xlsx`, 697 and 615 CHF per kW for 2035 and 2050, the
+cost of a large roof). The setting `pv_roof_cost_mode` (default `tech`) gives the per-plant
+candidates Nexus-E's structure:
 
-| | `pv09_ewopt` | `pv_old` |
-|---|---|---|
-| Database | `pv_all_eu_evflex_pv09_ewopt` | `pv_all_eu_evflex_pv_old` |
-| Candidate units | 8,556 | 125 |
-| Unit scheme | grid node × tilt (0/15/30/60) × azimuth (0/90/135/180/225/270) × size class (1-10, 10-30, 30-100, 100-1000 kW) | one per grid node |
-| Grid nodes | 135 | 125 (121 in common) |
-| Total potential | 93,303 MW | 46,994 MW |
-| Full-load hours at potential | 391 to 1,227, median 958 | 838 to 1,159, median 994 |
-| Investment cost, EUR per MW and year | four levels by size class, 46,280 to 105,904 | one level, 64,921 |
-| Weather year | 2009 (east-west optimised roofs) | 2009 |
+| `pv_roof_cost_mode` | Each per-plant candidate pays |
+|---|---|
+| `tech` | the `pvrf` technology cost, as before |
+| `by_class` | the cost of its `cost_class` from `input/cost_pv_roof_cost_classes.csv` |
+| `average` | the `all` row of that table, the potential-weighted mean of the classes |
 
-Neither database records its meteorological year; 2009 for both is the Nexus-E team's
-statement. A check against FEM's own EMHIRES Swiss PV profiles
-(`input/RES_EMHIRES/pvrf_<year>.csv`) agrees for the new set (daily energy correlates at 0.94
-with 2009, below 0.6 with 1995, 2007 and 2008) but not for the old one (0.95 with 1995, 0.58 with
-2009). On the nodes both have, the new potential is on median 1.9 times the old one with a range
-of 0.08 to 9.4, so the two rest on different potential assumptions. Units at the same node and
-orientation have nearly the same profile shape and differ in `Pmax`.
+`by_class` and `average` need `high_resolution_PV` on; with it off the aggregated candidates have
+no class and the run stops. In `by_class` every PV-roof unit of the dataset must carry a class
+that the table has for the run year, else the run stops naming the units or classes. The seven
+aggregated candidates stay out of the investment set in every mode, as with the flag on in
+general (`tests/test_high_res_pv_loader.py` guards it); the pre-existing Swiss PV capacity is
+untouched. With the flag off, `pvrf` keeps its workbook cost.
+
+**The table** `input/cost_pv_roof_cost_classes.csv` (`cost_class, year, investment_cost_chfMW,
+source`) holds overnight costs in CHF2017 per MW, FEM's currency basis:
+
+| `cost_class` | 2035 | 2050 | Derivation |
+|---|---|---|---|
+| `1-10kW` | 1,974 | 1,452 | |
+| `10-30kW` | 1,459 | 987 | Nexus-E reference costs (SWEET CROSS, CHF2020 per kW, in `nexus_e/core_modules/update_inv_costs/cost_data/investment_costs.csv`) times 0.981 (CHF2020 to CHF2017, `cost_assumptions.xlsx` sheet `02_Parameters`); 2035 is the mean of the 2030 and 2040 values |
+| `30-100kW` | 1,020 | 763 | |
+| `100-1000kW` | 711 | 598 | |
+| `all` | 1,423 | 1,025 | mean of the four classes weighted by the installable potential per class of `pv09_ewopt` (26,268 / 36,125 / 20,053 / 10,857 MW); Nexus-E's own capacity-weighted average for 2050 is 998 CHF2020 per kW |
+
+in CHF per kW here. `model/pv_roof_costs.py` turns an overnight cost into the yearly slope the
+objective uses with FEM's one annuity rule (`utils/annuity.py`: 5% discount rate over the `pvrf`
+amortization period of 25 years), the same function `get_cost_component` applies to every
+technology, so a class and `pvrf` are priced on the same terms. Like every other FEM technology
+the classes carry no fixed operation and maintenance cost (the workbook's `fixed_op_cost_chfMW`
+is read by nothing). The `100-1000kW` class is within 3% of the `pvrf` cost, so a large roof
+costs what it did; the smaller classes cost up to 2.4 times more.
+
+In the model the slope lands in `investment_genmax_slp[p, scen]`, per plant: the class annuity
+where a plant has a class, the technology slope otherwise. Two outputs show it:
+`investment_summary.csv` lists each plant's `Investment Cost (CHF/MW)` (the annuity, CHF per MW
+and year), and `Map_plant_cost_class.csv` lists the class of every priced plant, so results can
+be grouped by class (aggregation merges it like every other `Map_*` file). The log line
+`[pv_roof_costs] mode …: N candidates priced by class [...]` confirms the mode took effect.
+
+## Datasets at hand (November 2026)
+
+All three databases live on the Nexus-E input server and hold the same five run years; only
+2050 has rooftop-PV candidates.
+
+| | `pv09_ewopt` | `pv_cy09` | `pv_old` |
+|---|---|---|---|
+| Database | `pv_all_eu_evflex_pv09_ewopt` | `pv_all_eu_evflex_pv_cy09_wy2009` | `pv_all_eu_evflex_pv_old` |
+| Folder | `pv09_ewopt/2009` | `pv_cy09/2009` | `pv_old/1995` |
+| Candidate units | 8,556 | 125 | 125 |
+| Unit scheme | grid node × tilt (0/15/30/60) × azimuth (0/90/135/180/225/270) × size class (1-10, 10-30, 30-100, 100-1000 kW) | one per grid node | one per grid node |
+| Grid nodes | 135 | 125 (121 in common with `pv09_ewopt`) | 125 |
+| Total potential | 93,303 MW | 46,994 MW | 46,994 MW |
+| Energy at potential | 83.1 TWh | 49.5 TWh | 44.6 TWh |
+| `cost_class` | from the name suffix: 2,536 / 2,443 / 2,202 / 1,375 units | `all` | none (exported before the column existed) |
+| Investment cost in the database, EUR per MW and year | four levels by size class, 46,280 to 105,904 | one level, 64,921 | one level, 64,921 |
+| Weather year | 2009 (east-west optimised roofs) | 2009 | 1995 |
+
+No database records its meteorological year, so each was checked against FEM's own EMHIRES Swiss
+PV profiles (`input/RES_EMHIRES/pvrf_<year>.csv`, daily energy correlation): `pv09_ewopt` 0.94
+and `pv_cy09` 0.95 with 2009 and below 0.6 with 1995, 2007 and 2008; `pv_old` 0.95 with 1995 and
+0.58 with 2009, and its profiles are identical to the Nexus-E default per-node databases
+(`1023_target0_ab`, `base_3_36`), which are 1995 data. `pv_cy09` was built by the user from the
+per-node set with 2009 profiles and is the per-node counterpart of `pv09_ewopt`; `pv_old` is
+kept for reference and not used. On the nodes both have, the `pv09_ewopt` potential is on median
+1.9 times the per-node one with a range of 0.08 to 9.4, so the two rest on different potential
+assumptions. Units at the same node and orientation have nearly the same profile shape and
+differ in `Pmax`.
 
 The files Nexus-E sends by hand (`NexusInput_genstab_newPV.csv` with the potential in column
 `P_gen_max in 2015 (MW)` plus the profile table) carry the same content as the database export;
@@ -136,18 +199,19 @@ but has not been exported here.
 
 ## Running with the flag
 
-- **Unit tests.** `tests/test_high_res_pv_loader.py` and `tests/test_export_nexuse_pv.py` build
-  small synthetic data and need neither a database, the data folders nor a solver. Run
-  `poetry run pytest`.
-- **Test run.** Point `target_csv` in `scenarios/scenarios.py` at
-  `scenarios/scen_to_run_test_high_res_pv.csv` (25 hours, weather year 2009, the flag on with
-  `pv09_ewopt`; meta-scenario `2050_st_pv09`) or `scenarios/scen_to_run_test_high_res_pv_old.csv`
-  (the same with `pv_old`; `2050_st_pvold`), run `poetry run python run_scenarios.py`, then
-  restore `target_csv` (`docs/running.md`). Results go to `output/2050_st_pv09/` and
-  `output/2050_st_pvold/`. Check log lines 1 and 4, and that the `CH00` row of
-  `Map_node_plant.csv` lists `CH00_*_pvrf` plants and no `CH0x_pvrf`. The two are separate files
-  because one `run_scenarios.py` process cannot run meta-scenarios whose Swiss candidates differ
-  (`docs/running.md`, test run).
+- **Unit tests.** `tests/test_high_res_pv_loader.py`, `tests/test_export_nexuse_pv.py`,
+  `tests/test_pv_roof_costs.py` and `tests/test_annuity.py` build small synthetic data and need
+  neither a database, the data folders nor a solver. Run `poetry run pytest`.
+- **Test runs.** Three 25-hour scenarios, one file each, all on weather year 2009 with the flag
+  on: `scenarios/scen_to_run_test_high_res_pv.csv` (`pv09_ewopt`, mode `tech`; meta-scenario
+  `2050_st_pv09`), `scenarios/scen_to_run_test_high_res_pv_cls.csv` (`pv09_ewopt`, `by_class`;
+  `2050_st_pv09cls`) and `scenarios/scen_to_run_test_high_res_pv_cy09.csv` (`pv_cy09`,
+  `average`; `2050_st_pvcy09`). Point `target_csv` in `scenarios/scenarios.py` at one of them, run
+  `poetry run python run_scenarios.py`, then restore `target_csv` (`docs/running.md`). Results go
+  to `output/<meta-scenario>/`. Check log lines 1 and 4 and, in the class modes, the
+  `[pv_roof_costs]` line; that the `CH00` row of `Map_node_plant.csv` lists `CH00_*_pvrf` plants
+  and no `CH0x_pvrf`; and that `investment_summary.csv` shows four cost levels for the `by_class`
+  run and one for the others.
 - **Size and run time.** Each candidate adds one `gen` variable and two constraints per modelled
   hour and sub-scenario. On the 25-hour test scenario (2026-10-16, same code, one laptop) the
   4,535-unit data took the model from 28,818 variables and 32,960 constraints to 146,546 and
@@ -155,17 +219,24 @@ but has not been exported here.
   80 million more constraints than without it (about 10 and 11.5 million). The 8,556-unit
   `pv09_ewopt` dataset gives 251,092 variables and 477,508 constraints for the same 25 hours,
   about 78 million more variables and 156 million more constraints over a full year; the
-  125-unit `pv_old` dataset gives 31,886 and 39,096, a negligible addition. The flag took that
+  125-unit per-node datasets give 31,886 and 39,096, a negligible addition. The flag took that
   25-hour run from 16 seconds to 132 seconds
   and its peak memory to 6.8 GB. About 40 seconds of that is `load_high_res_PV` itself (12 seconds
   parsing the 770 MB CSV, 28 seconds building the dictionary of 4,535 x 8,760 availability values,
   which stays in memory for the whole run); the rest is the ordinary data import and model build
-  handling 4,535 more plants. No full-year run with the flag on has been done yet; plan it for a
-  large-memory Euler node (`docs/running.md`, `docs/multi_weather_year.md`).
-- **Run set.** `scenarios/scen_to_run_high_res_pv.csv` is a 2 x 2 design for 2050 and weather
-  year 2009: aggregated against per-plant PV (dataset `pv09_ewopt`), each without and with the
-  Swiss RES target of 45 TWh (`minimum_RES_target_CH` in MWh of annual PV and wind infeed in
-  Switzerland). The other settings are those of the 2050 base column of
-  `scenarios/scen_to_run_STORSUPPORT.csv`. Its aggregated and per-plant columns have different
-  Swiss candidates, so run it one meta-scenario per process (the Euler array script), not with
-  `run_scenarios.py` in one go.
+  handling 4,535 more plants. With the 8,556-unit dataset the same 25-hour test takes 12 to
+  15 minutes on a laptop (2026-11-03, modes `tech` and `by_class` alike; the 125-unit per-node
+  test takes under a minute), so the cost mode costs nothing extra; almost all of it is the model
+  build and the result export for 8,556 more plants. No full-year run with the flag on has been
+  done yet; plan it for a large-memory Euler node (`docs/running.md`,
+  `docs/multi_weather_year.md`). Note that the 25-hour window builds no PV at all, so the three
+  test runs share one objective value; the cost modes show in `investment_summary.csv` and
+  `Map_plant_cost_class.csv`, not in the solution.
+- **Run set.** `scenarios/scen_to_run_high_res_pv.csv` holds six full-year 2050 meta-scenarios
+  on weather year 2009, each without and with the Swiss RES target of 45 TWh
+  (`minimum_RES_target_CH` in MWh of annual PV and wind infeed in Switzerland): `2050_old_pv` and
+  `2050_res45_old_pv` on the per-node set `pv_cy09` at the average class cost, `2050_cls_pv` and
+  `2050_res45_cls_pv` on the 8,556-unit set priced by class, `2050_avg_pv` and `2050_res45_avg_pv`
+  on the 8,556-unit set at the average class cost. The other settings are those of the 2050 base
+  column of `scenarios/scen_to_run_STORSUPPORT.csv`. The per-unit runs need a large-memory Euler
+  node (see "Size and run time"); run one as a pilot before the rest.
