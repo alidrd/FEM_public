@@ -1,5 +1,6 @@
 import pyomo.environ as pyo
 from pyomo.environ import Set, Param, Var, Constraint
+from model.plant_lookups import consumer_node_map, res_candidates_by_node
 from model.structural_parameters import (
     Map_plant_tech_cost_component,
     tech_p_no_gen,
@@ -532,7 +533,7 @@ def define_sets(
     )
 
     model.P_allinv = Set(
-        initialize=[p for p in model.P if p in Plant_investment_RES_CH_list+Plant_investment_non_RES_CH_list+PlantDH_investment_STES_list],
+        initialize=[p for p in model.P if p in set(Plant_investment_RES_CH_list) | set(Plant_investment_non_RES_CH_list) | set(PlantDH_investment_STES_list)],
         within=model.P,
         doc="set of all candidate power plants that can be invested in CH, connected to the electric grid",
     )
@@ -544,20 +545,20 @@ def define_sets(
     )
     
     model.P_fuelswitching = Set(
-        initialize=[p for p in model.P if p in P_list_fuelswitching_plants],
+        initialize=[p for p in model.P if p in set(P_list_fuelswitching_plants)],
         within=model.P,
         doc="set of fuel switching plants",
     )
 
 
     model.P_RESinv = Set(
-        initialize=[p for p in model.P if p in Plant_investment_RES_CH_list],
+        initialize=[p for p in model.P if p in set(Plant_investment_RES_CH_list)],
         within=model.P,
         doc="set of RES candidate power plants that can be invested in CH",
     )
 
     model.P_convinv = Set(
-        initialize=[p for p in model.P if p in Plant_investment_non_RES_CH_list],
+        initialize=[p for p in model.P if p in set(Plant_investment_non_RES_CH_list)],
         within=model.P,
         doc="set of conventional candidate power plants (non-RES) that can be invested in CH",
     )
@@ -910,6 +911,24 @@ def define_params_op(model, resistive_heater_investment_cap_MW_total):
         initialize={n: Map_node_consumer[n] for n in model.Node},
         within=pyo.Any,
         doc="map of consumers to nodes",
+    )
+
+    # Lookups the curtailment limit needs for every consumer, hour and sub-scenario, built once
+    # from the two maps above: with thousands of per-plant PV candidates a per-call scan of the
+    # plant lists took hours (model/plant_lookups.py).
+    model.Map_consumer_node = Param(
+        model.Consumer,
+        initialize=consumer_node_map({n: Map_node_consumer[n] for n in model.Node}),
+        within=pyo.Any,
+        doc="node of each consumer",
+    )
+    model.P_RESinv_node = Set(
+        model.Node,
+        initialize=res_candidates_by_node(
+            list(model.P_gen), Plant_investment_RES_CH_list, {n: Map_node_plant[n] for n in model.Node}
+        ),
+        within=model.P_gen,
+        doc="RES investment candidates at each node, in the order of P_gen",
     )
 
     model.Map_node_exportinglineATC = Param(
@@ -1664,10 +1683,11 @@ def define_constraints(model):
 
     # fixing generation from new RES plants to maximum possible generation (gen_max * RES availability)
     # needed so that curtailment is calculated correctly
+    res_candidate_set = set(Plant_investment_RES_CH_list)
     Plant_to_fix_generation = [
         plant
         for plant in model.P
-        if plant in Plant_investment_RES_CH_list and Map_plant_tech[plant] in tech_infeed_all_list
+        if plant in res_candidate_set and Map_plant_tech[plant] in tech_infeed_all_list
     ]
 
     model.infeedgen_fix = Constraint(
@@ -2280,12 +2300,11 @@ def curtailment_limit_Constraint(model, c, t, s):
     # if sum of RES generation is negative (which should not be possible), then max(0,sum(RES generation)) allows crutailment to be 0...
     # ... which is necessary because curtailment is defined as a non-negative variable.
     # NOTE: this should be later be avoided, by making sure that sum of RES generation is always positive, even after substracting consumers' infeed from main infeed.
-    # node is equal to the node of the consumer, that is the key in model.Map_node_consumer that leads to c
-    # Define node
-    node = [k for k, v in model.Map_node_consumer.items() if c in v][0]
+    # the RES investment candidates at the consumer's node, both looked up once per model (define_params_op)
+    res_candidates = model.P_RESinv_node[model.Map_consumer_node[c]]
     return sf * model.curtailment[c, t, s] <= sf * (max(
         0, sum(model.infeed[c, tech, t, s] for tech in model.Tech_infeed)
-        )) + sf * (sum(model.gen[p, t, s] for p in model.P_gen if p in Plant_investment_RES_CH_list if p in model.Map_node_plant[node]))
+        )) + sf * (sum(model.gen[p, t, s] for p in res_candidates))
 
 
 

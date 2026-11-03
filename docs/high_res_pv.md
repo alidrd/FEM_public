@@ -224,11 +224,15 @@ but has not been exported here.
   and its peak memory to 6.8 GB. About 40 seconds of that is `load_high_res_PV` itself (12 seconds
   parsing the 770 MB CSV, 28 seconds building the dictionary of 4,535 x 8,760 availability values,
   which stays in memory for the whole run); the rest is the ordinary data import and model build
-  handling 4,535 more plants. With the 8,556-unit dataset the same 25-hour test takes 12 to
-  15 minutes on a laptop (2026-11-03, modes `tech` and `by_class` alike; the 125-unit per-node
-  test takes under a minute), so the cost mode costs nothing extra; almost all of it is the model
-  build and the result export for 8,556 more plants. No full-year run with the flag on has been
-  done yet; plan it for a large-memory Euler node (`docs/running.md`,
+  handling 4,535 more plants. With the 8,556-unit dataset the same 25-hour test takes about
+  5 minutes on a laptop (2026-11-03, modes `tech` and `by_class` alike; the 125-unit per-node
+  test takes under a minute), so the cost mode costs nothing extra. It used to take 12 to
+  15 minutes: the curtailment limit scanned the plant list for every consumer and hour, which
+  grows with the square of the plant count, and a full-year Euler run was still building
+  constraints after 8 hours (model/plant_lookups.py builds those lookups once now). What is left
+  scales with the year: Pyomo's LP file writer took 91 s for the 25 hours, about 9 hours for a
+  full year with 167 million constraints, and the objective about 3 hours, so give a full-year
+  per-unit run a multi-day limit on a large-memory Euler node (`docs/running.md`,
   `docs/multi_weather_year.md`). Note that the 25-hour window builds no PV at all, so the three
   test runs share one objective value; the cost modes show in `investment_summary.csv` and
   `Map_plant_cost_class.csv`, not in the solution.
@@ -238,5 +242,7 @@ but has not been exported here.
   `2050_res45_old_pv` on the per-node set `pv_cy09` at the average class cost, `2050_cls_pv` and
   `2050_res45_cls_pv` on the 8,556-unit set priced by class, `2050_avg_pv` and `2050_res45_avg_pv`
   on the 8,556-unit set at the average class cost. The other settings are those of the 2050 base
-  column of `scenarios/scen_to_run_STORSUPPORT.csv`. The per-unit runs need a large-memory Euler
-  node (see "Size and run time"); run one as a pilot before the rest.
+  column of `scenarios/scen_to_run_STORSUPPORT.csv`, except `solver_parameters`, which loosens the
+  barrier convergence to `BarConvTol=1e-6` and matches `threads` to the CPUs of the job (8 for the
+  per-node runs, 16 for the per-unit ones); the duals of these runs are not used. The per-unit runs
+  need a large-memory Euler node and a multi-day limit (see "Size and run time").
