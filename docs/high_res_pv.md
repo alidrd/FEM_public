@@ -241,17 +241,21 @@ but has not been exported here.
   (`minimum_RES_target_CH` in MWh of annual PV and wind infeed in Switzerland): `2050_old_pv` and
   `2050_res45_old_pv` on the per-node set `pv_cy09` at the average class cost, `2050_cls_pv` and
   `2050_res45_cls_pv` on the 8,556-unit set priced by class, `2050_avg_pv` and `2050_res45_avg_pv`
-  on the 8,556-unit set at the average class cost. The other settings are those of the 2050 base
-  column of `scenarios/scen_to_run_STORSUPPORT.csv`, except `solver_parameters`, which loosens the
+  on the 8,556-unit set at the average class cost. The other settings are those of the full-year
+  weather-year-2009 run `2050_wy2009` of `scen_to_run_dh_paper_weather_years.csv` (no explicit hydro
+  volumes, no demand change, no cap on resistive heaters), with `pump_capacity_GW = 5.54` from the
+  2050 base column of `scenarios/scen_to_run_STORSUPPORT.csv`, and `solver_parameters`, which loosens the
   barrier convergence to `BarConvTol=1e-6` and matches `threads` to the CPUs of the job (8 for the
   per-node runs, 16 for the per-unit ones); the duals of these runs are not used. The per-unit runs
   need a large-memory Euler node and a multi-day limit (see "Size and run time").
 - **Only Switzerland varies.** Four more rows make the six runs differ in the Swiss PV candidates
   alone. The neighbours' candidates of `input/plants_invest_candidates_res_CH.csv` (PV, wind and gas
   in DE00, IT00, FR00, AT00, 20 GW caps for PV and wind) stay in the model (`investment_markets =
-  False`) but are fixed at what the first run set built: `variable_presets_file =
-  input/variable_presets/neighbour_capacities_design1.csv` (20 GW of PV in DE, IT and AT; 20, 16.4 and 12.4 GW
-  of wind; no gas; nothing in FR), so they are equal in every run. The second run set dropped them
+  False`) but are fixed at what they built in `2050_wy2009`: `variable_presets_file =
+  input/variable_presets/neighbour_capacities_wy2009.csv` (20 GW of PV and 20 GW of wind in DE, 20 GW of
+  wind in IT, 0.45 GW of PV and 18.4 GW of wind in AT, 4.6 GW of gas with carbon capture in FR), so
+  they are equal in every run. An earlier set fixed them at the build of the first run set
+  (`input/variable_presets/neighbour_capacities_design1.csv`). The second run set dropped them
   instead (`investment_markets = CH00`, which keeps only the listed markets' candidates).
   `battery_investment_nodes_in_addition_to_CH` is left empty, so no neighbour battery is built.
   `PVRF_CH_coefficient

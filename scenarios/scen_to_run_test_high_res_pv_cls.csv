@@ -13,12 +13,12 @@ t_end,6577
 electrolyzer_demand_reduction_coefficient,1
 flexible_household_heatpump_share,0.5
 V2G_share_of_flexibly_charging_EV,0.5
-reduce_inflex_demand_by_[MWh],-5659884
+reduce_inflex_demand_by_[MWh],0
 reduce_DH_demand_by_[MWh],0
-ror_annual_TWh,18.55
-hydro_inflow_TWh,20.06
+ror_annual_TWh,False
+hydro_inflow_TWh,False
 pump_capacity_GW,5.54
-adding_hydro_storage_cap_TWh,2
+adding_hydro_storage_cap_TWh,False
 heat_flexibility_Kelvin,0.5
 battery_cost_factor,1
 source_for_CH_NTC,TYNDP22
@@ -27,6 +27,6 @@ high_resolution_PV,True
 high_resolution_PV_dataset,pv09_ewopt
 pv_roof_cost_mode,by_class
 investment_markets,False
-variable_presets_file,input/variable_presets/neighbour_capacities_design1.csv
+variable_presets_file,input/variable_presets/neighbour_capacities_wy2009.csv
 PVRF_CH_coefficient,0
 Windon_CH_coefficient,0

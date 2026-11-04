@@ -1,0 +1,17 @@
+# Investment candidates outside Switzerland (input/plants_invest_candidates_res_CH.csv), fixed at what they built in the
+# full-year weather-year-2009 run 2050_wy2009 of 16 October 2026 (Euler job 17294088_0, scenario file
+# scen_to_run_dh_paper_weather_years.csv), rounded to 0.001 MW. Named by the setting variable_presets_file in
+# scenarios/scen_to_run_high_res_pv.csv, so the neighbours' PV, wind and gas are equal in every run of that set.
+# Format: see input/model_variable_presets.csv.
+gen_max,,DE01_pvrf,,20000.0
+gen_max,,DE01_windon,,20000.0
+gen_max,,IT01_pvrf,,0.0
+gen_max,,IT01_windon,,20000.0
+gen_max,,FR01_pvrf,,0.0
+gen_max,,FR01_windon,,0.0
+gen_max,,AT01_pvrf,,447.209
+gen_max,,AT01_windon,,18370.345
+gen_max,,DE00_newCCGTCCS,,0.0
+gen_max,,IT00_newCCGTCCS,,0.0
+gen_max,,FR00_newCCGTCCS,,4622.543
+gen_max,,AT00_newCCGTCCS,,0.0

@@ -59,10 +59,11 @@ def test_existing_presets_file_is_returned(tmp_path):
     assert require_preset_file(path) == path
 
 
-def test_neighbour_presets_fix_every_candidate_outside_switzerland_within_its_cap():
+@pytest.mark.parametrize("presets_file", ["input/variable_presets/neighbour_capacities_design1.csv", "input/variable_presets/neighbour_capacities_wy2009.csv"])
+def test_neighbour_presets_fix_every_candidate_outside_switzerland_within_its_cap(presets_file):
     candidates = pd.read_csv(REPO / "input" / "plants_invest_candidates_res_CH.csv").set_index("index")
     outside = candidates[candidates["market"] != "CH00"]
-    presets = read_variable_presets(str(REPO / "input/variable_presets/neighbour_capacities_design1.csv"))
+    presets = read_variable_presets(str(REPO / presets_file))
     plants = [p["indices"][0] for p in presets]
     assert sorted(plants) == sorted(outside.index)
     for p in presets:
