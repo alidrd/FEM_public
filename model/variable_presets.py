@@ -13,6 +13,16 @@ import pyomo.environ as pyo
 logger = logging.getLogger(__name__)
 
 
+def require_preset_file(preset_file_path: str) -> str:
+    """Return the presets file named by the setting variable_presets_file; raise if it does not exist.
+
+    read_variable_presets skips a missing file, which would solve the run without the fixed values.
+    """
+    if not os.path.isfile(preset_file_path):
+        raise FileNotFoundError(f"variable_presets_file '{preset_file_path}' does not exist")
+    return preset_file_path
+
+
 def read_variable_presets(preset_file_path="input/model_variable_presets.csv"):
     """
     Read variable presets from CSV file.

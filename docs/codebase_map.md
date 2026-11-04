@@ -26,7 +26,8 @@ contents, list the folder; this guide records what a listing does not tell you.
      `define_constraints`, then `define_constraints_central` (`model/components_central.py`:
      electrolyzer energy, winter import limit, Swiss RES target) and `fixing_capacities_central`
      (fixes pre-existing capacities);
-   - applies presets from `input/model_variable_presets.csv` (`model/variable_presets.py`); a
+   - applies presets from the file named by the setting `variable_presets_file` (default
+     `input/model_variable_presets.csv`; `model/variable_presets.py`); a missing file or a
      preset that cannot be applied (variable or index not in the model) stops the run;
    - solves with `pyo.SolverFactory(solver_name)` and the options string `solver_parameters`,
      hard-coded in `core.py`;
@@ -46,7 +47,7 @@ contents, list the folder; this guide records what a listing does not tell you.
 | Swiss rooftop-PV candidates | Aggregated (default): rows `CH0x_pvrf` of `input/plants_invest_candidates_res_CH.csv` with EMHIRES profiles. Per plant: settings `high_resolution_PV` and `high_resolution_PV_dataset`, loader `model/high_res_PV.py`, two `if high_resolution_PV:` branches in `model/data_import_fcns.py`; datasets come from a Nexus-E database via `data_prep/export_nexuse_pv.py`. Their investment cost by size class: setting `pv_roof_cost_mode`, table `input/cost_pv_roof_cost_classes.csv`, `model/pv_roof_costs.py` (per-plant slopes into `define_params_inv`), annuity rule in `utils/annuity.py` (`docs/high_res_pv.md`). |
 | Technology cost category | `Map_plant_tech_cost_component` in `model/structural_parameters.py` (`cap_op` or `cap_op_energy`). |
 | Which markets may invest | The setting `investment_markets` (default `False`: every row of `input/plants_invest_candidates_res_CH.csv`); a comma-separated string of market codes such as `CH00` keeps only those markets' candidates (`model/investment_candidates.py`, applied in `read_plant_non_hydro_data`), and extra battery nodes outside them raise. Inherited Swiss PV and wind scale with `PVRF_CH_coefficient` and `Windon_CH_coefficient` (`read_RES_capacities`); 0 removes them. |
-| Fix or start values for one scenario | `input/model_variable_presets.csv` (format in its header). |
+| Fix or start values for one scenario | `input/model_variable_presets.csv` (format in its header), or the file named by the setting `variable_presets_file`, e.g. `input/variable_presets/neighbour_capacities_design1.csv` (neighbours' candidates fixed for the rooftop-PV run set). |
 | Solver options | The setting `solver_parameters` (default `threads=8 method=2 crossover=0` in `scenarios/settings_default.py`), a Gurobi options string; a scenario CSV row overrides it per run, e.g. to add `BarConvTol=1e-6` or raise `threads` to the CPUs of the job. |
 
 ## Exports

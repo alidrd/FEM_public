@@ -246,15 +246,20 @@ but has not been exported here.
   barrier convergence to `BarConvTol=1e-6` and matches `threads` to the CPUs of the job (8 for the
   per-node runs, 16 for the per-unit ones); the duals of these runs are not used. The per-unit runs
   need a large-memory Euler node and a multi-day limit (see "Size and run time").
-- **Only Switzerland varies.** Three more rows make the six runs differ in the Swiss PV candidates
-  alone. `investment_markets = CH00` (default `False`, every candidate) keeps only the candidates of
-  the listed markets from `input/plants_invest_candidates_res_CH.csv`, so the neighbours' PV, wind
-  and gas candidates (20 GW caps in DE00, IT00, FR00, AT00) are gone and their capacities stay at
-  the exogenous TYNDP values; `battery_investment_nodes_in_addition_to_CH` is left empty, since a
-  battery outside the listed markets raises an error rather than being dropped. `PVRF_CH_coefficient
+- **Only Switzerland varies.** Four more rows make the six runs differ in the Swiss PV candidates
+  alone. The neighbours' candidates of `input/plants_invest_candidates_res_CH.csv` (PV, wind and gas
+  in DE00, IT00, FR00, AT00, 20 GW caps for PV and wind) stay in the model (`investment_markets =
+  False`) but are fixed at what the first run set built: `variable_presets_file =
+  input/variable_presets/neighbour_capacities_design1.csv` (20 GW of PV in DE, IT and AT; 20, 16.4 and 12.4 GW
+  of wind; no gas; nothing in FR), so they are equal in every run. The second run set dropped them
+  instead (`investment_markets = CH00`, which keeps only the listed markets' candidates).
+  `battery_investment_nodes_in_addition_to_CH` is left empty, so no neighbour battery is built.
+  `PVRF_CH_coefficient
   = 0` and `Windon_CH_coefficient = 0` remove the inherited Swiss rooftop PV and onshore wind
   (37.5 GW and 2.2 GW in 2050 under `ch_policy` ZBA, 46.85 TWh of infeed in weather year 2009), so
   the roof potential of the Nexus-E candidates is not counted twice and the 45 TWh target has to be
   built: in the first run set, with the inherited capacity in place, the target never bound. The
   seven Swiss wind candidates (600 MW each) stay. The three 25-hour test files carry the same
-  rows; `model/investment_candidates.py` and `tests/test_investment_candidates.py` hold the filter.
+  rows; `model/investment_candidates.py` and `tests/test_investment_candidates.py` hold the market
+  filter, `tests/test_variable_presets.py` checks that the presets file fixes every candidate outside
+  Switzerland within its cap.

@@ -46,6 +46,7 @@ seetings_default_param = {
     "battery_cost_factor": 1,
     "battery_investment_nodes_in_addition_to_CH": "",
     "investment_markets": False,   # False: every candidate of input/plants_invest_candidates_res_CH.csv may be built; a comma-separated string of market codes (e.g. "CH00") keeps only the candidates of those markets, so the neighbours keep their exogenous capacities; batteries added by battery_investment_nodes_in_addition_to_CH must lie in these markets
+    "variable_presets_file": "input/model_variable_presets.csv",   # CSV of variable values fixed before the solve (format in the header of input/model_variable_presets.csv); a run file can name its own, e.g. input/variable_presets/neighbour_capacities_design1.csv
     "reduce_BE_FR_day_nine_and_ten_demand_to_percent": 1.0,
     "resistive_heater_investment_cap_MW_total": False,  # MW limit for total resistive heater investment across all nodes
     "electrolyzer_demand_reduction_coefficient": 1,

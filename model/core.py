@@ -35,7 +35,7 @@ from model.solver_status import require_optimal_solve
 import model.price_setting_tech as price_setting_tech
 
 import model.investment_summary as investment_summary
-from model.variable_presets import apply_variable_presets, read_variable_presets
+from model.variable_presets import apply_variable_presets, read_variable_presets, require_preset_file
 
 # %% import packages ---------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
@@ -168,10 +168,11 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     # %% fixing values  (pre-existing capacities etc.)----------------------------------------------------
     fixing_capacities_central(model, sub_scenarios_list)
     
-    # Apply variable presets from CSV file (if it exists)
-    print("Applying variable presets from model_variable_presets.csv...")
-    preset_summary = apply_variable_presets(model, scenario_name, preset_file_path="input/model_variable_presets.csv", verbose=True)
-    applicable_count = len([p for p in read_variable_presets('input/model_variable_presets.csv') if p['scenario_name'] == '' or p['scenario_name'] == scenario_name])
+    # Apply variable presets from the CSV file named by the setting variable_presets_file
+    preset_file = require_preset_file(settings_scen["variable_presets_file"])
+    print(f"Applying variable presets from {preset_file}...")
+    preset_summary = apply_variable_presets(model, scenario_name, preset_file_path=preset_file, verbose=True)
+    applicable_count = len([p for p in read_variable_presets(preset_file) if p['scenario_name'] == '' or p['scenario_name'] == scenario_name])
     print(f"Presets applied: {preset_summary['applied']}, Total applicable: {applicable_count}")
     if preset_summary['details']:
         print("Preset details:")

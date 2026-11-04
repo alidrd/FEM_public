@@ -26,6 +26,7 @@ lost_load_cost_mode,multi_step_v1
 high_resolution_PV,True
 high_resolution_PV_dataset,pv09_ewopt
 pv_roof_cost_mode,by_class
-investment_markets,CH00
+investment_markets,False
+variable_presets_file,input/variable_presets/neighbour_capacities_design1.csv
 PVRF_CH_coefficient,0
 Windon_CH_coefficient,0
