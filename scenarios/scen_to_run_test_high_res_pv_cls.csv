@@ -27,6 +27,6 @@ high_resolution_PV,True
 high_resolution_PV_dataset,pv09_ewopt
 pv_roof_cost_mode,by_class
 investment_markets,False
-variable_presets_file,input/variable_presets/neighbour_capacities_wy2009.csv
+variable_presets_file,input/variable_presets/neighbours_wy2009_no_new_ch_nuclear.csv
 PVRF_CH_coefficient,0
 Windon_CH_coefficient,0

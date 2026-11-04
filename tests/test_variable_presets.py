@@ -59,13 +59,20 @@ def test_existing_presets_file_is_returned(tmp_path):
     assert require_preset_file(path) == path
 
 
-@pytest.mark.parametrize("presets_file", ["input/variable_presets/neighbour_capacities_design1.csv", "input/variable_presets/neighbour_capacities_wy2009.csv"])
+@pytest.mark.parametrize("presets_file", ["input/variable_presets/neighbour_capacities_design1.csv", "input/variable_presets/neighbour_capacities_wy2009.csv", "input/variable_presets/neighbours_wy2009_no_new_ch_nuclear.csv"])
 def test_neighbour_presets_fix_every_candidate_outside_switzerland_within_its_cap(presets_file):
     candidates = pd.read_csv(REPO / "input" / "plants_invest_candidates_res_CH.csv").set_index("index")
-    outside = candidates[candidates["market"] != "CH00"]
+    outside = candidates.index[candidates["market"] != "CH00"]
     presets = read_variable_presets(str(REPO / presets_file))
     plants = [p["indices"][0] for p in presets]
-    assert sorted(plants) == sorted(outside.index)
+    assert len(plants) == len(set(plants))
+    assert set(outside) <= set(plants) <= set(candidates.index)
     for p in presets:
         assert (p["variable_name"], p["scenario_name"], p["indices"][1]) == ("gen_max", "", "")
-        assert 0 <= p["value"] <= float(outside.loc[p["indices"][0], "gen_max_limit"])
+        assert 0 <= p["value"] <= float(candidates.loc[p["indices"][0], "gen_max_limit"])
+
+
+def test_no_new_nuclear_presets_hold_the_swiss_candidate_at_the_floor_core_sets():
+    presets = read_variable_presets(str(REPO / "input/variable_presets/neighbours_wy2009_no_new_ch_nuclear.csv"))
+    swiss = [p for p in presets if p["indices"][0].startswith("CH")]
+    assert [(p["indices"][0], p["value"]) for p in swiss] == [("CH00_nuclear", 0.01)]

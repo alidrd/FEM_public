@@ -251,10 +251,14 @@ but has not been exported here.
 - **Only Switzerland varies.** Four more rows make the six runs differ in the Swiss PV candidates
   alone. The neighbours' candidates of `input/plants_invest_candidates_res_CH.csv` (PV, wind and gas
   in DE00, IT00, FR00, AT00, 20 GW caps for PV and wind) stay in the model (`investment_markets =
-  False`) but are fixed at what they built in `2050_wy2009`: `variable_presets_file =
-  input/variable_presets/neighbour_capacities_wy2009.csv` (20 GW of PV and 20 GW of wind in DE, 20 GW of
+  False`) but are fixed at what they built in `2050_wy2009` (20 GW of PV and 20 GW of wind in DE, 20 GW of
   wind in IT, 0.45 GW of PV and 18.4 GW of wind in AT, 4.6 GW of gas with carbon capture in FR), so
-  they are equal in every run. An earlier set fixed them at the build of the first run set
+  they are equal in every run. `variable_presets_file =
+  input/variable_presets/neighbours_wy2009_no_new_ch_nuclear.csv` holds these values and
+  also fixes the Swiss nuclear candidate `CH00_nuclear` at 0.01 MW, the floor `model/core.py` sets on it,
+  so no new nuclear is built: without inherited Swiss PV and wind it otherwise filled the gap (6.7 to
+  9.1 GW without the target). `input/variable_presets/neighbour_capacities_wy2009.csv` holds the neighbours
+  alone. An earlier set fixed them at the build of the first run set
   (`input/variable_presets/neighbour_capacities_design1.csv`). The second run set dropped them
   instead (`investment_markets = CH00`, which keeps only the listed markets' candidates).
   `battery_investment_nodes_in_addition_to_CH` is left empty, so no neighbour battery is built.

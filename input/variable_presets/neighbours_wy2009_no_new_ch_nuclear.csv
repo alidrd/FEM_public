@@ -1,0 +1,17 @@
+# As neighbour_capacities_wy2009.csv (the 12 candidates outside Switzerland fixed at what the full-year
+# weather-year-2009 run 2050_wy2009 built), plus the Swiss nuclear candidate CH00_nuclear fixed at 0.01 MW, the floor
+# that model/core.py sets on it, so no new nuclear is built in Switzerland. Named by the setting variable_presets_file
+# in scenarios/scen_to_run_high_res_pv.csv. Format: see input/model_variable_presets.csv.
+gen_max,,DE01_pvrf,,20000.0
+gen_max,,DE01_windon,,20000.0
+gen_max,,IT01_pvrf,,0.0
+gen_max,,IT01_windon,,20000.0
+gen_max,,FR01_pvrf,,0.0
+gen_max,,FR01_windon,,0.0
+gen_max,,AT01_pvrf,,447.209
+gen_max,,AT01_windon,,18370.345
+gen_max,,DE00_newCCGTCCS,,0.0
+gen_max,,IT00_newCCGTCCS,,0.0
+gen_max,,FR00_newCCGTCCS,,4622.543
+gen_max,,AT00_newCCGTCCS,,0.0
+gen_max,,CH00_nuclear,,0.01
