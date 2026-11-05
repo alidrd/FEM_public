@@ -59,17 +59,29 @@ def test_existing_presets_file_is_returned(tmp_path):
     assert require_preset_file(path) == path
 
 
-@pytest.mark.parametrize("presets_file", ["input/variable_presets/neighbour_capacities_design1.csv", "input/variable_presets/neighbour_capacities_wy2009.csv", "input/variable_presets/neighbours_wy2009_no_new_ch_nuclear.csv"])
+@pytest.mark.parametrize("presets_file", ["input/variable_presets/neighbour_capacities_design1.csv", "input/variable_presets/neighbour_capacities_wy2009.csv", "input/variable_presets/neighbours_wy2009_no_new_ch_nuclear.csv",
+                                          "input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear.csv"])
 def test_neighbour_presets_fix_every_candidate_outside_switzerland_within_its_cap(presets_file):
+    """Every row fixes a candidate (within its cap) or an existing plant; every candidate outside CH is fixed."""
     candidates = pd.read_csv(REPO / "input" / "plants_invest_candidates_res_CH.csv").set_index("index")
+    existing = set(pd.read_csv(REPO / "input" / "plants_non_hydro.csv")["index"])
     outside = candidates.index[candidates["market"] != "CH00"]
     presets = read_variable_presets(str(REPO / presets_file))
     plants = [p["indices"][0] for p in presets]
     assert len(plants) == len(set(plants))
-    assert set(outside) <= set(plants) <= set(candidates.index)
+    assert set(outside) <= set(plants) <= set(candidates.index) | existing
     for p in presets:
         assert (p["variable_name"], p["scenario_name"], p["indices"][1]) == ("gen_max", "", "")
-        assert 0 <= p["value"] <= float(candidates.loc[p["indices"][0], "gen_max_limit"])
+        assert p["value"] >= 0
+        if p["indices"][0] in candidates.index:
+            assert p["value"] <= float(candidates.loc[p["indices"][0], "gen_max_limit"])
+
+
+def test_french_oil_presets_add_only_the_oil_backup_to_the_no_new_nuclear_file():
+    def rows(name):
+        return {(p["indices"][0], p["value"]) for p in read_variable_presets(str(REPO / name))}
+    base, oil = rows("input/variable_presets/neighbours_wy2009_no_new_ch_nuclear.csv"), rows("input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear.csv")
+    assert base <= oil and oil - base == {("FR00_oil", 6500.0)}
 
 
 def test_no_new_nuclear_presets_hold_the_swiss_candidate_at_the_floor_core_sets():

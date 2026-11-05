@@ -1,0 +1,19 @@
+# As neighbours_wy2009_no_new_ch_nuclear.csv (the 12 candidates outside Switzerland fixed at their 2050_wy2009 build,
+# CH00_nuclear at its 0.01 MW floor), plus the existing French oil plant FR00_oil fixed at 6,500 MW as a backup: at
+# RES_EU_coefficient 1.0 France sheds up to 5.5 GW and Belgium 0.2 GW on 9-10 January 2009, and oil is available at 93 %
+# in January. FR00_oil is an existing plant (0 MW in 2050), so its annuity, 223 MCHF a year at 34,236 CHF/MW/yr, is not
+# in the objective. Named by the setting variable_presets_file. Format: see input/model_variable_presets.csv.
+gen_max,,DE01_pvrf,,20000.0
+gen_max,,DE01_windon,,20000.0
+gen_max,,IT01_pvrf,,0.0
+gen_max,,IT01_windon,,20000.0
+gen_max,,FR01_pvrf,,0.0
+gen_max,,FR01_windon,,0.0
+gen_max,,AT01_pvrf,,447.209
+gen_max,,AT01_windon,,18370.345
+gen_max,,DE00_newCCGTCCS,,0.0
+gen_max,,IT00_newCCGTCCS,,0.0
+gen_max,,FR00_newCCGTCCS,,4622.543
+gen_max,,AT00_newCCGTCCS,,0.0
+gen_max,,CH00_nuclear,,0.01
+gen_max,,FR00_oil,,6500.0

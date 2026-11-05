@@ -258,7 +258,12 @@ but has not been exported here.
   also fixes the Swiss nuclear candidate `CH00_nuclear` at 0.01 MW, the floor `model/core.py` sets on it,
   so no new nuclear is built: without inherited Swiss PV and wind it otherwise filled the gap (6.7 to
   9.1 GW without the target). `input/variable_presets/neighbour_capacities_wy2009.csv` holds the neighbours
-  alone. An earlier set fixed them at the build of the first run set
+  alone. The current run set uses `input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear.csv`, which also
+  fixes the existing French oil plant `FR00_oil` (0 MW in 2050) at 6,500 MW as a backup, and sets
+  `RES_EU_coefficient = 1.0` and `electrolyzer_demand_reduction_coefficient = 0.5`: with the lower
+  RES coefficient France otherwise sheds up to 5.5 GW in a January cold spell. The oil plant is not
+  a candidate, so its annuity (34,236 CHF/MW/yr) is not in the objective. An earlier set fixed the
+  neighbours at the build of the first run set
   (`input/variable_presets/neighbour_capacities_design1.csv`). The second run set dropped them
   instead (`investment_markets = CH00`, which keeps only the listed markets' candidates).
   `battery_investment_nodes_in_addition_to_CH` is left empty, so no neighbour battery is built.
