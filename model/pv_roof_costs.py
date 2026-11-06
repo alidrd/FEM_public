@@ -73,6 +73,17 @@ def class_investment_slopes(table, run_year, amortization_years=None, discount_r
     }
 
 
+def validate_average_class(average_class):
+    """Return the setting pv_roof_average_cost_class if it is text; raise otherwise. The settings reader evaluates
+    run-file values as Python, so a bare `all` arrives as the built-in function: write it as 'all'."""
+    if not isinstance(average_class, str):
+        raise ValueError(
+            f"[pv_roof_costs] pv_roof_average_cost_class is {average_class!r}, not text; in the run file write the "
+            "class in quotes, e.g. 'all' (the settings reader evaluates values as Python)."
+        )
+    return average_class
+
+
 def plant_cost_classes(mode, unit_cost_classes, average_class=AVERAGE_CLASS):
     """The class each per-plant candidate is priced at, {plant_id: class}; {} in mode `tech`.
     In mode `average` every candidate gets `average_class` (a row of the cost table).

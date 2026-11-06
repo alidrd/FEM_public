@@ -1,5 +1,5 @@
 import utils.dic_list_expansion as dle
-from model.pv_roof_costs import validate_cost_mode, plant_investment_slopes
+from model.pv_roof_costs import validate_average_class, validate_cost_mode, plant_investment_slopes
 from data_prep.definitions_TYNDP import *
 from data_prep.definitions_common import (
     Consumer_list,
@@ -171,7 +171,7 @@ def data_import_TYNDP_fcn(scenario_name):
     high_resolution_PV = settings_scen["high_resolution_PV"]
     high_resolution_PV_dataset = settings_scen["high_resolution_PV_dataset"]
     pv_roof_cost_mode = validate_cost_mode(settings_scen["pv_roof_cost_mode"], high_resolution_PV)
-    pv_roof_average_cost_class = settings_scen["pv_roof_average_cost_class"]
+    pv_roof_average_cost_class = validate_average_class(settings_scen["pv_roof_average_cost_class"])
 
     # --- Read multi-step lost load cost data ---
     lost_load_cost_filename = f"lostLoadCost_{lost_load_cost_mode}.csv"

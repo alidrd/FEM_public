@@ -103,6 +103,13 @@ def test_plant_cost_classes_follow_the_mode():
     assert costs.plant_cost_classes("by_class", unit_classes, "paper_average") == unit_classes
 
 
+def test_validate_average_class_keeps_text_and_rejects_what_eval_makes_of_a_bare_all():
+    assert costs.validate_average_class("all") == "all"
+    assert costs.validate_average_class(eval("'all'")) == "all"      # the run file's 'all'
+    with pytest.raises(ValueError, match="in quotes"):
+        costs.validate_average_class(eval("all"))                    # the run file's bare all: the built-in
+
+
 def test_plant_cost_classes_need_the_column_outside_mode_tech():
     with pytest.raises(ValueError, match="no `cost_class` column"):
         costs.plant_cost_classes("by_class", None)
