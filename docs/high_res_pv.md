@@ -258,11 +258,16 @@ but has not been exported here.
   also fixes the Swiss nuclear candidate `CH00_nuclear` at 0.01 MW, the floor `model/core.py` sets on it,
   so no new nuclear is built: without inherited Swiss PV and wind it otherwise filled the gap (6.7 to
   9.1 GW without the target). `input/variable_presets/neighbour_capacities_wy2009.csv` holds the neighbours
-  alone. The current run set uses `input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear.csv`, which also
-  fixes the existing French oil plant `FR00_oil` (0 MW in 2050) at 6,500 MW as a backup, and sets
-  `RES_EU_coefficient = 1.0` and `electrolyzer_demand_reduction_coefficient = 0.5`: with the lower
-  RES coefficient France otherwise sheds up to 5.5 GW in a January cold spell. The oil plant is not
-  a candidate, so its annuity (34,236 CHF/MW/yr) is not in the objective. An earlier set fixed the
+  alone. `input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear.csv` also
+  fixes the existing French oil plant `FR00_oil` (0 MW in 2050) at 6,500 MW as a backup; with
+  `RES_EU_coefficient = 1.0` France otherwise sheds up to 5.5 GW in a January cold spell. The oil plant is not
+  a candidate, so its annuity (34,236 CHF/MW/yr) is not in the objective. The current run set sets
+  `electrolyzer_demand_reduction_coefficient = 0.6667` and uses
+  `input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear_no_fuel_allowance.csv`, which also fixes
+  the annual fuel allowance `fuel_storage_capacity_annual` at 0 for the fuels without a limit in
+  `input/fuel_limits.csv`: two per-unit runs stopped unconverged with tens of TWh in it, unused. Its run
+  `2050_res45_le30_pv` keeps only candidates up to 30 kW investable through a presets file written by
+  `data_prep/presets_pv_size_limit.py` (gen_max of the larger classes fixed at 0). An earlier set fixed the
   neighbours at the build of the first run set
   (`input/variable_presets/neighbour_capacities_design1.csv`). The second run set dropped them
   instead (`investment_markets = CH00`, which keeps only the listed markets' candidates).

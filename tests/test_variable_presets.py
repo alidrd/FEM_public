@@ -84,6 +84,17 @@ def test_french_oil_presets_add_only_the_oil_backup_to_the_no_new_nuclear_file()
     assert base <= oil and oil - base == {("FR00_oil", 6500.0)}
 
 
+def test_no_fuel_allowance_presets_add_a_zero_allowance_for_each_fuel_without_a_storage_limit():
+    def rows(name):
+        return {(p["variable_name"], p["indices"][0], p["value"]) for p in read_variable_presets(str(REPO / name))}
+    limits = pd.read_csv(REPO / "input" / "fuel_limits.csv", comment="#", encoding="utf-8-sig")
+    unlimited = limits.loc[(limits["limit_type"] == "storage_potential_capacity") & (limits["2050"] == float("inf")), "fuel"]
+    oil = rows("input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear.csv")
+    no_allowance = rows("input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear_no_fuel_allowance.csv")
+    assert oil <= no_allowance
+    assert no_allowance - oil == {("fuel_storage_capacity_annual", fuel, 0.0) for fuel in unlimited}
+
+
 def test_no_new_nuclear_presets_hold_the_swiss_candidate_at_the_floor_core_sets():
     presets = read_variable_presets(str(REPO / "input/variable_presets/neighbours_wy2009_no_new_ch_nuclear.csv"))
     swiss = [p for p in presets if p["indices"][0].startswith("CH")]

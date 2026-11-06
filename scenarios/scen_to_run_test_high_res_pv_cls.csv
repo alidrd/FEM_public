@@ -10,7 +10,7 @@ weather_year,2009
 run_year,2050
 t_start,6553
 t_end,6577
-electrolyzer_demand_reduction_coefficient,0.5
+electrolyzer_demand_reduction_coefficient,0.6667
 RES_EU_coefficient,1.0
 flexible_household_heatpump_share,0.5
 V2G_share_of_flexibly_charging_EV,0.5
@@ -28,6 +28,9 @@ high_resolution_PV,True
 high_resolution_PV_dataset,pv09_ewopt
 pv_roof_cost_mode,by_class
 investment_markets,False
-variable_presets_file,input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear.csv
+variable_presets_file,input/variable_presets/neighbours_wy2009_fr_oil_no_new_ch_nuclear_no_fuel_allowance.csv
 PVRF_CH_coefficient,0
 Windon_CH_coefficient,0
+symbolic_solver_labels,False
+import_reduced_costs,False
+params_not_exported,['avail_plant']

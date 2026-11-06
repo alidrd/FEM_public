@@ -1,0 +1,24 @@
+# As neighbours_wy2009_fr_oil_no_new_ch_nuclear.csv (neighbours fixed at their 2050_wy2009 build, CH00_nuclear at its
+# 0.01 MW floor, 6.5 GW of French oil), plus the annual fuel allowance fuel_storage_capacity_annual fixed at 0 for the
+# three fuels whose limit in input/fuel_limits.csv is inf (fossilmethane, resmethane, oil). The allowance adds to the
+# Swiss annual fuel limit at investment_fuel_storage_slp per MWh. In this run set Swiss burn of these fuels stays far
+# below the import capacity (at most 2.9 TWh of fossil methane against 36 TWh), so 0 does not bind; the two design-6
+# per-unit target runs stopped unconverged with 28.6 and 46.7 TWh in it (448 and 731 MCHF, 79 and 86 % of their
+# primal-dual gaps). Named by the setting variable_presets_file. Format: see input/model_variable_presets.csv.
+gen_max,,DE01_pvrf,,20000.0
+gen_max,,DE01_windon,,20000.0
+gen_max,,IT01_pvrf,,0.0
+gen_max,,IT01_windon,,20000.0
+gen_max,,FR01_pvrf,,0.0
+gen_max,,FR01_windon,,0.0
+gen_max,,AT01_pvrf,,447.209
+gen_max,,AT01_windon,,18370.345
+gen_max,,DE00_newCCGTCCS,,0.0
+gen_max,,IT00_newCCGTCCS,,0.0
+gen_max,,FR00_newCCGTCCS,,4622.543
+gen_max,,AT00_newCCGTCCS,,0.0
+gen_max,,CH00_nuclear,,0.01
+gen_max,,FR00_oil,,6500.0
+fuel_storage_capacity_annual,,fossilmethane,,0.0
+fuel_storage_capacity_annual,,resmethane,,0.0
+fuel_storage_capacity_annual,,oil,,0.0
