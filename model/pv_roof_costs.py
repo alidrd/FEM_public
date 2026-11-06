@@ -5,7 +5,8 @@ The scenario setting `pv_roof_cost_mode` decides what a per-plant candidate
 
     tech      the technology cost of `pvrf` from input/cost_assumptions.xlsx (default)
     by_class  the cost of the unit's `cost_class` (column of units.csv) from COST_TABLE
-    average   the `all` row of COST_TABLE for every unit
+    average   one row of COST_TABLE for every unit: `all` (the potential-weighted class mean) unless the
+              setting `pv_roof_average_cost_class` names another row, such as `paper_average`
 
 COST_TABLE holds overnight costs in CHF per MW by class and run year; they are
 annuitised with FEM's rule (`utils/annuity`) over the `pvrf` amortization
@@ -72,8 +73,9 @@ def class_investment_slopes(table, run_year, amortization_years=None, discount_r
     }
 
 
-def plant_cost_classes(mode, unit_cost_classes):
+def plant_cost_classes(mode, unit_cost_classes, average_class=AVERAGE_CLASS):
     """The class each per-plant candidate is priced at, {plant_id: class}; {} in mode `tech`.
+    In mode `average` every candidate gets `average_class` (a row of the cost table).
 
     `unit_cost_classes` is what `model.high_res_PV.load_cost_classes` returns:
     {plant_id: class} when units.csv has the column, None when it does not.
@@ -86,7 +88,7 @@ def plant_cost_classes(mode, unit_cost_classes):
             "rewrite the unit table with data_prep/export_nexuse_pv.py --units-only --cost-class ..."
         )
     if mode == "average":
-        return {plant: AVERAGE_CLASS for plant in unit_cost_classes}
+        return {plant: average_class for plant in unit_cost_classes}
     return dict(unit_cost_classes)
 
 

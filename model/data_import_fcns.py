@@ -631,7 +631,7 @@ def cross_match_plant_list(Plant_capacity_gen_list, Plant_non_hydro_list, Plant_
         )
 
 
-def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only=False, weather_year=None, run_year=None, high_resolution_PV=False, high_resolution_PV_dataset=None, pv_roof_cost_mode="tech", investment_markets=False):
+def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only=False, weather_year=None, run_year=None, high_resolution_PV=False, high_resolution_PV_dataset=None, pv_roof_cost_mode="tech", investment_markets=False, pv_roof_average_cost_class="all"):
     """
     Read plant data from plants_non_hydro.csv file and store data in:
     Plant_non_hydro_list: list of plants
@@ -697,7 +697,8 @@ def read_plant_non_hydro_data(allow_res_investment, Node_list, battery_investmen
                 unit_classes = load_cost_classes(high_resolution_PV_dataset, weather_year)
                 Map_plant_cost_class_instance = {
                     plant: cls
-                    for plant, cls in plant_cost_classes(pv_roof_cost_mode, unit_classes).items()
+                    for plant, cls in plant_cost_classes(pv_roof_cost_mode, unit_classes,
+                                                         pv_roof_average_cost_class).items()
                     if plant in hires_plants.index
                 }
                 print(

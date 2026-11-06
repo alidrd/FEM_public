@@ -171,6 +171,7 @@ def data_import_TYNDP_fcn(scenario_name):
     high_resolution_PV = settings_scen["high_resolution_PV"]
     high_resolution_PV_dataset = settings_scen["high_resolution_PV_dataset"]
     pv_roof_cost_mode = validate_cost_mode(settings_scen["pv_roof_cost_mode"], high_resolution_PV)
+    pv_roof_average_cost_class = settings_scen["pv_roof_average_cost_class"]
 
     # --- Read multi-step lost load cost data ---
     lost_load_cost_filename = f"lostLoadCost_{lost_load_cost_mode}.csv"
@@ -362,7 +363,7 @@ def data_import_TYNDP_fcn(scenario_name):
         Map_consumer_plant_nonhydro,
         P_list_fuelswitching_plants_instance,
         Map_plant_cost_class_instance,
-    ) = read_plant_non_hydro_data(allow_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only, weather_year=weather_year, run_year=run_year, high_resolution_PV=high_resolution_PV, high_resolution_PV_dataset=high_resolution_PV_dataset, pv_roof_cost_mode=pv_roof_cost_mode, investment_markets=investment_markets)
+    ) = read_plant_non_hydro_data(allow_investment, Node_list, battery_investment_nodes_in_addition_to_CH, CH_only, weather_year=weather_year, run_year=run_year, high_resolution_PV=high_resolution_PV, high_resolution_PV_dataset=high_resolution_PV_dataset, pv_roof_cost_mode=pv_roof_cost_mode, investment_markets=investment_markets, pv_roof_average_cost_class=pv_roof_average_cost_class)
 
     dle.extend_list_with_new_elements(Plant_investment_RES_CH_list_instance, Plant_investment_RES_CH_list)
     dle.extend_list_with_new_elements(Plant_investment_non_RES_CH_list_instance, Plant_investment_non_RES_CH_list)

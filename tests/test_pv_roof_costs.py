@@ -98,6 +98,9 @@ def test_plant_cost_classes_follow_the_mode():
     assert costs.plant_cost_classes("tech", None) == {}
     assert costs.plant_cost_classes("by_class", unit_classes) == unit_classes
     assert costs.plant_cost_classes("average", unit_classes) == {"CH00_a_pvrf": "all", "CH00_b_pvrf": "all"}
+    assert costs.plant_cost_classes("average", unit_classes, "paper_average") == {
+        "CH00_a_pvrf": "paper_average", "CH00_b_pvrf": "paper_average"}
+    assert costs.plant_cost_classes("by_class", unit_classes, "paper_average") == unit_classes
 
 
 def test_plant_cost_classes_need_the_column_outside_mode_tech():
@@ -130,11 +133,15 @@ def test_plant_investment_slopes_reject_a_class_the_table_lacks():
 def test_shipped_table_covers_both_run_years_and_its_average_row_is_the_weighted_mean():
     table = costs.read_cost_table()
     classes = {"1-10kW", "10-30kW", "30-100kW", "100-1000kW", "all"}
+    extra = {2035: set(), 2050: {"paper_average"}}
     # installable potential per class of pv09_ewopt/2009 (MW), as stated in the table's source column
     weights = {"1-10kW": 26268.5, "10-30kW": 36125.4, "30-100kW": 20053.1, "100-1000kW": 10856.5}
     for year in (2035, 2050):
         rows = table[table["year"] == year].set_index("cost_class")["investment_cost_chfMW"]
-        assert set(rows.index) == classes
+        assert set(rows.index) == classes | extra[year]
         assert rows["1-10kW"] > rows["10-30kW"] > rows["30-100kW"] > rows["100-1000kW"]
         mean = sum(weights[c] * rows[c] for c in weights) / sum(weights.values())
         assert rows["all"] == pytest.approx(mean, abs=500)        # rounded to 1,000 CHF/MW
+    # the manuscript's 1,098 EUR/kWp in CHF2017: / 1.10 (EUR per CHF2020 in Nexus-e) x 0.981 (CHF2020 -> CHF2017)
+    paper = table[(table["year"] == 2050) & (table["cost_class"] == "paper_average")]["investment_cost_chfMW"]
+    assert paper.tolist() == [pytest.approx(1098 / 1.10 * 0.981 * 1000, abs=500)]

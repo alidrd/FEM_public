@@ -128,7 +128,7 @@ candidates Nexus-E's structure:
 |---|---|
 | `tech` | the `pvrf` technology cost, as before |
 | `by_class` | the cost of its `cost_class` from `input/cost_pv_roof_cost_classes.csv` |
-| `average` | the `all` row of that table, the potential-weighted mean of the classes |
+| `average` | one row of that table: `all`, the potential-weighted mean of the classes, unless the setting `pv_roof_average_cost_class` names another row (`paper_average`, the manuscript's uniform cost) |
 
 `by_class` and `average` need `high_resolution_PV` on; with it off the aggregated candidates have
 no class and the run stops. In `by_class` every PV-roof unit of the dataset must carry a class
@@ -147,6 +147,7 @@ source`) holds overnight costs in CHF2017 per MW, FEM's currency basis:
 | `30-100kW` | 1,020 | 763 | |
 | `100-1000kW` | 711 | 598 | |
 | `all` | 1,423 | 1,025 | mean of the four classes weighted by the installable potential per class of `pv09_ewopt` (26,268 / 36,125 / 20,053 / 10,857 MW); Nexus-E's own capacity-weighted average for 2050 is 998 CHF2020 per kW |
+| `paper_average` | – | 979 | the manuscript's uniform cost (Frischholz et al., draft (11), Table 3: 1,098 EUR/kWp), divided by Nexus-E's 1.10 EUR per CHF2020 and times 0.981; used with `pv_roof_average_cost_class = paper_average` |
 
 in CHF per kW here. `model/pv_roof_costs.py` turns an overnight cost into the yearly slope the
 objective uses with FEM's one annuity rule (`utils/annuity.py`: 5% discount rate over the `pvrf`

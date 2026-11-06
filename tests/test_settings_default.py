@@ -20,6 +20,11 @@ def test_every_default_setting_is_defined_once():
     assert sorted({key for key in keys if keys.count(key) > 1}) == []
 
 
+def test_average_cost_class_defaults_to_the_potential_weighted_mean_row():
+    from scenarios.settings_default import seetings_default_param as defaults
+    assert defaults["pv_roof_average_cost_class"] == "all"
+
+
 def test_speed_settings_default_to_the_behaviour_before_they_existed():
     from scenarios.settings_default import seetings_default_param as defaults
     assert (defaults["symbolic_solver_labels"], defaults["import_reduced_costs"], defaults["params_not_exported"]) == (True, True, [])
