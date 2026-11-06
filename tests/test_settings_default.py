@@ -18,3 +18,8 @@ def test_every_default_setting_is_defined_once():
     ]
     keys = [key.value for key in defaults.keys]
     assert sorted({key for key in keys if keys.count(key) > 1}) == []
+
+
+def test_speed_settings_default_to_the_behaviour_before_they_existed():
+    from scenarios.settings_default import seetings_default_param as defaults
+    assert (defaults["symbolic_solver_labels"], defaults["import_reduced_costs"], defaults["params_not_exported"]) == (True, True, [])

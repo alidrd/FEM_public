@@ -1,6 +1,9 @@
 seetings_default_param = {
     "DUALS_EXPORT_ALL": False,
     "solver_parameters": "threads=8 method=2 crossover=0",   # Gurobi options string passed to the solve (e.g. add BarConvTol=1e-6 to loosen the barrier convergence); every sub-scenario of a meta-scenario must give the same string
+    "symbolic_solver_labels": True,   # True writes the model's names into the LP file the solver reads; False writes short labels (x1, c1), a smaller file written and read faster; the solution is mapped back either way
+    "import_reduced_costs": True,   # True reads the reduced cost of every variable back from the solver and exports <variable>_reduced_cost.csv for the investment variables; False skips both
+    "params_not_exported": [],   # names of indexed parameters not written to output/ after the solve, e.g. ['avail_plant'] (7 GB of input availability with per-plant PV); an unknown name raises
     "consumer_based_on_tariff": False,
     "consumer_connection_limit": False,
     "solver_name": "gurobi",

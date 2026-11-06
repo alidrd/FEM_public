@@ -36,6 +36,7 @@ import model.price_setting_tech as price_setting_tech
 
 import model.investment_summary as investment_summary
 from model.variable_presets import apply_variable_presets, read_variable_presets, require_preset_file
+from model.export_selection import indexed_params_to_export
 
 # %% import packages ---------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------------------------
@@ -200,7 +201,8 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     opt.options["LogFile"] = str(log_path)  # Convert Path object to string if needed
     
     model.dual = pyo.Suffix(direction=pyo.Suffix.IMPORT)     # so that dual values are reported back from the solve
-    model.rc = pyo.Suffix(direction=pyo.Suffix.IMPORT)       # so that reduced costs are reported back from the solve
+    if settings_scen["import_reduced_costs"]:
+        model.rc = pyo.Suffix(direction=pyo.Suffix.IMPORT)   # so that reduced costs are reported back from the solve
     
     # Diagnostic: Check for large objective coefficients BEFORE solving
     print("Checking objective function coefficients...")
@@ -219,7 +221,7 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
         tee=True,                           # tee: prints solver statements (summary)
         keepfiles=False,
         options_string=solver_parameters,
-        symbolic_solver_labels=True,
+        symbolic_solver_labels=settings_scen["symbolic_solver_labels"],
     )
     solve_time = time.time() - solve_timer_start
     print("time to solve the model: ", solve_time)    
@@ -238,8 +240,8 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
     res_export.par_var(var_list, scenario_name)
 
     # Parameters ---------------------------------------------------
-    # create a list of all indexed parameters in the model (exclude scalars)
-    par_list = [v for v in model.component_objects(ctype=Param, active=True, descend_into=True) if v.is_indexed()]
+    # all indexed parameters of the model (no scalars), except those named by the setting params_not_exported
+    par_list = indexed_params_to_export(model, settings_scen["params_not_exported"])
 
     # export all parameters in par_list
     res_export.par_var(par_list, scenario_name)
@@ -358,13 +360,8 @@ def core_main(scenario_name, sub_scenarios_list, model_version=None):
         "gen_energy_max",    # storage energy capacity (MWh)
         "gen_energyTh_max",  # thermal storage energy capacity (MWh thermal)
     ]
-    reduced_costs_dict = res_export.reduced_costs(
-        investment_var_names, 
-        scenario_name, 
-        model, 
-        weight_in_objective_fcn, 
-        write_csv=True
-    )
+    if settings_scen["import_reduced_costs"]:
+        res_export.reduced_costs(investment_var_names, scenario_name, model, weight_in_objective_fcn, write_csv=True)
 
     # df_plants, df_counts = price_setting_tech.aggregate_price_setting_data(
     #     scenario_name,
